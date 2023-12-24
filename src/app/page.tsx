@@ -16,6 +16,9 @@ import {
 } from "@/components/ui/menubar"
 import { ThemeToggle } from '@/components/core/theme-toggle'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { TabsPanel } from '@/components/core/top-bar/tabs-panel'
+import { ConnectionSelector } from '@/components/core/top-bar/connection-selector'
+// TODO: add everything to jira 
 // TODO: finish tabbed item switcher 
 // TODO: install needed libs from ai-gpt 
 // TODO: implement profile switcher 
@@ -23,6 +26,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 // TODO; finish top bar 
 // TODO: finish sidebar (taxomony template?)
 // TODO: make sure that you change everything 
+// TODO: push changes of vega.raspi 
+// TODO: move chat code from ai-chat to here and make sure everything is chaneged 
 
 
 
@@ -117,16 +122,8 @@ export default function Home() {
           </MenubarItem>
         </MenubarContent>
       </MenubarMenu>
-      <Tabs value='Hello'>
-        <TabsList>
-          <TabsTrigger defaultValue="def-val" value='Hello' name='Hello'>
-            <h1>Chat</h1>
-          </TabsTrigger>
-          <TabsTrigger value='Hello' name='Hello'>
-            <h1>Analytics</h1>
-          </TabsTrigger>
-        </TabsList>
-      </Tabs>
+      <ConnectionSelector/>
+      <TabsPanel/>
     </Menubar>
 
   )
