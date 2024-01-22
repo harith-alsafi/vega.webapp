@@ -20,8 +20,8 @@ export function TabsPanel() {
   return (
     <Tabs defaultValue="account" >
       <TabsList >
-        <TabsTrigger value="account">Account</TabsTrigger>
-        <TabsTrigger value="password">Password</TabsTrigger>
+        <TabsTrigger value="account">Chat</TabsTrigger>
+        <TabsTrigger value="password">Info</TabsTrigger>
       </TabsList>
       {/* <TabsContent value="account"> */}
         {/* <h1>hi</h1> */}

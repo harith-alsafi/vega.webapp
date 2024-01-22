@@ -4,36 +4,31 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { kv } from '@vercel/kv'
 
-// import { auth } from '@/auth'
 import { type Chat } from '@/lib/types'
 
-export async function getChats(userId?: string | null) {
-  if (!userId) {
-    return []
-  }
+export async function getChats() {
 
   try {
-    const pipeline = kv.pipeline()
-    const chats: string[] = await kv.zrange(`user:chat:${userId}`, 0, -1, {
-      rev: true
-    })
-
-    for (const chat of chats) {
-      pipeline.hgetall(chat)
+    const keys = await kv.keys(`*`)
+    let chatArray: Chat[] = []
+    for (const key of keys) {
+      const chat = await kv.hgetall<Chat>(key)
+      if(chat !== null && chat !== undefined){
+        chatArray.push(chat)
+      }
     }
+    // console.log(chatArray) 
 
-    const results = await pipeline.exec()
-
-    return results as Chat[]
+    return chatArray
   } catch (error) {
     return []
   }
 }
 
-export async function getChat(id: string, userId: string) {
+export async function getChat(id: string) {
   const chat = await kv.hgetall<Chat>(`chat:${id}`)
 
-  if (!chat || (userId && chat.userId !== userId)) {
+  if (!chat) {
     return null
   }
 
@@ -48,21 +43,12 @@ export async function removeChat({ id, path }: { id: string; path: string }) {
   //     error: 'Unauthorized'
   //   }
   // }
+  const chat = await kv.hgetall<Chat>(`chat:${id}`)
 
-  // const uid = await kv.hget<string>(`chat:${id}`, 'userId')
+  await kv.del(`chat:${id}`)
 
-  // if (uid !== session?.user?.id) {
-  //   return {
-  //     error: 'Unauthorized'
-  //   }
-  // }
-
-  // await kv.del(`chat:${id}`)
-  // await kv.zrem(`user:chat:${session.user.id}`, `chat:${id}`)
-
-  // revalidatePath('/')
-  // return revalidatePath(path)
-  return null
+  revalidatePath('/')
+  return revalidatePath(path)
 }
 
 export async function clearChats() {
@@ -74,21 +60,21 @@ export async function clearChats() {
   //   }
   // }
 
-  // const chats: string[] = await kv.zrange(`user:chat:${session.user.id}`, 0, -1)
-  // if (!chats.length) {
-  //   return redirect('/')
-  // }
-  // const pipeline = kv.pipeline()
+  const chats: string[] = await kv.zrange(`user:chat:me`, 0, -1)
+  if (!chats.length) {
+    return redirect('/')
+  }
+  const pipeline = kv.pipeline()
 
-  // for (const chat of chats) {
-  //   pipeline.del(chat)
-  //   pipeline.zrem(`user:chat:${session.user.id}`, chat)
-  // }
+  for (const chat of chats) {
+    pipeline.del(chat)
+    pipeline.zrem(`user:chat:me`, chat)
+  }
 
-  // await pipeline.exec()
+  await pipeline.exec()
 
-  // revalidatePath('/')
-  // return redirect('/')
+  revalidatePath('/')
+  return redirect('/')
 }
 
 export async function getSharedChat(id: string) {
@@ -110,22 +96,20 @@ export async function shareChat(id: string) {
   //   }
   // }
 
-  // const chat = await kv.hgetall<Chat>(`chat:${id}`)
+  const chat = await kv.hgetall<Chat>(`chat:${id}`)
 
-  // if (!chat || chat.userId !== session.user.id) {
-  //   return {
-  //     error: 'Something went wrong'
-  //   }
-  // }
+  if (!chat || chat.userId !== 'me') {
+    return {
+      error: 'Something went wrong'
+    }
+  }
 
-  // const payload = {
-  //   ...chat,
-  //   sharePath: `/share/${chat.id}`
-  // }
+  const payload = {
+    ...chat,
+    sharePath: `/share/${chat.id}`
+  }
 
-  // await kv.hmset(`chat:${chat.id}`, payload)
+  await kv.hmset(`chat:${chat.id}`, payload)
 
-  // return payload
-
-  return null
+  return payload
 }

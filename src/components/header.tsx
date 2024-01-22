@@ -20,6 +20,8 @@ import { UserMenu } from '@/components/user-menu'
 import { SidebarMobile } from './sidebar-mobile'
 import { SidebarToggle } from './sidebar-toggle'
 import { ChatHistory } from './chat-history'
+import { ConnectionSelector } from './core/top-bar/connection-selector'
+import { TabsPanel } from './core/top-bar/tabs-panel'
 
 async function UserOrLogin() {
   // const session = await auth()
@@ -54,6 +56,8 @@ export function Header() {
         <React.Suspense fallback={<div className="flex-1 overflow-auto" />}>
           <UserOrLogin />
         </React.Suspense>
+        <ConnectionSelector />  
+        <TabsPanel/>
       </div>
       <div className="flex items-center justify-end space-x-2">
         <a
@@ -74,6 +78,7 @@ export function Header() {
           <span className="hidden sm:block">Deploy to Vercel</span>
           <span className="sm:hidden">Deploy</span>
         </a>
+        <ThemeToggle />
       </div>
     </header>
   )

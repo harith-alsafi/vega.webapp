@@ -9,7 +9,7 @@ import { EmptyScreen } from "@/components/empty-screen";
 import { Button } from "@/components/ui/button";
 import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+import { cn, nanoid } from "@/lib/utils";
 import { Dialog } from "@radix-ui/react-dialog";
 
 import { Message } from 'ai'
@@ -40,5 +40,7 @@ const messages:Message[] = [
 ];
 
 export default function ChatPage() {
-return <Chat  />
+  const id = nanoid()
+
+return <Chat  id={id}/>
 }
