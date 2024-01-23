@@ -37,20 +37,11 @@ export async function POST(req: Request) {
     functions:[
       {
         name: "plot-data",
-        description: "Plots and shows a line chart without any need of data, used when user asks to plot a line chart",
-        // parameters: {
-        //   type: "object",
-        //   properties: {
-        //     x: {
-        //       type: "Array<number>",
-        //       description: "Array of x values given as [1, 2, 3 .. etc]",
-        //     },
-        //     y: {
-        //       type: "Array<number>",
-        //       description: "Array of y values given as [1, 2, 3 .. etc]",
-        //     },
-        //   },
-        // },
+        description: "Plots and shows a line chart when user asks you will not show the plot instead you will ONLY mention to the user that the plot has been shown above",
+      },
+      {
+        name: "get_current_weather",
+        description: "Gets the current weather",
       }
     ]
   }, )
@@ -82,55 +73,55 @@ export async function POST(req: Request) {
   // }
 
   const stream = OpenAIStream(res, {
-    async experimental_onFunctionCall( { name, arguments: args }, createFunctionCallMessages) {
-      const newMessages = createFunctionCallMessages({
-        info: "Plotting data now..."
-      });
-      newMessages.push({
-        // id: id,
-        name: name,
-        content: "Plotting data now...",
-        role: "assistant",
+    // async experimental_onFunctionCall( { name, arguments: args }, createFunctionCallMessages) {
+    //   const newMessages = createFunctionCallMessages({
+    //     info: "Plotting data now..."
+    //   });
+    //   newMessages.push({
+    //     // id: id,
+    //     name: name,
+    //     content: "Plotting data now...",
+    //     role: "assistant",
         
-        // createdAt: new Date(),
-        // data: {
-        //   x: [1, 2, 3],
-        //   y: [1, 2, 3]
-        // }
-      });
-      // newMessages[newMessages.length-1].data = {
-      //   x: [1, 2, 3],
-      //   y: [1, 2, 3]
-      // }
-      // console.log(newMessages)
+    //     // createdAt: new Date(),
+    //     // data: {
+    //     //   x: [1, 2, 3],
+    //     //   y: [1, 2, 3]
+    //     // }
+    //   });
+    //   // newMessages[newMessages.length-1].data = {
+    //   //   x: [1, 2, 3],
+    //   //   y: [1, 2, 3]
+    //   // }
+    //   // console.log(newMessages)
       
-      return openai.chat.completions.create({
-        model: 'gpt-3.5-turbo',
-        messages: [...messages, ...newMessages],
-        temperature: 0.7,
-        stream: true,
-        function_call: "auto",
-        functions:[
-          {
-            name: "plot-data",
-            description: "Plots and shows a line chart without any need of data, used when user asks to plot a line chart",
-            // parameters: {
-            //   type: "object",
-            //   properties: {
-            //     x: {
-            //       type: "Array<number>",
-            //       description: "Array of x values given as [1, 2, 3 .. etc]",
-            //     },
-            //     y: {
-            //       type: "Array<number>",
-            //       description: "Array of y values given as [1, 2, 3 .. etc]",
-            //     },
-            //   },
-            // },
-          }
-        ]
-      });
-    },
+    //   return openai.chat.completions.create({
+    //     model: 'gpt-3.5-turbo',
+    //     messages: [...messages, ...newMessages],
+    //     temperature: 0.7,
+    //     stream: true,
+    //     function_call: "auto",
+    //     functions:[
+    //       {
+    //         name: "plot-data",
+    //         description: "Plots and shows a line chart without any need of data, used when user asks to plot a line chart",
+    //         // parameters: {
+    //         //   type: "object",
+    //         //   properties: {
+    //         //     x: {
+    //         //       type: "Array<number>",
+    //         //       description: "Array of x values given as [1, 2, 3 .. etc]",
+    //         //     },
+    //         //     y: {
+    //         //       type: "Array<number>",
+    //         //       description: "Array of y values given as [1, 2, 3 .. etc]",
+    //         //     },
+    //         //   },
+    //         // },
+    //       }
+    //     ]
+    //   });
+    // },
     async onCompletion(completion) {
       const title = json.messages[0].content.substring(0, 100)
       const id = json.id ?? nanoid()

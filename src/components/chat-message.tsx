@@ -55,9 +55,9 @@ export function ChatMessage({ message, ...props }: ChatMessageProps) {
           className="prose break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0"
           remarkPlugins={[remarkGfm, remarkMath]}
           components={{
-            a: (props) => (
-              <a {...props} target="_blank" rel="noopener noreferrer" />
-            ),
+            // a: (props) => (
+            //   <a {...props} target="_blank" rel="noopener noreferrer" />
+            // ),
             p({ children }) {
               return <p className="mb-2 last:mb-0">{children}</p>
             },

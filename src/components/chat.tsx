@@ -21,6 +21,7 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { toast } from "react-hot-toast";
 import { usePathname, useRouter } from "next/navigation";
+import { ChatRequest, nanoid } from "ai";
 
 const IS_PREVIEW = process.env.VERCEL_ENV === "preview";
 export interface ChatProps extends React.ComponentProps<"div"> {
@@ -39,9 +40,9 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
   const [previewTokenInput, setPreviewTokenInput] = useState(
     previewToken ?? ""
   );
-  const { messages, append, reload, stop, isLoading, input, setInput } =
+  const { messages, append, reload, stop, isLoading, input, setInput, handleInputChange, handleSubmit, data } =
     useChat({
-      api: 'api/chat',
+      // api: 'api/chat',
       initialMessages,
       id,
       body: {
@@ -54,17 +55,70 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
         }
         
       },
-
-      onFinish() {
-        messages[messages.length-1].data = {
-          x: [1, 2, 3],
-          y: [1, 2, 3],
+      async experimental_onFunctionCall(chatMessages, functionCall) {
+        if (functionCall.name === 'get_current_weather') {
+          if (functionCall.arguments) {
+            const parsedFunctionCallArguments = JSON.parse(functionCall.arguments);
+            // You now have access to the parsed arguments here (assuming the JSON was valid)
+            // If JSON is invalid, return an appropriate message to the model so that it may retry?
+            console.log(parsedFunctionCallArguments);
+          }
+       
+          // Generate a fake temperature
+          const temperature = Math.floor(Math.random() * (100 - 30 + 1) + 30);
+          // Generate random weather condition
+          const weather = ['sunny', 'cloudy', 'rainy', 'snowy'][
+            Math.floor(Math.random() * 4)
+          ];
+       
+          const functionResponse: ChatRequest = {
+            messages: [
+              ...chatMessages,
+              {
+                id: nanoid(),
+                name: 'get_current_weather',
+                role: 'function' as const,
+                content: JSON.stringify({
+                  temperature,
+                  weather,
+                  info: 'This data is randomly generated and came from a fake weather API!',
+                }),
+              },
+            ],
+          };
+          return functionResponse;
         }
+        else if(functionCall.name === "plot-data" ){
+          const functionResponse: ChatRequest = {
+            messages: [
+              ...chatMessages,
+              {
+                id: nanoid(),
+                name: 'plot-data',
+                role: 'function' as const,
+                content: JSON.stringify({
+                  x: [1, 2, 3],
+                  y: [1, 2, 3],
+                  info: 'The plot has been ALREADY shown the user, just inform the user it is shown above',
+                }),
+              },
+            ],
+          };
+          return functionResponse;
+        }
+      },
+      onFinish() {
+        // messages[messages.length-1].data = {
+        //   x: [1, 2, 3],
+        //   y: [1, 2, 3],
+        // }
         if (!path.includes('chat')) {
           window.history.pushState({}, '', `/chat/${id}`)
         }
       }
     });
+    console.log(messages.filter((message) => message.role === 'function').length)
+
   return (
     <>
       <div className={cn("pb-[200px] pt-4 md:pt-10", className)}>
