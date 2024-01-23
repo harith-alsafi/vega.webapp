@@ -26,7 +26,7 @@ export function ChatList({ messages }: ChatList) {
           )}
         </div>
         ) : (
-        message.role === 'function' && message.function_call !== null && message.function_call == "plot-data"?
+        message.role === 'function' && message.name == "plot-data"?
         <div key={index}>
           <ChartMessage/>
         </div> : null)

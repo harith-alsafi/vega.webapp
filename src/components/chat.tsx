@@ -55,6 +55,9 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
         }
         
       },
+      onError(error) {
+          toast.error(error.message)
+      },
       async experimental_onFunctionCall(chatMessages, functionCall) {
         if (functionCall.name === 'get_current_weather') {
           if (functionCall.arguments) {
