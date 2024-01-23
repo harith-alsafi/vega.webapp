@@ -16,7 +16,7 @@ export function ChatList({ messages }: ChatList) {
     <div className="relative mx-auto max-w-2xl px-4">
       {messages.map((message, index) => {
         if(message.role === 'function'){
-          console.log(message)
+          // console.log(message)
         }
         return (message.role === 'assistant' && message.function_call == null )|| message.role === "user" ? (
           <div key={index}>
@@ -26,7 +26,7 @@ export function ChatList({ messages }: ChatList) {
           )}
         </div>
         ) : (
-        message.role === 'function'?
+        message.role === 'function' && message.function_call !== null && message.function_call == "plot-data"?
         <div key={index}>
           <ChartMessage/>
         </div> : null)

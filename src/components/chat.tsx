@@ -117,7 +117,6 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
         }
       }
     });
-    console.log(messages.filter((message) => message.role === 'function').length)
 
   return (
     <>
