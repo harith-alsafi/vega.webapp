@@ -28,9 +28,5 @@ export default async function ChatPage({ params }: ChatPageProps) {
     notFound()
   }
 
-  if (chat?.userId ) {
-    notFound()
-  }
-
   return <Chat id={chat.id} initialMessages={chat.messages} />
 }

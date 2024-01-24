@@ -19,9 +19,9 @@ import {
 import { useState } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { toast } from "react-hot-toast";
 import { usePathname, useRouter } from "next/navigation";
 import { ChatRequest, nanoid } from "ai";
+import {toast} from "sonner";
 
 const IS_PREVIEW = process.env.VERCEL_ENV === "preview";
 export interface ChatProps extends React.ComponentProps<"div"> {
@@ -42,22 +42,29 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
   );
   const { messages, append, reload, stop, isLoading, input, setInput, handleInputChange, handleSubmit, data } =
     useChat({
-      // api: 'api/chat',
+      api: '/api/chat',
       initialMessages,
       id,
       body: {
         id,
         previewToken,
       },
+      
       onResponse(response) {
         if (response.status === 401) {
           toast.error(response.statusText);
         }
         
       },
+      onFinish() {
+        if (!path.includes('chat')) {
+          window.history.pushState({}, '', `/chat/${id}`)
+        }
+      },
       onError(error) {
           toast.error(error.message)
       },
+      
       async experimental_onFunctionCall(chatMessages, functionCall) {
         if (functionCall.name === 'get_current_weather') {
           if (functionCall.arguments) {
@@ -81,6 +88,10 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
                 id: nanoid(),
                 name: 'get_current_weather',
                 role: 'function' as const,
+                data: {
+                  x: [1, 2, 3],
+                  y: [1, 2, 3],
+                },
                 content: JSON.stringify({
                   temperature,
                   weather,
@@ -110,15 +121,6 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
           return functionResponse;
         }
       },
-      onFinish() {
-        // messages[messages.length-1].data = {
-        //   x: [1, 2, 3],
-        //   y: [1, 2, 3],
-        // }
-        if (!path.includes('chat')) {
-          window.history.pushState({}, '', `/chat/${id}`)
-        }
-      }
     });
 
   return (

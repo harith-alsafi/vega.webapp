@@ -1,5 +1,5 @@
 import { kv } from '@vercel/kv'
-import { Message, OpenAIStream, StreamingTextResponse } from 'ai'
+import { AIStream, Message, OpenAIStream, StreamingTextResponse } from 'ai'
 import OpenAI from 'openai'
 
 import { nanoid } from '@/lib/utils'
@@ -28,6 +28,25 @@ export async function POST(req: Request) {
     openai.apiKey = previewToken
   }
 
+  // const response = await fetch('https://api.openai.com/v1/completions', {
+  //   method: 'POST',
+  //   headers: {
+  //     Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+  //     'Content-Type': 'application/json',
+  //   },
+  //   body: JSON.stringify({
+  //     model: 'gpt-3.5-turbo',
+  //     messages: [
+  //       {
+  //         role: 'user',
+  //         content: 'Hello, how are you?'
+  //       }
+  //     ],
+  //     temperature: 0.7,
+  //     stream: true,
+  //   }),
+  // });
+
   const res = await openai.chat.completions.create({
     model: 'gpt-3.5-turbo',
     messages,
@@ -45,6 +64,10 @@ export async function POST(req: Request) {
       }
     ]
   }, )
+
+
+  // const response = await fetch("");
+  // res 
 
   const stream = OpenAIStream(res, {
     async onCompletion(completion) {
@@ -68,7 +91,9 @@ export async function POST(req: Request) {
           }
         ]
       }
+      
       await kv.hmset(`chat:${id}`, payload)
+      completion = "Hi"
       // await kv.set(`chat:${id}`, payload)
       // await kv.zadd(`user:chat:me`, {
         // score: createdAt,
