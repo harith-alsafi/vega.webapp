@@ -33,7 +33,7 @@ export function SidebarItem({ index, chat, children }: SidebarItemProps) {
 
   if (!chat?.id) return null
 
-  return (
+  return ( 
     <motion.div
       className="relative h-8"
       variants={{
