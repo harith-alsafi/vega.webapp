@@ -1,13 +1,16 @@
+import { PiComponentInfo, PiFunctionCall } from "@/lib/types";
 import { FunctionCall, FunctionCallPayload, JSONValue } from "ai";
 import OpenAI from 'openai'
 import { ChatCompletionCreateParams } from 'openai/resources/chat/completions';
 
 export default class RaspberryPi {
+    private _isConnected: boolean = false;
     private _piUrl: string;
     private _piPort: number;
     private _piIp: string;
     private static functionCallUrl: string = '/get-function-calls';
     private static runFunctionCallUrl: string = '/run-function-call';
+    private static getComponentsUrl: string = '/get-components';
 
     constructor(port: number, ip: string) {
         this._piUrl = `http://${ip}:${port}`;
@@ -15,6 +18,10 @@ export default class RaspberryPi {
         this._piIp = ip;
     }
     
+    public get isConnected() {
+        return this._isConnected;
+    }
+
     async ConnectRaspberryPi() {
         return;
     }
@@ -23,17 +30,15 @@ export default class RaspberryPi {
         return;
     }
 
-    async GetFunctionCalls(): Promise<ChatCompletionCreateParams.Function[] | null>{
+    async GetFunctionCalls(): Promise<Array<ChatCompletionCreateParams.Function> | null>{
         return null;
     }
 
-    async RunFunctionCall(functionCall:FunctionCallPayload): Promise<JSONValue | null>{
+    async RunFunctionCall(functionCall:FunctionCallPayload, runAside: boolean): Promise<PiFunctionCall | null>{
         return null;
     }
 
-    async GetComponents(): Promise<JSONValue | null>{
+    async GetComponents(): Promise<PiComponentInfo[] | null>{
         return null;
     }
-    
 }
-

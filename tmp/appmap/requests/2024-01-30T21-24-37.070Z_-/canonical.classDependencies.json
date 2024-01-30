@@ -1,0 +1,10 @@
+[
+  {
+    "caller": "GET /",
+    "callee": "vega/layout"
+  },
+  {
+    "caller": "GET /",
+    "callee": "vega/page"
+  }
+]

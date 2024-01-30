@@ -1,0 +1,7 @@
+[
+  {
+    "route": "POST /api/chat",
+    "parameters": "()",
+    "status": 200
+  }
+]

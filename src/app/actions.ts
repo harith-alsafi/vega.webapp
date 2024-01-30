@@ -25,6 +25,8 @@ export async function getChats() {
 }
 
 export async function getChat(id: string) {
+  return null
+  
   const chat = await kv.hgetall<Chat>(`chat:${id}`)
 
   if (!chat) {

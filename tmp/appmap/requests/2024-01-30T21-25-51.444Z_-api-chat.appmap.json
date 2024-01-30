@@ -1,0 +1,78 @@
+{
+  "events": [
+    {
+      "event": "call",
+      "http_server_request": {
+        "path_info": "/api/chat",
+        "request_method": "POST",
+        "headers": {
+          "Host": "localhost:3000",
+          "Connection": "keep-alive",
+          "Content-Length": "351",
+          "Sec-Ch-Ua": "\"Not A(Brand\";v=\"99\", \"Google Chrome\";v=\"121\", \"Chromium\";v=\"121\"",
+          "Sec-Ch-Ua-Platform": "\"Windows\"",
+          "Sec-Ch-Ua-Mobile": "?0",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+          "Content-Type": "application/json",
+          "Accept": "*/*",
+          "Origin": "http://localhost:3000",
+          "Sec-Fetch-Site": "same-origin",
+          "Sec-Fetch-Mode": "cors",
+          "Sec-Fetch-Dest": "empty",
+          "Referer": "http://localhost:3000/",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Accept-Language": "en,ar;q=0.9",
+          "Cookie": "next-auth.csrf-token=316288ecb22d7d666b1476f2be652b6f93ab2ebbc7e6f12cd1814caf9c6c41de%7C638f14ff8d7b6a847bbdee96c7134cfa5dad6b1d8b2e2fe0c24fd5670d27a26c; next-auth.callback-url=http%3A%2F%2Flocalhost%3A3000%2F"
+        },
+        "protocol": "HTTP/1.1"
+      },
+      "id": 1,
+      "thread_id": 0
+    },
+    {
+      "event": "return",
+      "http_server_response": {
+        "status_code": 200,
+        "headers": {
+          "Content-Type": "text/plain; charset=utf-8",
+          "X-Experimental-Stream-Data": "false"
+        }
+      },
+      "id": 2,
+      "thread_id": 0,
+      "parent_id": 1,
+      "elapsed": 2.51938280000104
+    }
+  ],
+  "version": "1.12",
+  "metadata": {
+    "client": {
+      "name": "appmap-node",
+      "version": "2.14.2",
+      "url": "https://github.com/getappmap/appmap-node"
+    },
+    "language": {
+      "name": "javascript",
+      "engine": "Node.js",
+      "version": "v20.10.0"
+    },
+    "app": "vega.webapp",
+    "recorder": {
+      "type": "requests",
+      "name": "requests"
+    },
+    "name": "POST /api/chat (200) — 2024-01-30T21:25:51.444Z"
+  },
+  "classMap": [
+    {
+      "type": "http",
+      "name": "HTTP server requests",
+      "children": [
+        {
+          "type": "route",
+          "name": "POST /api/chat"
+        }
+      ]
+    }
+  ]
+}

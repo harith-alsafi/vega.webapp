@@ -1,0 +1,8 @@
+# 'name' should generally be the same as the code repo name.
+# to run npx appmap-node npm run dev
+name: vega.webapp
+packages:
+  - path: src/api/chat/
+  - path: src/server/data
+  - path: src/app/(chat)
+    shallow: true

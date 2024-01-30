@@ -29,6 +29,7 @@ export function ChatList({ messages }: ChatList) {
   if (!messages.length) {
     return null
   }
+  console.log("ChatList", messages.length)
   return (
     <div className="relative mx-auto max-w-2xl px-4">
       {messages.map((message, index) => {

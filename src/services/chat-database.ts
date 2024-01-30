@@ -1,5 +1,9 @@
 import { Chat } from "@/lib/types";
+import { kv } from '@vercel/kv'
 
+export async function AppendChat(id: string, chat: Chat): Promise<void> {
+
+}
 
 export async function GetChats(): Promise<Chat[]> {
     return []

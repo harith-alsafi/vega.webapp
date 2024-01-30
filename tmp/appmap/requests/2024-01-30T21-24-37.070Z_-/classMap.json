@@ -1,0 +1,42 @@
+[
+  {
+    "name": "vega",
+    "type": "package",
+    "children": [
+      {
+        "type": "class",
+        "name": "layout",
+        "children": [
+          {
+            "type": "function",
+            "name": "ChatLayout",
+            "static": true,
+            "location": "A:\\Work\\Projects\\vega\\vega.webapp\\src\\app\\(chat)\\layout.tsx:3"
+          }
+        ]
+      },
+      {
+        "type": "class",
+        "name": "page",
+        "children": [
+          {
+            "type": "function",
+            "name": "IndexPage",
+            "static": true,
+            "location": "A:\\Work\\Projects\\vega\\vega.webapp\\src\\app\\(chat)\\page.tsx:4"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "http",
+    "name": "HTTP server requests",
+    "children": [
+      {
+        "type": "route",
+        "name": "GET /"
+      }
+    ]
+  }
+]

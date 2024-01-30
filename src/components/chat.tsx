@@ -22,12 +22,24 @@ import { Input } from "./ui/input";
 import { usePathname, useRouter } from "next/navigation";
 import { ChatRequest, nanoid } from "ai";
 import {toast} from "sonner";
+import { ChatCompletionCreateParams, ChatCompletionFunctionCallOption } from "openai/resources/index.mjs";
 
 const IS_PREVIEW = process.env.VERCEL_ENV === "preview";
 export interface ChatProps extends React.ComponentProps<"div"> {
   initialMessages?: Message[];
   id?: string;
 }
+
+const functions: Array<ChatCompletionCreateParams.Function> = [
+  {
+    name: "plot-data",
+    description: "Plots and shows a line chart when user asks you will not show the plot instead you will ONLY mention to the user that the plot has been shown above",
+  },
+  {
+    name: "get_current_weather",
+    description: "Gets the current weather",
+  }
+]
 
 export function Chat({ id, initialMessages, className }: ChatProps) {
   const router = useRouter();
@@ -40,7 +52,8 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
   const [previewTokenInput, setPreviewTokenInput] = useState(
     previewToken ?? ""
   );
-  const { messages, append, reload, stop, isLoading, input, setInput, handleInputChange, handleSubmit, data } =
+
+  const { messages, append, reload, stop, isLoading, input, setInput, handleInputChange, handleSubmit, data, setMessages } =
     useChat({
       api: '/api/chat',
       initialMessages,
@@ -48,29 +61,44 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
       body: {
         id,
         previewToken,
+        functions
       },
-      
       onResponse(response) {
         if (response.status === 401) {
           toast.error(response.statusText);
         }
-        
+        console.log("OnResponse: ",messages.length)
+
       },
-      onFinish() {
-        if (!path.includes('chat')) {
-          window.history.pushState({}, '', `/chat/${id}`)
-        }
+      
+      async onFinish(message) {
+        // if (!path.includes('chat')) {
+        //   window.history.pushState({}, '', `/chat/${id}`)
+        // }
+        console.log("Before OnCompletion: ",messages.length)
+        messages.push(message)
+
+        // message.content += " (Finished)";
+        // console.log(messages[messages.length - 1])
+        // messages.push(message)
+        // console.log(message);
+        // if(messages.length > 0 && messages[messages.length - 1].role === "assistant"){
+          // messages[messages.length - 1].content += " (Finished)";
+          // message.content += " (Finished)";
+          // await reload();
+          // append(message);                
+        // }
+        // setMessages(messages);
+        console.log("After OnCompletion: ",messages.length)
+
       },
       onError(error) {
           toast.error(error.message)
       },
-      
       async experimental_onFunctionCall(chatMessages, functionCall) {
         if (functionCall.name === 'get_current_weather') {
           if (functionCall.arguments) {
             const parsedFunctionCallArguments = JSON.parse(functionCall.arguments);
-            // You now have access to the parsed arguments here (assuming the JSON was valid)
-            // If JSON is invalid, return an appropriate message to the model so that it may retry?
             console.log(parsedFunctionCallArguments);
           }
        
@@ -136,6 +164,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
         )}
       </div>
       <ChatPanel
+        setMessages={setMessages}
         id={id}
         isLoading={isLoading}
         stop={stop}

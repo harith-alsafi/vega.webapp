@@ -1,0 +1,426 @@
+{
+  "events": [
+    {
+      "event": "call",
+      "http_server_request": {
+        "path_info": "/",
+        "request_method": "GET",
+        "headers": {
+          "Host": "localhost:3000",
+          "Connection": "keep-alive",
+          "Cache-Control": "max-age=0",
+          "Sec-Ch-Ua": "\"Not A(Brand\";v=\"99\", \"Google Chrome\";v=\"121\", \"Chromium\";v=\"121\"",
+          "Sec-Ch-Ua-Mobile": "?0",
+          "Sec-Ch-Ua-Platform": "\"Windows\"",
+          "Upgrade-Insecure-Requests": "1",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+          "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+          "Sec-Fetch-Site": "same-origin",
+          "Sec-Fetch-Mode": "navigate",
+          "Sec-Fetch-User": "?1",
+          "Sec-Fetch-Dest": "document",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Accept-Language": "en,ar;q=0.9",
+          "Cookie": "next-auth.csrf-token=316288ecb22d7d666b1476f2be652b6f93ab2ebbc7e6f12cd1814caf9c6c41de%7C638f14ff8d7b6a847bbdee96c7134cfa5dad6b1d8b2e2fe0c24fd5670d27a26c; next-auth.callback-url=http%3A%2F%2Flocalhost%3A3000%2F"
+        },
+        "protocol": "HTTP/1.1"
+      },
+      "id": 1,
+      "thread_id": 0
+    },
+    {
+      "event": "call",
+      "id": 2,
+      "thread_id": 0,
+      "method_id": "IndexPage",
+      "static": true,
+      "parameters": [
+        {
+          "class": "Object",
+          "properties": [
+            {
+              "name": "params",
+              "class": "Object",
+              "properties": []
+            },
+            {
+              "name": "searchParams",
+              "class": "Object",
+              "properties": []
+            }
+          ],
+          "value": "{ params: {}, searchParams: {} }",
+          "object_id": 1
+        }
+      ],
+      "defined_class": "page",
+      "path": "A:\\Work\\Projects\\vega\\vega.webapp\\src\\app\\(chat)\\page.tsx",
+      "lineno": 4
+    },
+    {
+      "event": "return",
+      "thread_id": 0,
+      "id": 3,
+      "parent_id": 2,
+      "return_value": {
+        "class": "Object",
+        "properties": [
+          {
+            "name": "$$typeof",
+            "class": "Symbol"
+          },
+          {
+            "name": "type",
+            "class": "Object",
+            "properties": []
+          },
+          {
+            "name": "key",
+            "class": "object"
+          },
+          {
+            "name": "ref",
+            "class": "object"
+          },
+          {
+            "name": "props",
+            "class": "Object",
+            "properties": [
+              {
+                "name": "id",
+                "class": "String"
+              }
+            ]
+          },
+          {
+            "name": "_owner",
+            "class": "object"
+          },
+          {
+            "name": "_store",
+            "class": "Object",
+            "properties": []
+          }
+        ],
+        "value": "{\n  '$$typeof': Symbol(react.element),\n  type: {},\n  key: null,\n  ref: null,\n  props: { id: 'EMykWss' },\n  _owner: null,\n  _store: {}\n}",
+        "object_id": 2
+      },
+      "elapsed": 0.0009497999999439344
+    },
+    {
+      "event": "call",
+      "id": 4,
+      "thread_id": 0,
+      "method_id": "ChatLayout",
+      "static": true,
+      "parameters": [
+        {
+          "class": "Object",
+          "properties": [
+            {
+              "name": "children",
+              "class": "Object",
+              "properties": [
+                {
+                  "name": "$$typeof",
+                  "class": "Symbol"
+                },
+                {
+                  "name": "type",
+                  "class": "Function"
+                },
+                {
+                  "name": "key",
+                  "class": "object"
+                },
+                {
+                  "name": "ref",
+                  "class": "object"
+                },
+                {
+                  "name": "props",
+                  "class": "Object",
+                  "properties": [
+                    {
+                      "name": "parallelRouterKey",
+                      "class": "String"
+                    },
+                    {
+                      "name": "segmentPath",
+                      "class": "Array",
+                      "items": {
+                        "class": "String"
+                      }
+                    },
+                    {
+                      "name": "loading",
+                      "class": "undefined"
+                    },
+                    {
+                      "name": "loadingStyles",
+                      "class": "undefined"
+                    },
+                    {
+                      "name": "loadingScripts",
+                      "class": "undefined"
+                    },
+                    {
+                      "name": "hasLoading",
+                      "class": "Boolean"
+                    },
+                    {
+                      "name": "error",
+                      "class": "undefined"
+                    },
+                    {
+                      "name": "errorStyles",
+                      "class": "undefined"
+                    },
+                    {
+                      "name": "errorScripts",
+                      "class": "undefined"
+                    },
+                    {
+                      "name": "template",
+                      "class": "Object",
+                      "properties": [
+                        {
+                          "name": "$$typeof",
+                          "class": "Symbol"
+                        },
+                        {
+                          "name": "type",
+                          "class": "Symbol"
+                        },
+                        {
+                          "name": "key",
+                          "class": "object"
+                        },
+                        {
+                          "name": "ref",
+                          "class": "object"
+                        },
+                        {
+                          "name": "props",
+                          "class": "Object",
+                          "properties": [
+                            {
+                              "name": "children",
+                              "class": "Object",
+                              "properties": [
+                                {
+                                  "name": "$$typeof",
+                                  "class": "Symbol"
+                                },
+                                {
+                                  "name": "type",
+                                  "class": "Function"
+                                },
+                                {
+                                  "name": "key",
+                                  "class": "object"
+                                },
+                                {
+                                  "name": "ref",
+                                  "class": "object"
+                                },
+                                {
+                                  "name": "props",
+                                  "class": "Object",
+                                  "properties": []
+                                },
+                                {
+                                  "name": "_owner",
+                                  "class": "object"
+                                },
+                                {
+                                  "name": "_store",
+                                  "class": "Object",
+                                  "properties": []
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "name": "_owner",
+                          "class": "object"
+                        },
+                        {
+                          "name": "_store",
+                          "class": "Object",
+                          "properties": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "templateStyles",
+                      "class": "undefined"
+                    },
+                    {
+                      "name": "templateScripts",
+                      "class": "undefined"
+                    },
+                    {
+                      "name": "notFound",
+                      "class": "Object",
+                      "properties": [
+                        {
+                          "name": "$$typeof",
+                          "class": "Symbol"
+                        },
+                        {
+                          "name": "type",
+                          "class": "Function"
+                        },
+                        {
+                          "name": "key",
+                          "class": "object"
+                        },
+                        {
+                          "name": "ref",
+                          "class": "object"
+                        },
+                        {
+                          "name": "props",
+                          "class": "Object",
+                          "properties": []
+                        },
+                        {
+                          "name": "_owner",
+                          "class": "object"
+                        },
+                        {
+                          "name": "_store",
+                          "class": "Object",
+                          "properties": []
+                        }
+                      ]
+                    },
+                    {
+                      "name": "notFoundStyles",
+                      "class": "Array"
+                    },
+                    {
+                      "name": "styles",
+                      "class": "object"
+                    }
+                  ]
+                },
+                {
+                  "name": "_owner",
+                  "class": "object"
+                },
+                {
+                  "name": "_store",
+                  "class": "Object",
+                  "properties": []
+                }
+              ]
+            },
+            {
+              "name": "params",
+              "class": "Object",
+              "properties": []
+            }
+          ],
+          "value": "{\n  children: {\n    '$$typeof': Symbol(react.element),\n    type: [Function (anonymous)],\n    key: null,\n    ref: null,\n    props: [Object],\n    _owner: null,\n    _store: {}\n  },\n  params: {}\n}",
+          "object_id": 3
+        }
+      ],
+      "defined_class": "layout",
+      "path": "A:\\Work\\Projects\\vega\\vega.webapp\\src\\app\\(chat)\\layout.tsx",
+      "lineno": 3
+    },
+    {
+      "event": "return",
+      "thread_id": 0,
+      "id": 5,
+      "parent_id": 4,
+      "return_value": {
+        "class": "Promise",
+        "value": "Promise {\n  {\n    '$$typeof': Symbol(react.element),\n    type: 'div',\n    key: null,\n    ref: null,\n    props: [Object],\n    _owner: null,\n    _store: {}\n  },\n  [Symbol(async_id_symbol)]: 186565,\n  [Symbol(trigger_async_id_symbol)]: 186521,\n  [Symbol(kResourceStore)]: {\n    headers: [Getter],\n    cookies: [Getter],\n    mutableCookies: [Getter],\n    draftMode: [Getter]\n  },\n  [Symbol(kResourceStore)]: {\n    isStaticGeneration: false,\n    urlPathname: '/',\n    pagePath: '/(chat)/page',\n    incrementalCache: [IncrementalCache],\n    isRevalidate: false,\n    isPrerendering: undefined,\n    fetchCache: undefined,\n    isOnDemandRevalidate: false,\n    isDraftMode: false,\n    postpone: undefined,\n    fetchMetrics: []\n  },\n  [Symbol(kResourceStore)]: {\n    destination: null,\n    flushScheduled: false,\n    resumableState: [Object],\n    renderState: [Object],\n    rootFormatContext: [Object],\n    progressiveChunkSize: 12800,\n    status: 0,\n    fatalError: null,\n    nextSegmentId: 0,\n    allPendingTasks: 1,\n    pendingRootTasks: 1,\n    completedRootSegment: null,\n    abortableTasks: [Set],\n    pingedTasks: [],\n    clientRenderedBoundaries: [],\n    completedBoundaries: [],\n    partialBoundaries: [],\n    trackedPostpones: null,\n    onError: [Function (anonymous)],\n    onPostpone: [Function: oQ],\n    onAllReady: [Function (anonymous)],\n    onShellReady: [Function: y],\n    onShellError: [Function: g],\n    onFatalError: [Function (anonymous)],\n    formState: null\n  },\n  [Symbol(kResourceStore)]: {\n    status: 0,\n    flushScheduled: false,\n    fatalError: null,\n    destination: [ReadableByteStreamController],\n    bundlerConfig: [Object],\n    cache: Map(0) {},\n    nextChunkId: 6,\n    pendingChunks: 4,\n    hints: [Set],\n    abortableTasks: [Set],\n    pingedTasks: [],\n    completedImportChunks: [Array],\n    completedHintChunks: [],\n    completedRegularChunks: [],\n    completedErrorChunks: [],\n    writtenSymbols: Map(0) {},\n    writtenClientReferences: [Map],\n    writtenServerReferences: Map(0) {},\n    writtenProviders: Map(0) {},\n    writtenObjects: [WeakMap],\n    identifierPrefix: '',\n    identifierCount: 1,\n    taintCleanupQueue: [],\n    onError: [Function (anonymous)],\n    onPostpone: [Function: eS],\n    toJSON: [Function: toJSON]\n  }\n}",
+        "object_id": 4
+      },
+      "elapsed": 0.0004241999995429069
+    },
+    {
+      "event": "return",
+      "http_server_response": {
+        "status_code": 200,
+        "headers": {
+          "Vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Url, Accept-Encoding",
+          "Cache-Control": "no-store, must-revalidate",
+          "X-Powered-By": "Next.js",
+          "Content-Type": "text/html; charset=utf-8",
+          "Content-Encoding": "gzip"
+        }
+      },
+      "id": 6,
+      "thread_id": 0,
+      "parent_id": 1,
+      "elapsed": 23.784827999999834
+    }
+  ],
+  "version": "1.12",
+  "metadata": {
+    "client": {
+      "name": "appmap-node",
+      "version": "2.14.2",
+      "url": "https://github.com/getappmap/appmap-node"
+    },
+    "language": {
+      "name": "javascript",
+      "engine": "Node.js",
+      "version": "v20.10.0"
+    },
+    "app": "vega.webapp",
+    "recorder": {
+      "type": "requests",
+      "name": "requests"
+    },
+    "name": "GET / (200) — 2024-01-30T21:24:37.070Z"
+  },
+  "classMap": [
+    {
+      "name": "vega",
+      "type": "package",
+      "children": [
+        {
+          "type": "class",
+          "name": "layout",
+          "children": [
+            {
+              "type": "function",
+              "name": "ChatLayout",
+              "static": true,
+              "location": "A:\\Work\\Projects\\vega\\vega.webapp\\src\\app\\(chat)\\layout.tsx:3"
+            }
+          ]
+        },
+        {
+          "type": "class",
+          "name": "page",
+          "children": [
+            {
+              "type": "function",
+              "name": "IndexPage",
+              "static": true,
+              "location": "A:\\Work\\Projects\\vega\\vega.webapp\\src\\app\\(chat)\\page.tsx:4"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "http",
+      "name": "HTTP server requests",
+      "children": [
+        {
+          "type": "route",
+          "name": "GET /"
+        }
+      ]
+    }
+  ]
+}
