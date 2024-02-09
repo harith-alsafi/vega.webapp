@@ -10,6 +10,7 @@ import {
 import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions";
 import { useRef, useState } from "react";
 import { UpdateChat } from "./database";
+import { get } from "http";
 
 export interface MessageSystem extends ChatCompletionSystemMessageParam {}
 
@@ -59,12 +60,14 @@ export interface ChatCompletion {
   input: string;
   isMultipleToolCall: boolean;
   completionStatus: CompletionStatus;
+  currentToolCall: string | null;
   append: (message: Message) => Promise<void>;
   reload: () => void;
   stop: () => void;
   setMessages: (messages: Message[]) => void;
   updateDataBase: (messages: Message[]) => Promise<void>;
   setInput: React.Dispatch<React.SetStateAction<string>>;
+  setCurrentToolCall: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 export interface UseChatParams extends Omit<Chat, "messages" | "model" | "id" | "title" | "path"> {
@@ -81,6 +84,7 @@ export interface UseChatParams extends Omit<Chat, "messages" | "model" | "id" | 
     oldMessages: Message[],
     toolCalls: ChatCompletionMessageToolCall[]
   ) => Promise<Message[]>;
+  onDbUpdate?: (chat: Chat) => void;
 }
 
 export async function SendGpt(
@@ -123,7 +127,7 @@ export function useChat(params: UseChatParams): ChatCompletion {
     onError,
     onToolCall,
     initialMessages,
-
+    onDbUpdate,
   } = params;
 
   let actualId = id ?? nanoid()
@@ -138,11 +142,12 @@ export function useChat(params: UseChatParams): ChatCompletion {
   const [isLoading, setIsLoading] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
   const [isMultipleToolCall, setIsMultipleToolCall] = useState(false);
+  const [currentToolCall, setCurrentToolCall] = useState<string | null>(null);
   const [completionStatus, setCompletionStatus] =
     useState<CompletionStatus>("None");
 
-  const updateDataBase = async (messages: Message[]) : Promise<void> => {
-    const chat: Chat = {
+  const getChat = (messages: Message[]) : Chat => {
+    return  {
       title: title as string,
       id: actualId,
       path: actualPath,
@@ -152,9 +157,15 @@ export function useChat(params: UseChatParams): ChatCompletion {
       temperature,
       tools,
     };
+  }
 
+  const updateDataBase = async (messages: Message[]) : Promise<void> => {
+    const chat = getChat(messages);
     console.log("Updating database with chat", chat);
     await UpdateChat(chat);
+    if (onDbUpdate) {
+      onDbUpdate(chat);
+    }
   }
 
   const sendMessages = async (
@@ -172,16 +183,7 @@ export function useChat(params: UseChatParams): ChatCompletion {
 
     const { message: messageResponse, response: response } = await SendGpt(
       api as string,
-      {
-        title: title as string,
-        id: actualId,
-        path: actualPath,
-        raspi_id,
-        model: finalModel,
-        temperature,
-        tools,
-        messages: newMessages,
-      },
+      getChat(newMessages),
       () => abortControllerRef.current
     );
 
@@ -195,6 +197,7 @@ export function useChat(params: UseChatParams): ChatCompletion {
     newMessages = [...newMessages, messageResponse];
 
     await updateDataBase(newMessages);
+    
 
     setMessages(newMessages);
 
@@ -274,6 +277,7 @@ export function useChat(params: UseChatParams): ChatCompletion {
       }
     } finally {
       setIsLoading(false);
+      setCurrentToolCall(null);
       setCompletionStatus("None");
       abortControllerRef.current = null;
     }
@@ -306,5 +310,7 @@ export function useChat(params: UseChatParams): ChatCompletion {
     setInput,
     updateDataBase,
     isMultipleToolCall,
+    currentToolCall,
+    setCurrentToolCall,
   } as ChatCompletion;
 }

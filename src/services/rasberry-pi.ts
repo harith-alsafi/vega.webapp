@@ -1,7 +1,16 @@
-import { PiComponentInfo, PiFunctionCall } from "@/lib/types";
 import { FunctionCall, FunctionCallPayload, JSONValue } from "ai";
-import OpenAI from 'openai'
 import { ChatCompletionCreateParams } from 'openai/resources/chat/completions';
+
+export interface PiComponentInfo {
+    name: string
+    description: string
+    type: string
+    pin: string
+  }
+  
+  export interface PiFunctionCall {
+    name: string
+  }
 
 export default class RaspberryPi {
     private _isConnected: boolean = false;

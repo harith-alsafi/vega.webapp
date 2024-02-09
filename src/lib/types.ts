@@ -17,14 +17,3 @@ export type ServerActionResult<Result> = Promise<
       error: string
     }
 >
-
-export interface PiComponentInfo {
-  name: string
-  description: string
-  type: string
-  pin: string
-}
-
-export interface PiFunctionCall {
-  name: string
-}

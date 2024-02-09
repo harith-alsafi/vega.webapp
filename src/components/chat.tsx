@@ -34,6 +34,7 @@ import {
   ChatCompletionTool,
 } from "openai/resources";
 import ChartMessage from "./chat/message/chart-message";
+import { emitUpdateSidebarEvent } from "@/lib/event-emmiter";
 
 const IS_PREVIEW = process.env.VERCEL_ENV === "preview";
 export interface ChatProps extends React.ComponentProps<"div"> {
@@ -61,7 +62,7 @@ const tools: Array<ChatCompletionTool> = [
 
 export function Chat({ id, initialMessages, className }: ChatProps) {
   const path = usePathname();
-
+  const [updatedSideBar, setUpdatedSideBar] = useState(false);
   const {
     messages,
     append,
@@ -90,6 +91,12 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
     },
     onError(error) {
       toast.error(error.name);
+    },
+    onDbUpdate(chat){
+      if(!updatedSideBar && !path.includes('chat')){
+        emitUpdateSidebarEvent();
+        setUpdatedSideBar(true);
+      }
     },
     async onToolCall(oldMessages, toolCalls) {
       const toolCall = toolCalls[0];
