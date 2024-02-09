@@ -1,7 +1,7 @@
 import { type Metadata } from 'next'
 import { notFound, redirect } from 'next/navigation'
 
-import { getChat } from '@/app/actions'
+import { GetChat } from '@/services/database'
 import { Chat } from '@/components/chat'
 
 export interface ChatPageProps {
@@ -14,7 +14,7 @@ export async function generateMetadata({
   params
 }: ChatPageProps): Promise<Metadata> {
 
-  const chat = await getChat(params.id)
+  const chat = await GetChat(params.id)
   return {
     title: chat?.title.toString().slice(0, 50) ?? 'Chat'
   }
@@ -22,7 +22,7 @@ export async function generateMetadata({
 
 export default async function ChatPage({ params }: ChatPageProps) {
 
-  const chat = await getChat(params.id)
+  const chat = await GetChat(params.id)
 
   if (!chat) {
     notFound()

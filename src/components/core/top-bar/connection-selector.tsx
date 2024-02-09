@@ -21,24 +21,24 @@ import {
 const frameworks = [
   {
     value: "next.js",
-    label: "Next.js",
+    label: "1.1.9.10@rapsi",
   },
   {
     value: "sveltekit",
-    label: "SvelteKit",
+    label: "1.8.0.1@ras",
   },
-  {
-    value: "nuxt.js",
-    label: "Nuxt.js",
-  },
-  {
-    value: "remix",
-    label: "Remix",
-  },
-  {
-    value: "astro",
-    label: "Astro",
-  },
+  // {
+  //   value: "nuxt.js",
+  //   label: "Nuxt.js",
+  // },
+  // {
+  //   value: "remix",
+  //   label: "Remix",
+  // },
+  // {
+  //   value: "astro",
+  //   label: "Astro",
+  // },
 ]
 
 export function ConnectionSelector() {
@@ -56,13 +56,13 @@ export function ConnectionSelector() {
         >
           {value
             ? frameworks.find((framework) => framework.value === value)?.label
-            : "Select framework..."}
+            : "Select Raspberry Pi..."}
           <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
         <Command>
-          <CommandInput placeholder="Search framework..." className="h-9" />
+          <CommandInput placeholder="Search raspberry..." className="h-9" />
           <CommandEmpty>No framework found.</CommandEmpty>
           <CommandGroup>
             {frameworks.map((framework) => (

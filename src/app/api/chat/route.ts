@@ -5,7 +5,7 @@ import OpenAI from 'openai'
 import { nanoid } from '@/lib/utils'
 import { Chat } from '@/lib/types'
 
-export const runtime = 'edge'
+// export const runtime = 'edge'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY

@@ -1,6 +1,12 @@
 "use client";
 
-import { useChat, type Message } from "ai/react";
+// import { useChat, type Message } from "ai/react";
+
+import {
+  useChat,
+  Message,
+  MessageToolCallResponse,
+} from "@/services/chat-completion";
 
 import { cn } from "@/lib/utils";
 import { ChatList } from "@/components/chat-list";
@@ -21,8 +27,13 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { usePathname, useRouter } from "next/navigation";
 import { ChatRequest, nanoid } from "ai";
-import {toast} from "sonner";
-import { ChatCompletionCreateParams, ChatCompletionFunctionCallOption } from "openai/resources/index.mjs";
+import { toast } from "sonner";
+import {
+  ChatCompletionCreateParams,
+  ChatCompletionFunctionCallOption,
+  ChatCompletionTool,
+} from "openai/resources";
+import ChartMessage from "./chat/message/chart-message";
 
 const IS_PREVIEW = process.env.VERCEL_ENV === "preview";
 export interface ChatProps extends React.ComponentProps<"div"> {
@@ -30,16 +41,23 @@ export interface ChatProps extends React.ComponentProps<"div"> {
   id?: string;
 }
 
-const functions: Array<ChatCompletionCreateParams.Function> = [
+const tools: Array<ChatCompletionTool> = [
   {
-    name: "plot-data",
-    description: "Plots and shows a line chart when user asks you will not show the plot instead you will ONLY mention to the user that the plot has been shown above",
+    type: "function",
+    function: {
+      name: "plot-data",
+      description:
+        "Plots and shows a line chart when user asks you will not show the plot instead you will ONLY mention to the user that the plot has been shown above",
+    },
   },
   {
-    name: "get_current_weather",
-    description: "Gets the current weather",
-  }
-]
+    type: "function",
+    function: {
+      name: "get_current_weather",
+      description: "Gets the current weather",
+    },
+  },
+];
 
 export function Chat({ id, initialMessages, className }: ChatProps) {
   const router = useRouter();
@@ -53,110 +71,75 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
     previewToken ?? ""
   );
 
-  const { messages, append, reload, stop, isLoading, input, setInput, handleInputChange, handleSubmit, data, setMessages } =
-    useChat({
-      api: '/api/chat',
-      initialMessages,
-      id,
-      body: {
-        id,
-        previewToken,
-        functions
-      },
-      onResponse(response) {
-        if (response.status === 401) {
-          toast.error(response.statusText);
-        }
-        console.log("OnResponse: ",messages.length)
+  const {
+    messages,
+    append,
+    reload,
+    stop,
+    isLoading,
+    input,
+    setInput,
+    setMessages,
+    completionStatus
+  } = useChat({
+    api: "/api/chat/internal",
+    initialMessages,
+    id: id,
+    tools,
+    onResponse(response, isAfterOnToolCall) {
+      if (response.status === 401) {
+        toast.error(response.statusText);
+      }
+    },
+    async onFinish(message, isAfterOnToolCall) {
+      if (!path.includes('chat')) {
+        window.history.pushState({}, '', `/chat/${id}`)
+      }
+      console.log("OnFinish: ", message);
+    },
+    onError(error) {
+      toast.error(error.name);
+    },
+    async onToolCall(oldMessages, toolCalls) {
+      const toolCall = toolCalls[0];
+      if (toolCall.function.name === "plot-data") {
+        const toolResponse: MessageToolCallResponse = {
+          tool_call_id: toolCall.id,
+          role: "tool",
+          name: toolCall.function.name,
+          ui: <div> <ChartMessage/> </div>,
+          content:
+            "The plot has been ALREADY shown the user, just inform the user it is shown above",
+        };
 
-      },
-      
-      async onFinish(message) {
-        // if (!path.includes('chat')) {
-        //   window.history.pushState({}, '', `/chat/${id}`)
-        // }
-        console.log("Before OnCompletion: ",messages.length)
-        messages.push(message)
-
-        // message.content += " (Finished)";
-        // console.log(messages[messages.length - 1])
-        // messages.push(message)
-        // console.log(message);
-        // if(messages.length > 0 && messages[messages.length - 1].role === "assistant"){
-          // messages[messages.length - 1].content += " (Finished)";
-          // message.content += " (Finished)";
-          // await reload();
-          // append(message);                
-        // }
-        // setMessages(messages);
-        console.log("After OnCompletion: ",messages.length)
-
-      },
-      onError(error) {
-          toast.error(error.message)
-      },
-      async experimental_onFunctionCall(chatMessages, functionCall) {
-        if (functionCall.name === 'get_current_weather') {
-          if (functionCall.arguments) {
-            const parsedFunctionCallArguments = JSON.parse(functionCall.arguments);
-            console.log(parsedFunctionCallArguments);
-          }
-       
-          // Generate a fake temperature
-          const temperature = Math.floor(Math.random() * (100 - 30 + 1) + 30);
-          // Generate random weather condition
-          const weather = ['sunny', 'cloudy', 'rainy', 'snowy'][
-            Math.floor(Math.random() * 4)
-          ];
-       
-          const functionResponse: ChatRequest = {
-            messages: [
-              ...chatMessages,
-              {
-                id: nanoid(),
-                name: 'get_current_weather',
-                role: 'function' as const,
-                data: {
-                  x: [1, 2, 3],
-                  y: [1, 2, 3],
-                },
-                content: JSON.stringify({
-                  temperature,
-                  weather,
-                  info: 'This data is randomly generated and came from a fake weather API!',
-                }),
-              },
-            ],
-          };
-          return functionResponse;
-        }
-        else if(functionCall.name === "plot-data" ){
-          const functionResponse: ChatRequest = {
-            messages: [
-              ...chatMessages,
-              {
-                id: nanoid(),
-                name: 'plot-data',
-                role: 'function' as const,
-                content: JSON.stringify({
-                  x: [1, 2, 3],
-                  y: [1, 2, 3],
-                  info: 'The plot has been ALREADY shown the user, just inform the user it is shown above',
-                }),
-              },
-            ],
-          };
-          return functionResponse;
-        }
-      },
-    });
+        return [...oldMessages, toolResponse] as Message[];
+      } else if (toolCall.function.name === "get_current_weather") {
+        const temperature = Math.floor(Math.random() * (100 - 30 + 1) + 30);
+        const weather = ["sunny", "cloudy", "rainy", "snowy"][
+          Math.floor(Math.random() * 4)
+        ];
+        const toolResponse: MessageToolCallResponse = {
+          tool_call_id: toolCall.id,
+          role: "tool",
+          name: toolCall.function.name,
+          content: JSON.stringify({
+            temperature,
+            weather,
+            info: "This data is randomly generated and came from a fake weather API!",
+          }),
+        };
+        return [...oldMessages, toolResponse] as Message[];
+      }
+      return oldMessages;
+    },
+  });
 
   return (
     <>
       <div className={cn("pb-[200px] pt-4 md:pt-10", className)}>
         {messages.length ? (
           <>
-            <ChatList messages={messages} />
+            <ChatList completionStatus={completionStatus} isLoading={isLoading}  messages={messages} />
             <ChatScrollAnchor trackVisibility={isLoading} />
           </>
         ) : (

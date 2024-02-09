@@ -23,44 +23,67 @@ import { ChatHistory } from './chat-history'
 import { ConnectionSelector } from './core/top-bar/connection-selector'
 import { TabsPanel } from './core/top-bar/tabs-panel'
 
-async function UserOrLogin() {
-  // const session = await auth()
-  return (
-    <>
-      {/* {session?.user ? ( */}
-        <>
-          <SidebarMobile>
-            <ChatHistory />
-          </SidebarMobile>
-          <SidebarToggle />
-        </>
-      {/* ) : ( */}
-        {/* <Link href="/" target="_blank" rel="nofollow"> */}
-          {/* <IconNextChat className="w-6 h-6 mr-2 dark:hidden" inverted /> */}
-          {/* <IconNextChat className="hidden w-6 h-6 mr-2 dark:block" /> */}
-        {/* </Link> */}
-      {/* )} */}
-      <div className="flex items-center">
-        <IconSeparator className="w-6 h-6 text-muted-foreground/50" />
-          <UserMenu user={'harith'} />
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 
-      </div>
-    </>
+export function RaspberryPiConnect() {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline">Edit Connection</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Edit Connection</DialogTitle>
+          <DialogDescription>
+            Make changes to your profile here. Click save when youre done.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="name" className="text-right">
+              Name
+            </Label>
+            <Input id="name" defaultValue="Pedro Duarte" className="col-span-3" />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="username" className="text-right">
+              Username
+            </Label>
+            <Input id="username" defaultValue="@peduarte" className="col-span-3" />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button type="submit">Save changes</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }
+
 
 export function Header() {
   return (
     <header className="sticky top-0 z-50 flex items-center justify-between w-full h-16 px-4 border-b shrink-0 bg-gradient-to-b from-background/10 via-background/50 to-background/80 backdrop-blur-xl">
-      <div className="flex items-center">
-        <React.Suspense fallback={<div className="flex-1 overflow-auto" />}>
-          <UserOrLogin />
-        </React.Suspense>
-        <ConnectionSelector />  
+      <div className="flex items-center space-x-2">
+      <SidebarMobile>
+            <ChatHistory />
+          </SidebarMobile>
+          <SidebarToggle />
+        {/* <ConnectionSelector />   */}
         <TabsPanel/>
       </div>
       <div className="flex items-center justify-end space-x-2">
-        <a
+        {/* <a
           target="_blank"
           href="https://github.com/vercel/nextjs-ai-chatbot/"
           rel="noopener noreferrer"
@@ -68,8 +91,9 @@ export function Header() {
         >
           <IconGitHub />
           <span className="hidden ml-2 md:flex">GitHub</span>
-        </a>
-        <a
+        </a> */}
+        <RaspberryPiConnect />
+        {/* <a
           href="https://github.com/vercel/nextjs-ai-chatbot/"
           target="_blank"
           className={cn(buttonVariants())}
@@ -77,7 +101,7 @@ export function Header() {
           <IconVercel className="mr-2" />
           <span className="hidden sm:block">Deploy to Vercel</span>
           <span className="sm:hidden">Deploy</span>
-        </a>
+        </a> */}
         <ThemeToggle />
       </div>
     </header>

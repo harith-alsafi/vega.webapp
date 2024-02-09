@@ -15,8 +15,8 @@ import {
   TooltipTrigger
 } from '@/components/ui/tooltip'
 import { useLocalStorage } from '@/lib/hooks/use-local-storage'
-import { type Chat } from '@/lib/types'
 import { cn } from '@/lib/utils'
+import { Chat } from '@/services/chat-completion'
 
 interface SidebarItemProps {
   index: number
@@ -54,7 +54,7 @@ export function SidebarItem({ index, chat, children }: SidebarItemProps) {
       }}
     >
       <div className="absolute left-2 top-1 flex h-6 w-6 items-center justify-center">
-        {chat.sharePath ? (
+        {/* {chat.sharePath ? (
           <Tooltip delayDuration={1000}>
             <TooltipTrigger
               tabIndex={-1}
@@ -64,12 +64,12 @@ export function SidebarItem({ index, chat, children }: SidebarItemProps) {
             </TooltipTrigger>
             <TooltipContent>This is a shared chat.</TooltipContent>
           </Tooltip>
-        ) : (
+        ) : ( */}
           <IconMessage className="mr-2" />
-        )}
+        {/* )} */}
       </div>
       <Link
-        href={chat.path === undefined ? '/' : chat.path}
+        href={chat.path}
         className={cn(
           buttonVariants({ variant: 'ghost' }),
           'group w-full px-8 transition-colors hover:bg-zinc-200/40 dark:hover:bg-zinc-300/10',

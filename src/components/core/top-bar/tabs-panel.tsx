@@ -21,7 +21,7 @@ export function TabsPanel() {
     <Tabs defaultValue="account" >
       <TabsList >
         <TabsTrigger value="account">Chat</TabsTrigger>
-        <TabsTrigger value="password">Info</TabsTrigger>
+        <TabsTrigger value="password">Schematic</TabsTrigger>
       </TabsList>
       {/* <TabsContent value="account"> */}
         {/* <h1>hi</h1> */}

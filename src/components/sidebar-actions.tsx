@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import * as React from 'react'
 import { toast } from 'react-hot-toast'
 
-import { ServerActionResult, type Chat } from '@/lib/types'
+import { ServerActionResult } from '@/lib/types'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,6 +23,8 @@ import {
   TooltipContent,
   TooltipTrigger
 } from '@/components/ui/tooltip'
+import { Chat } from '@/services/chat-completion'
+import { RemoveChat } from '@/services/database'
 
 interface SidebarActionsProps {
   chat: Chat
@@ -43,7 +45,7 @@ export function SidebarActions({
   return (
     <>
       <div className="space-x-1">
-        <Tooltip>
+        {/* <Tooltip>
           <TooltipTrigger asChild>
             <Button
               variant="ghost"
@@ -55,7 +57,7 @@ export function SidebarActions({
             </Button>
           </TooltipTrigger>
           <TooltipContent>Share chat</TooltipContent>
-        </Tooltip>
+        </Tooltip> */}
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
@@ -71,13 +73,13 @@ export function SidebarActions({
           <TooltipContent>Delete chat</TooltipContent>
         </Tooltip>
       </div>
-      <ChatShareDialog
+      {/* <ChatShareDialog
         chat={chat}
         shareChat={shareChat}
         open={shareDialogOpen}
         onOpenChange={setShareDialogOpen}
         onCopy={() => setShareDialogOpen(false)}
-      />
+      /> */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -97,10 +99,7 @@ export function SidebarActions({
                 event.preventDefault()
                 // @ts-ignore
                 startRemoveTransition(async () => {
-                  const result = await removeChat({
-                    id: chat.id,
-                    path: chat.path
-                  })
+                  const result = await RemoveChat(chat.id, chat.path)
 
                   if (result && 'error' in result) {
                     toast.error(result.error)

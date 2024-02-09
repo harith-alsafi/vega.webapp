@@ -8,12 +8,15 @@ import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
 import { IconRefresh, IconShare, IconStop } from '@/components/ui/icons'
 import { FooterText } from '@/components/footer'
 import { ChatShareDialog } from '@/components/chat-share-dialog'
-import { CreateMessage, Message, nanoid } from 'ai'
+// import { CreateMessage, Message, nanoid } from 'ai'
+import {Message} from "@/services/chat-completion";
+
 import { set } from 'react-hook-form'
+import { ChatCompletion, UseChatParams } from '@/services/chat-completion'
 
 export interface ChatPanelProps
   extends Pick<
-    UseChatHelpers,
+  ChatCompletion,
     | 'append'
     | 'isLoading'
     | 'reload'
@@ -92,17 +95,17 @@ export function ChatPanel({
           <PromptForm
             onSubmit={async value => {
               const msg:Message = {
-                id : id ?? nanoid(),
+                // id : id ?? nanoid(),
                 content: value,
                 role: 'user'
               }
               // messages.push(msg)
-              console.log("Before Append: ",messages.length)
+              // console.log("Before Append: ",messages.length)
 
               await append(msg)
               // messages.push(msg)
               // setMessages(messages)
-              console.log("After Append: ",messages.length  )
+              // console.log("After Append: ",messages.length  )
 
             }}
             input={input}

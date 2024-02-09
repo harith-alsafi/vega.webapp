@@ -1,6 +1,8 @@
 'use client'
 
-import { type Message } from 'ai'
+// import { type Message } from 'ai'
+import {Message} from "@/services/chat-completion";
+
 
 import { Button } from '@/components/ui/button'
 import { IconCheck, IconCopy } from '@/components/ui/icons'
@@ -20,7 +22,7 @@ export function ChatMessageActions({
 
   const onCopy = () => {
     if (isCopied) return
-    copyToClipboard(message.content)
+    copyToClipboard(message.content as string)
   }
 
   return (
