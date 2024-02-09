@@ -3,15 +3,10 @@ import { Separator } from "@/components/ui/separator";
 import { ChatMessage } from "@/components/chat-message";
 import { cn } from "@/lib/utils";
 import { IconOpenAI } from "./ui/icons";
-import { dotWave } from "ldrs";
-
-dotWave.register();
-
 import { ring } from "ldrs";
 
 ring.register();
 
-// Default values shown
 
 export interface ChatList {
   messages: Message[];

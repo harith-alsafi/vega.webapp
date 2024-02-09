@@ -1,13 +1,8 @@
 import { Chat, MessageAssistant } from "@/services/chat-completion";
-import { kv } from "@vercel/kv";
-import { AIStream, Message, OpenAIStream, StreamingTextResponse } from "ai";
-import { m } from "framer-motion";
 import OpenAI from "openai";
 import {
   ChatCompletionAssistantMessageParam,
-  ChatCompletionFunctionMessageParam,
   ChatCompletionMessageParam,
-  ChatCompletionSystemMessageParam,
   ChatCompletionToolMessageParam,
   ChatCompletionUserMessageParam,
 } from "openai/resources";
@@ -15,7 +10,6 @@ import {
 export const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
   });
-  
 
 export async function POST(req: Request) {
   const json = await req.json();

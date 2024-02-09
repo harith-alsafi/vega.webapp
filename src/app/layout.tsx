@@ -1,7 +1,3 @@
-// import { Toaster } from 'react-hot-toast'
-// import { GeistSans } from 'geist/font/sans'
-// import { GeistMono } from 'geist/font/mono'
-
 import '@/app/globals.css'
 import { cn } from '@/lib/utils'
 import { TailwindIndicator } from '@/components/tailwind-indicator'
@@ -13,10 +9,10 @@ import { Toaster } from '@/components/ui/sonner'
 export const metadata = {
   metadataBase: new URL(`https://${process.env.VERCEL_URL}`),
   title: {
-    default: 'Next.js AI Chatbot',
-    template: `%s - Next.js AI Chatbot`
+    default: 'Vega IoT Chatbot',
+    template: `%s - IoT Chatbot`
   },
-  description: 'An AI-powered chatbot template built with Next.js and Vercel.',
+  description: 'An AI-powered IoT chatbot to talk with IoT devices',
   icons: {
     icon: '/favicon.ico',
     shortcut: '/favicon-16x16.png',
@@ -41,8 +37,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
       <body
         className={cn(
           'font-sans antialiased',
-          // GeistSans.variable,
-          // GeistMono.variable
         )}
       >
         <Providers

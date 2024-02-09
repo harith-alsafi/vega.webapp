@@ -1,8 +1,6 @@
 'use client'
 
-// import { type Message } from 'ai'
 import {Message} from "@/services/chat-completion";
-
 
 import { Button } from '@/components/ui/button'
 import { IconCheck, IconCopy } from '@/components/ui/icons'
