@@ -66,8 +66,8 @@ export const initialNodes: NodeProps[]  = [
 export const initialEdges:Edge[] = [
   { id: 'e12', source: '1', target: '2', label: "hi", animated: true },
   { id: 'e13', source: '1', target: '3', animated: true },
-  { id: 'e22a', source: '2', target: '2a', animated: true },
+  { id: 'e22a', source: '2', target: '2a', label: "bye", animated: true },
   { id: 'e22b', source: '2', target: '2b', animated: true },
   { id: 'e22c', source: '2', target: '2c', animated: true },
-  { id: 'e2c2d', source: '2c', target: '2d', animated: true },
+  { id: 'e2c2d', source: '2c', target: '2d', label: "hola", animated: true },
 ];

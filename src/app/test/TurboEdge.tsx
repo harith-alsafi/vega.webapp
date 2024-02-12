@@ -1,3 +1,4 @@
+import { Badge } from '@/components/ui/badge';
 import React from 'react';
 import { EdgeProps, getBezierPath } from 'reactflow';
 
@@ -32,6 +33,11 @@ export default function CustomEdge({
   const middlePointX = (sourceX + targetX) / 2;
   const middlePointY = (sourceY + targetY) / 2;
 
+  let length = 0 
+  if(label){
+    length = label.toString().length * 6
+  }
+
   return (
     <>
       <path
@@ -42,9 +48,10 @@ export default function CustomEdge({
         markerEnd={markerEnd}
       />
       {label && (
-        <text x={middlePointX} y={middlePointY} textAnchor="middle" >
-          {label}
-        </text>
+     <foreignObject x={middlePointX-length} y={middlePointY-14} width="100" height="100">
+     <Badge >{label}</Badge>
+   </foreignObject>
+
       )}
     </>
   );
