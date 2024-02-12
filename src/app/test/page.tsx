@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import Image from 'next/image'
+import Image from "next/image";
 import {
   Menubar,
   MenubarCheckboxItem,
@@ -15,28 +15,30 @@ import {
   MenubarSubContent,
   MenubarSubTrigger,
   MenubarTrigger,
-} from "@/components/ui/menubar"
-import { ThemeToggle } from '@/components/core/theme-toggle'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { TabsPanel } from '@/components/core/top-bar/tabs-panel'
-import { ConnectionSelector } from '@/components/core/top-bar/connection-selector'
-// TODO: add everything to jira 
-// TODO: finish tabbed item switcher 
-// TODO: install needed libs from ai-gpt 
-// TODO: implement profile switcher 
-// TODO: look into raspberry pi connection 
-// TODO; finish top bar 
+} from "@/components/ui/menubar";
+import { ThemeToggle } from "@/components/core/theme-toggle";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TabsPanel } from "@/components/core/top-bar/tabs-panel";
+import { ConnectionSelector } from "@/components/core/top-bar/connection-selector";
+// TODO: add everything to jira
+// TODO: finish tabbed item switcher
+// TODO: install needed libs from ai-gpt
+// TODO: implement profile switcher
+// TODO: look into raspberry pi connection
+// TODO; finish top bar
 // TODO: finish sidebar (taxomony template?)
-// TODO: make sure that you change everything 
-// TODO: push changes of vega.raspi 
-// TODO: move chat code from ai-chat to here and make sure everything is chaneged 
+// TODO: make sure that you change everything
+// TODO: push changes of vega.raspi
+// TODO: move chat code from ai-chat to here and make sure everything is chaneged
 
+import Visualizer from "next-route-visualizer";
+import { ChatCard } from "@/components/chat/chat-card";
+import Flow from "./Flow";
+import LayoutFlow from "./LayoutFlow";
 
-import Visualizer from 'next-route-visualizer';
-import { ChatCard } from '@/components/chat/chat-card'
-
-export default function Home() {
-  return <Menubar>
+export function MenuTest() {
+  return (
+    <Menubar>
       <MenubarMenu>
         <MenubarTrigger>Connection</MenubarTrigger>
         <MenubarContent>
@@ -125,9 +127,13 @@ export default function Home() {
           </MenubarItem>
         </MenubarContent>
       </MenubarMenu>
-      <ConnectionSelector/>
-      <TabsPanel/>
+      <ConnectionSelector />
+      <TabsPanel />
     </Menubar>
-{/* <Visualizer displayColocating={false}  /> */}
-  
+  );
+}
+
+export default function Home() {
+  return <div 
+  style={{ width: "100vw", height: "92vh" }}> <LayoutFlow /> </div>;
 }

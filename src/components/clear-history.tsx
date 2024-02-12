@@ -18,6 +18,7 @@ import {
   AlertDialogTrigger
 } from '@/components/ui/alert-dialog'
 import { IconSpinner } from '@/components/ui/icons'
+import { emitUpdateSidebarEvent } from '@/lib/event-emmiter'
 
 interface ClearHistoryProps {
   isEnabled: boolean
@@ -60,10 +61,10 @@ export function ClearHistory({
                     toast.error(result.error)
                     return
                   }
-
                   setOpen(false)
                   router.push('/')
                 })
+                emitUpdateSidebarEvent()
               })
             }}
           >

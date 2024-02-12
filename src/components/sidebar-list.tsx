@@ -15,7 +15,7 @@ const loadChats = cache(async () => {
   return await GetChats()
 })
 
-export async function SidebarList(props : SidebarListProps) {
+export function SidebarList(props : SidebarListProps) {
   // const currentChats = await loadChats()
 
   const [chats, setChats] = useState<Chat[]>([]);

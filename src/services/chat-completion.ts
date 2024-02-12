@@ -10,7 +10,6 @@ import {
 import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions";
 import { useRef, useState } from "react";
 import { UpdateChat } from "./database";
-import { get } from "http";
 
 export interface MessageSystem extends ChatCompletionSystemMessageParam {}
 
@@ -27,6 +26,15 @@ export interface MessageToolCallResponse
 export interface MessageAssistant
   extends Omit<ChatCompletionAssistantMessageParam, "function_call" | "name"> {
   ui?: string | JSX.Element | JSX.Element[];
+}
+
+export interface MessageToolCall extends ChatCompletionMessageToolCall.Function{
+  runCondition?: string
+}
+
+export interface GptToolCallResponse {
+  numberOfTools: number;
+  tools: MessageToolCall[];
 }
 
 export type Message =

@@ -4,6 +4,7 @@ import { ChatMessage } from "@/components/chat-message";
 import { cn } from "@/lib/utils";
 import { IconOpenAI } from "./ui/icons";
 import { ring } from "ldrs";
+import ChartMessage from "./chat/message/chart-message";
 
 ring.register();
 
@@ -54,7 +55,7 @@ export function SingleChat({
 }) {
   if (message.role === "tool" && message.name == "plot-data" && message.ui) {
     console.log("message", message);
-    return message.ui;
+    return <div> <ChartMessage/> </div>;
   }
   if (message.role === "tool" && message.name == "get_current_weather") {
     return null;

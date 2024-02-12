@@ -105,7 +105,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
           tool_call_id: toolCall.id,
           role: "tool",
           name: toolCall.function.name,
-          ui: <div> <ChartMessage/> </div>,
+          ui: "chart-message",
           content:
             "The plot has been ALREADY shown the user, just inform the user it is shown above",
         };
