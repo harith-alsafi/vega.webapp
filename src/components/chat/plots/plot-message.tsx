@@ -1,3 +1,5 @@
+"use client";
+import { Card } from "@/components/ui/card";
 import React from "react";
 import {
   LineChart,
@@ -10,11 +12,10 @@ import {
   ScatterChart,
   Scatter,
 } from "recharts";
-import {
-  ScatterCustomizedShape,
-} from "recharts/types/cartesian/Scatter";
+import { ScatterCustomizedShape } from "recharts/types/cartesian/Scatter";
 
 export interface DataPoint {
+  name: string;
   x: number;
   y: number;
 }
@@ -39,22 +40,23 @@ export const PlotMessagesExample: DataPlot = {
     {
       name: "Sensor 1",
       data: [
-        { x: 2, y: 1 },
-        { x: 3, y: 2 },
-        { x: 4, y: 3 },
-        { x: 5, y: 4 },
-        { x: 6, y: 5 },
+        { name: "Sensor 1", x: 2, y: 1 },
+        { name: "Sensor 1", x: 3, y: 2 },
+        { name: "Sensor 1", x: 4, y: 3 },
+        { name: "Sensor 1", x: 4.25, y: 3 },
+        { name: "Sensor 1", x: 5, y: 4 },
+        { name: "Sensor 1", x: 6, y: 5 },
       ],
       fill: "#82ca9d",
     },
     {
       name: "Sensor 2",
       data: [
-        { x: 2, y: 5 },
-        { x: 3, y: 9 },
-        { x: 4, y: 1 },
-        { x: 5, y: 2 },
-        { x: 10, y: 4 },
+        { name: "Sensor 2", x: 2, y: 5 },
+        { name: "Sensor 2", x: 3, y: 9 },
+        { name: "Sensor 2", x: 4, y: 1 },
+        { name: "Sensor 2", x: 5, y: 2 },
+        { name: "Sensor 2", x: 10, y: 4 },
       ],
       fill: "#8884d8",
     },
@@ -71,60 +73,67 @@ export default function PlotMessage({ data, title, xLabel, yLabel }: DataPlot) {
   }));
 
   const maxTickCount = Math.max(...data.map((series) => series.data.length));
-
   return (
-    <ScatterChart
+    <LineChart
       width={600}
       height={320}
-      title={title}
-      className="mb-4"
-      margin={{
-        top: 20,
-        right: 20,
-        bottom: 20,
-        left: 20,
-      }}
+      data={sortedData}
+      margin={{ top: 20, right: 30, left: 20, bottom: 10 }}
     >
       <CartesianGrid stroke="#4d4d4d" strokeDasharray="5 5" />
       <XAxis
-        type="number"
-        label={{ value: xLabel, position: "insideBottomMiddle", dy: 14 }}
         dataKey="x"
-        name={xLabel}
         domain={["dataMin", "dataMax"]}
         tickCount={maxTickCount}
+        type="number"
+        label={{ value: xLabel, position: "insideBottomMiddle", dy: 14 }}
       />
       <YAxis
+        // dataKey="y"
         label={{
           value: yLabel,
           dx: 15,
           angle: -90,
           position: "insideLeft",
         }}
-        type="number"
-        dataKey="y"
-        // domain={['dataMin', 'dataMax']}
-        name={yLabel}
       />
-      <Tooltip cursor={{ strokeDasharray: "3 3" }} />
+      <Tooltip
+        labelFormatter={() => ""}
+        content={({ payload }) => {
+          if (payload && payload.length > 0) {
+            const sensor = payload[0].payload;
+            return (
+              <Card className="p-2">
+                <p className="text-sm font-medium leading-none">
+                  {sensor.name}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {`x: ${sensor.x}, y: ${sensor.y}`}
+                </p>
+              </Card>
+            );
+          }
+          return null;
+        }}
+      />
       <Legend
         wrapperStyle={{ marginRight: "-10px" }}
         align="right"
         verticalAlign="top"
         layout="vertical"
       />
-      {sortedData.map((series) => (
-        <Scatter
-          lineJointType="monotoneX"
+      {sortedData.map((sensor, index) => (
+        <Line
+          // strokeWidth={2}
+          key={index}
           type="monotone"
-          key={series.name}
-          name={series.name}
-          data={series.data}
-          fill={series.fill}
-          line
-          shape={series.shape ?? "circle"}
+          dataKey="y"
+          data={sensor.data}
+          name={sensor.name}
+          stroke={sensor.fill}
+          // dot={{ cursor: "pointer" }}
         />
       ))}
-    </ScatterChart>
+    </LineChart>
   );
 }

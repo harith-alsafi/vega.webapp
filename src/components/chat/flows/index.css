@@ -180,5 +180,5 @@
   }
 
   .react-flow__pane:active {
-    cursor: move;
+    cursor: default;
   }
