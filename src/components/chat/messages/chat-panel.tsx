@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Button } from '@/components/ui/button'
-import { PromptForm } from '@/components/prompt-form'
-import { ButtonScrollToBottom } from '@/components/button-scroll-to-bottom'
+import { PromptForm } from '@/components/chat/messages/prompt-form'
+import { ButtonScrollToBottom } from '@/components/chat/messages/button-scroll-to-bottom'
 import { IconRefresh, IconStop } from '@/components/ui/icons'
 import {Message} from "@/services/chat-completion";
 import { ChatCompletion } from '@/services/chat-completion'

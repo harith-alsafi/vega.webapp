@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { type DialogProps } from "@radix-ui/react-dialog"
-import { MagnifyingGlassIcon } from "@radix-ui/react-icons"
+import { MagnifyingGlassIcon, PlusIcon } from "@radix-ui/react-icons"
 import { Command as CommandPrimitive } from "cmdk"
 
 import { cn } from "@/lib/utils"
@@ -51,6 +51,8 @@ const CommandInput = React.forwardRef<
       )}
       {...props}
     />
+          <PlusIcon onClick={() => {}} className="ml-auto h-4 w-4" />
+
   </div>
 ))
 

@@ -1,5 +1,5 @@
-import { Sidebar } from '@/components/sidebar'
-import { ChatHistory } from '@/components/chat-history'
+import { Sidebar } from '@/components/chat/panel/sidebar'
+import { ChatHistory } from '@/components/chat/messages/chat-history'
 
 export async function SidebarDesktop() {
 

@@ -1,10 +1,11 @@
 import { CompletionStatus, Message } from "@/services/chat-completion";
 import { Separator } from "@/components/ui/separator";
-import { ChatMessage } from "@/components/chat-message";
+import { ChatMessage } from "@/components/chat/messages/chat-message";
 import { cn } from "@/lib/utils";
-import { IconOpenAI } from "./ui/icons";
+import { IconOpenAI } from "../../ui/icons";
 import { ring } from "ldrs";
-import ChartMessage from "./chat/message/chart-message";
+import PlotMessage, { PlotMessagesExample } from "../plots/plot-message";
+import FlowChart, { GptResultExample } from "../flows/flow-chart";
 
 ring.register();
 
@@ -55,11 +56,13 @@ export function SingleChat({
 }) {
   if (message.role === "tool" && message.name == "plot-data" && message.ui) {
     console.log("message", message);
-    return <div> <ChartMessage/> </div>;
+    return <div>  <PlotMessage {...PlotMessagesExample} />
+    </div>;
   }
   if (message.role === "tool" && message.name == "get_current_weather") {
-    return null;
-  }
+    // return <div style={{ height: "42vh" }}><FlowChart nodes={GptResultExample.nodes} edges={GptResultExample.edges} /> </div>;
+    return <FlowChart nodes={GptResultExample.nodes} edges={GptResultExample.edges} />;
+  }   
   if (
     (message.role === "assistant" && message.tool_calls == null) ||
     message.role === "user"

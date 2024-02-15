@@ -2,7 +2,7 @@ import { type Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
 import { GetChat } from '@/services/database'
-import { Chat } from '@/components/chat'
+import { Chat } from '@/components/chat/messages/chat'
 
 export interface ChatPageProps {
   params: {

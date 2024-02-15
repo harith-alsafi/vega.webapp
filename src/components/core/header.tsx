@@ -5,23 +5,22 @@ import { cn } from "@/lib/utils";
 // import { auth } from '@/auth'
 import { clearChats } from "@/app/actions";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Sidebar } from "@/components/sidebar";
-import { SidebarList } from "@/components/sidebar-list";
+import { Sidebar } from "@/components/chat/panel/sidebar";
+import { SidebarList } from "@/components/chat/panel/sidebar-list";
 import {
   IconGitHub,
   IconNextChat,
   IconSeparator,
   IconVercel,
 } from "@/components/ui/icons";
-import { SidebarFooter } from "@/components/sidebar-footer";
-import { ThemeToggle } from "@/components/theme-toggle";
-import { ClearHistory } from "@/components/clear-history";
+import { SidebarFooter } from "@/components/chat/panel/sidebar-footer";
+import { ThemeToggle } from "@/components/core/theme-toggle";
+import { ClearHistory } from "@/components/chat/messages/clear-history";
 import { UserMenu } from "@/components/user-menu";
-import { SidebarMobile } from "./sidebar-mobile";
-import { SidebarToggle } from "./sidebar-toggle";
-import { ChatHistory } from "./chat-history";
-import { ConnectionSelector } from "./core/top-bar/connection-selector";
-import { TabsPanel } from "./core/top-bar/tabs-panel";
+import { SidebarMobile } from "../chat/panel/sidebar-mobile";
+import { SidebarToggle } from "../chat/panel/sidebar-toggle";
+import { ChatHistory } from "../chat/messages/chat-history";
+import { TabsPanel } from "./top-bar/tabs-panel";
 
 import {
   Dialog,
@@ -34,6 +33,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ConnectionSelector } from "./connection/connection-selector";
 
 export function RaspberryPiConnect() {
   return (
@@ -45,7 +45,7 @@ export function RaspberryPiConnect() {
         <DialogHeader>
           <DialogTitle>Edit Connection</DialogTitle>
           <DialogDescription>
-            Make changes to your profile here. Click save when youre done.
+            Make changes to the current connection of the raspberry pi
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -86,7 +86,7 @@ export function Header() {
           <ChatHistory />
         </SidebarMobile>
         <SidebarToggle />
-        {/* <ConnectionSelector />   */}
+        <ConnectionSelector />  
         <TabsPanel />
       </div>
       <div className="flex items-center justify-end space-x-2">

@@ -1,22 +1,22 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons"
+import * as React from "react";
+import { CaretSortIcon, CheckIcon, PlusIcon } from "@radix-ui/react-icons";
 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
-} from "@/components/ui/command"
+} from "@/components/ui/command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
+} from "@/components/ui/popover";
 
 const frameworks = [
   {
@@ -39,11 +39,12 @@ const frameworks = [
   //   value: "astro",
   //   label: "Astro",
   // },
-]
+];
 
 export function ConnectionSelector() {
-  const [open, setOpen] = React.useState(false)
-  const [value, setValue] = React.useState("")
+  const [open, setOpen] = React.useState(false);
+  const [value, setValue] = React.useState("");
+  const [isLoading, setIsLoading] = React.useState(false);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -62,16 +63,19 @@ export function ConnectionSelector() {
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
         <Command>
-          <CommandInput placeholder="Search raspberry..." className="h-9" />
+          <CommandInput  placeholder="Search raspberry..." className="h-9" />
+          
           <CommandEmpty>No framework found.</CommandEmpty>
           <CommandGroup>
             {frameworks.map((framework) => (
               <CommandItem
                 key={framework.value}
                 value={framework.value}
-                onSelect={(currentValue) => {
-                  setValue(currentValue === value ? "" : currentValue)
-                  setOpen(false)
+                onSelect={async (currentValue) => {
+                  
+                  await fetch(`/api/raspberry-pi/${framework.value}`);
+                  setValue(currentValue === value ? "" : currentValue);
+                  setOpen(false);
                 }}
               >
                 {framework.label}
@@ -85,7 +89,9 @@ export function ConnectionSelector() {
             ))}
           </CommandGroup>
         </Command>
+        <Button>Test</Button>
+
       </PopoverContent>
     </Popover>
-  )
+  );
 }

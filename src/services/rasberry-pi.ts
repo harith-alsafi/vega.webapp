@@ -1,53 +1,75 @@
-import { FunctionCall, FunctionCallPayload, JSONValue } from "ai";
-import { ChatCompletionCreateParams } from 'openai/resources/chat/completions';
+import {
+  ChatCompletionMessageToolCall,
+  ChatCompletionTool,
+} from "openai/resources";
 
 export interface PiComponentInfo {
-    name: string
-    description: string
-    type: string
-    pin: string
-  }
-  
-  export interface PiFunctionCall {
-    name: string
-  }
+  name: string;
+  description: string;
+  type: string;
+  pin: string;
+}
 
-export default class RaspberryPi {
-    private _isConnected: boolean = false;
-    private _piUrl: string;
-    private _piPort: number;
-    private _piIp: string;
-    private static functionCallUrl: string = '/get-function-calls';
-    private static runFunctionCallUrl: string = '/run-function-call';
-    private static getComponentsUrl: string = '/get-components';
+export const FunctionCallUrl = "/get-function-calls";
+export const RunFunctionCallUrl = "/run-function-call";
+export const GetComponentsUrl = "/get-components";
+export const GetComponentInfoUrl = "/get-component-info";
 
-    constructor(port: number, ip: string) {
-        this._piUrl = `http://${ip}:${port}`;
-        this._piPort = port;
-        this._piIp = ip;
-    }
-    
-    public get isConnected() {
-        return this._isConnected;
-    }
+export interface PiConnection {
+  ip: string;
+  port: number;
+  url: string;
+  id: string;
+  status: boolean;
+  components: PiComponentInfo[];
+  functionCalls: Array<ChatCompletionTool["function"]>;
+}
 
-    async ConnectRaspberryPi() {
-        return;
-    }
-    
-    async DisconnectRaspberryPi(){
-        return;
-    }
+export interface PiDataResponse {
+    xValues: number[];
+    yValues: number[];
+    xLabel: string;
+    yLabel: string;
+    title: string;
+    xInterval: number;
+}
 
-    async GetFunctionCalls(): Promise<Array<ChatCompletionCreateParams.Function> | null>{
-        return null;
-    }
+export interface PiFunctionCallResponse {
+  status: boolean;
+  error?: string;
+  data?: any;
+}
 
-    async RunFunctionCall(functionCall:FunctionCallPayload, runAside: boolean): Promise<PiFunctionCall | null>{
-        return null;
-    }
+export async function GetComponentInfo(
+  url: string,
+  component: PiComponentInfo
+): Promise<PiComponentInfo | null> {
+  return null;
+}
 
-    async GetComponents(): Promise<PiComponentInfo[] | null>{
-        return null;
-    }
+export async function RunFunctionCall(
+  url: string,
+  functionInfo: ChatCompletionTool["function"],
+  functionCall: ChatCompletionMessageToolCall
+): Promise<PiFunctionCallResponse | null> {
+  return null;
+}
+
+export async function GetComponents(
+  url: string
+): Promise<PiComponentInfo[] | null> {
+  return null;
+}
+
+export async function GetFunctionCalls(
+  url: string
+): Promise<Array<ChatCompletionTool["function"]> | null> {
+  return null;
+}
+
+export async function ConnectRaspberryPi(
+  port: number,
+  ip: string
+): Promise<PiConnection | null> {
+  return null;
 }

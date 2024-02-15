@@ -1,6 +1,6 @@
 "use client";
-import { ClearHistory } from '@/components/clear-history'
-import { SidebarItems } from '@/components/sidebar-items'
+import { ClearHistory } from '@/components/chat/messages/clear-history'
+import { SidebarItems } from '@/components/chat/panel/sidebar-items'
 import { sideBarEventEmitter, subscribeToUpdateSidebarEvent, updateSidebarEvent } from '@/lib/event-emmiter'
 import { Chat } from '@/services/chat-completion'
 import { ClearChats, GetChats } from '@/services/database'

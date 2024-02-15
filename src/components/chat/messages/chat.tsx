@@ -9,10 +9,10 @@ import {
 } from "@/services/chat-completion";
 
 import { cn } from "@/lib/utils";
-import { ChatList } from "@/components/chat-list";
-import { ChatPanel } from "@/components/chat-panel";
-import { EmptyScreen } from "@/components/empty-screen";
-import { ChatScrollAnchor } from "@/components/chat-scroll-anchor";
+import { ChatList } from "@/components/chat/messages/chat-list";
+import { ChatPanel } from "@/components/chat/messages/chat-panel";
+import { EmptyScreen } from "@/components/chat/messages/empty-screen";
+import { ChatScrollAnchor } from "@/components/chat/messages/chat-scroll-anchor";
 import { useLocalStorage } from "@/lib/hooks/use-local-storage";
 import {
   Dialog,
@@ -23,8 +23,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useState } from "react";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
+import { Button } from "../../ui/button";
+import { Input } from "../../ui/input";
 import { usePathname, useRouter } from "next/navigation";
 import { ChatRequest, nanoid } from "ai";
 import { toast } from "sonner";
@@ -33,7 +33,6 @@ import {
   ChatCompletionFunctionCallOption,
   ChatCompletionTool,
 } from "openai/resources";
-import ChartMessage from "./chat/message/chart-message";
 import { emitUpdateSidebarEvent } from "@/lib/event-emmiter";
 
 const IS_PREVIEW = process.env.VERCEL_ENV === "preview";
