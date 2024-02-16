@@ -2,6 +2,7 @@ import {
   ChatCompletionMessageToolCall,
   ChatCompletionTool,
 } from "openai/resources";
+import { MessageSystem } from "./chat-completion";
 
 export interface PiComponentInfo {
   name: string;
@@ -18,7 +19,7 @@ export const GetComponentInfoUrl = "/get-component-info";
 export interface PiConnection {
   ip: string;
   port: number;
-  url?: string;
+  url?: string; 
   id: string;
   status: boolean;
   components: PiComponentInfo[];
@@ -92,4 +93,11 @@ export async function ConnectRaspberryPi(
 ): Promise<PiConnection> {
   await delay(2000);
   return DefaultPiConnection;
+}
+
+export function CreateSystemPrompt(piConnection: PiConnection): MessageSystem {
+  return {
+    role: "system",
+    content: ""
+  };
 }

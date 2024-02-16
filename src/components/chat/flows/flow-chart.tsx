@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useCallback } from "react";
 import ReactFlow, {
   addEdge,
@@ -21,7 +23,6 @@ import "reactflow/dist/base.css";
 import "./index.css";
 import FunctionIcon from "@/icons/FunctionIcon";
 import { Label } from "@/components/ui/label";
-import { Card } from "@/components/ui/card";
 import CollapsableMessage from "../messages/collapsable-message";
 
 export interface GptFlowChartResult {

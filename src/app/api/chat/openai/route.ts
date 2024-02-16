@@ -8,8 +8,8 @@ import {
 } from "openai/resources";
 
 export const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-  });
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 export async function POST(req: Request) {
   const json = await req.json();
@@ -28,8 +28,7 @@ export async function POST(req: Request) {
           content: message.content,
           tool_calls: message.tool_calls,
         } as ChatCompletionAssistantMessageParam;
-      }
-      else if(message.role == "user"){
+      } else if (message.role == "user") {
         return {
           role: message.role,
           content: message.content,
@@ -55,7 +54,7 @@ export async function POST(req: Request) {
     role: message.role,
     content: message.content,
     tool_calls: message.tool_calls,
-  }
- 
+  };
+
   return Response.json(finalMessage);
 }

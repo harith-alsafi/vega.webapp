@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/tooltip'
 import { IconArrowElbow, IconPlus } from '@/components/ui/icons'
 import { useRouter } from 'next/navigation'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 export interface PromptProps
   extends Pick<UseChatHelpers, 'input' | 'setInput'> {
@@ -45,7 +46,6 @@ export function PromptForm({
       }}
       ref={formRef}
     >
-      {/* <div className="relative flex flex-col w-full px-8 overflow-hidden max-h-60 grow bg-background sm:rounded-md sm:border sm:px-12"> */}
       <div className="relative flex flex-col w-full px-8 overflow-hidden max-h-60 grow bg-background sm:rounded-md sm:border sm:px-12">
         <Tooltip>
           <TooltipTrigger asChild>
@@ -66,6 +66,7 @@ export function PromptForm({
           </TooltipTrigger>
           <TooltipContent>New Chat</TooltipContent>
         </Tooltip>
+        {/* <ScrollArea> */}
         <Textarea
           ref={inputRef}
           tabIndex={0}
@@ -77,6 +78,7 @@ export function PromptForm({
           spellCheck={false}
           className="min-h-[60px] w-full resize-none bg-transparent px-4 py-[1.3rem] focus-within:outline-none sm:text-sm"
         />
+        {/* </ScrollArea> */}
         <div className="absolute right-0 top-4 sm:right-4">
           <Tooltip>
             <TooltipTrigger asChild>

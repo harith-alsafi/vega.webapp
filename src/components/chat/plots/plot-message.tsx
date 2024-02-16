@@ -133,7 +133,7 @@ export default function PlotMessage({ data, title, xLabel, yLabel }: DataPlot) {
         />
         {sortedData.map((sensor, index) => (
           <Line
-            animationDuration={800}
+            animationDuration={1200}
             strokeWidth={2}
             key={index}
             type="monotone"
