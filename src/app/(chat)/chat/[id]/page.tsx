@@ -21,7 +21,6 @@ export async function generateMetadata({
 }
 
 export default async function ChatPage({ params }: ChatPageProps) {
-
   const chat = await GetChat(params.id)
 
   if (!chat) {

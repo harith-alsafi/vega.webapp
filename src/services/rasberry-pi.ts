@@ -18,7 +18,7 @@ export const GetComponentInfoUrl = "/get-component-info";
 export interface PiConnection {
   ip: string;
   port: number;
-  url: string;
+  url?: string;
   id: string;
   status: boolean;
   components: PiComponentInfo[];
@@ -38,6 +38,16 @@ export interface PiFunctionCallResponse {
   status: boolean;
   error?: string;
   data?: any;
+}
+
+export const DefaultPiConnection: PiConnection = {
+  ip: "192.168.0.122",
+  port: 5000,
+  url: "https://192.168.0.122:5000",
+  id: "",
+  status: false,
+  components: [],
+  functionCalls: [],
 }
 
 export async function GetComponentInfo(
@@ -67,9 +77,19 @@ export async function GetFunctionCalls(
   return null;
 }
 
+async function delay(milliseconds: number) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(1);
+    }, milliseconds);
+  });
+}
+
 export async function ConnectRaspberryPi(
+  ip: string,
   port: number,
-  ip: string
-): Promise<PiConnection | null> {
-  return null;
+  url?: string
+): Promise<PiConnection> {
+  await delay(2000);
+  return DefaultPiConnection;
 }

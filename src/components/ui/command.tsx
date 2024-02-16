@@ -51,7 +51,7 @@ const CommandInput = React.forwardRef<
       )}
       {...props}
     />
-          <PlusIcon onClick={() => {}} className="ml-auto h-4 w-4" />
+          {/* <PlusIcon onClick={() => {}} className="ml-auto h-4 w-4" /> */}
 
   </div>
 ))

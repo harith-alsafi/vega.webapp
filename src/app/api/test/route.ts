@@ -61,7 +61,7 @@ export async function GetResponse(messages: ChatCompletionMessageParam[]){
     model: "gpt-3.5-turbo",
     messages: messages,
     temperature: 0.5,
-    tool_choice: "none",
+    // tool_choice: "none",
     tools: tools,
   });
   return res.choices[0].message
@@ -72,48 +72,59 @@ export async function POST(req: Request) {
     systemPrompts[1],
     {
       role: "user",
-      content: "give me the weather, if it is more than 50 degrees then show me a plot of the data",
+      content: "give me the weather",
     },
   ]
 
-  const condition:boolean = false
+  const data = await GetResponse(messages)
+  messages.push(data)
+
+  messages.push({
+    role: "user",
+    content: "plot me the data",
+  })
 
   const data1 = await GetResponse(messages)
-  if(data1.content){
-    console.log("gpttoolcall", JSON.parse(data1.content) as GptToolCallResponse)
-  }
-  else{
-    console.log(data1)
-  }
   messages.push(data1)
 
-  if(condition){
-    messages.push({
-      role: "tool",
-      tool_call_id: data1?.tool_calls?.[0]?.id ?? "",
-      content: "Please inform the user that the plot is shown above",
-    })  
-  
-    const data2 = await GetResponse(messages)
-    messages.push(data2)
-    messages.push({
-      role: "tool",
-      tool_call_id: data2?.tool_calls?.[0]?.id ?? "",
-      content: "Please inform the user that the weather is 50 degrees and sunny",
-    })  
-  
-    const data3 = await GetResponse(messages)
-    messages.push(data3)  
-  }
-  else{
-    messages.push({
-      role: "user",
-      content: "Thank you for running the tools",
-    })
+  // const condition:boolean = false
 
-    const data4 = await GetResponse(messages)
-    messages.push(data4)
-  }
+  // const data1 = await GetResponse(messages)
+  // if(data1.content){
+  //   console.log("gpttoolcall", JSON.parse(data1.content) as GptToolCallResponse)
+  // }
+  // else{
+  //   console.log(data1)
+  // }
+  // messages.push(data1)
+
+  // if(condition){
+  //   messages.push({
+  //     role: "tool",
+  //     tool_call_id: data1?.tool_calls?.[0]?.id ?? "",
+  //     content: "Please inform the user that the plot is shown above",
+  //   })  
+  
+  //   const data2 = await GetResponse(messages)
+  //   messages.push(data2)
+  //   messages.push({
+  //     role: "tool",
+  //     tool_call_id: data2?.tool_calls?.[0]?.id ?? "",
+  //     content: "Please inform the user that the weather is 50 degrees and sunny",
+  //   })  
+  
+  //   const data3 = await GetResponse(messages)
+  //   messages.push(data3)  
+  // }
+  // else{
+  //   messages.push({
+  //     role: "user",
+  //     content: "Thank you for running the tools",
+  //   })
+
+  //   const data4 = await GetResponse(messages)
+  //   messages.push(data4)
+  // }
 
 
   return Response.json(messages);

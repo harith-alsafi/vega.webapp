@@ -55,7 +55,6 @@ export function SingleChat({
   maxLength: number;
 }) {
   if (message.role === "tool" && message.name == "plot-data" && message.ui) {
-    console.log("message", message);
     return <div>  <PlotMessage {...PlotMessagesExample} />
     </div>;
   }

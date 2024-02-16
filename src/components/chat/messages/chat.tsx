@@ -34,6 +34,7 @@ import {
   ChatCompletionTool,
 } from "openai/resources";
 import { emitUpdateSidebarEvent } from "@/lib/event-emmiter";
+import { useConnectionContext } from "@/lib/context/connection-context";
 
 const IS_PREVIEW = process.env.VERCEL_ENV === "preview";
 export interface ChatProps extends React.ComponentProps<"div"> {
@@ -60,6 +61,8 @@ const tools: Array<ChatCompletionTool> = [
 ];
 
 export function Chat({ id, initialMessages, className }: ChatProps) {
+
+
   const path = usePathname();
   const [updatedSideBar, setUpdatedSideBar] = useState(false);
   const {
@@ -133,7 +136,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
 
   return (
     <>
-      <div className={cn("pb-[200px] pt-4 md:pt-10", className)}>
+      <div className={cn("mb-8 pb-[200px] pt-4 md:pt-10", className)}>
         {messages.length ? (
           <>
             <ChatList completionStatus={completionStatus} isLoading={isLoading}  messages={messages} />

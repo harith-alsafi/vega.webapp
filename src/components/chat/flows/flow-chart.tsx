@@ -19,12 +19,10 @@ import CustomEdge, { GptEdge } from "./custom-edge";
 
 import "reactflow/dist/base.css";
 import "./index.css";
-import { Button } from "@/components/ui/button";
 import FunctionIcon from "@/icons/FunctionIcon";
-import { Switch } from "@/components/ui/switch";
-import { Toggle } from "@/components/ui/toggle";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
+import CollapsableMessage from "../messages/collapsable-message";
 
 export interface GptFlowChartResult {
   nodes: GptNode[];
@@ -200,12 +198,12 @@ export default function FlowChart(result: GptFlowChartResult) {
   );
 
   const [layoutDirection, setLayoutDirection] = React.useState<"TB" | "LR">(
-    "TB"
+    "LR"
   );
 
   return (
-    <Card className="mb-4 ">
-      <div style={{ height: "42vh" }}>
+    <CollapsableMessage title="Gpt Flow Chart"> 
+         <div style={{ height: "42vh" }}>
         <ReactFlow
           proOptions={{ hideAttribution: true }}
           nodes={nodes}
@@ -262,6 +260,7 @@ export default function FlowChart(result: GptFlowChartResult) {
           </svg>
         </ReactFlow>
       </div>
-    </Card>
+    </CollapsableMessage>
+
   );
 }

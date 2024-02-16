@@ -14,13 +14,13 @@ import {
   IconVercel,
 } from "@/components/ui/icons";
 import { SidebarFooter } from "@/components/chat/panel/sidebar-footer";
-import { ThemeToggle } from "@/components/core/theme-toggle";
+import { ThemeToggle } from "@/components/core/top-bar/theme-toggle";
 import { ClearHistory } from "@/components/chat/messages/clear-history";
 import { UserMenu } from "@/components/user-menu";
-import { SidebarMobile } from "../chat/panel/sidebar-mobile";
-import { SidebarToggle } from "../chat/panel/sidebar-toggle";
-import { ChatHistory } from "../chat/messages/chat-history";
-import { TabsPanel } from "./top-bar/tabs-panel";
+import { SidebarMobile } from "../../chat/panel/sidebar-mobile";
+import { SidebarToggle } from "../../chat/panel/sidebar-toggle";
+import { ChatHistory } from "../../chat/messages/chat-history";
+import { TabsPanel } from "./tabs-panel";
 
 import {
   Dialog,
@@ -33,7 +33,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ConnectionSelector } from "./connection/connection-selector";
+import { ConnectionSelector } from "./connection-selector";
 
 export function RaspberryPiConnect() {
   return (
@@ -78,6 +78,71 @@ export function RaspberryPiConnect() {
   );
 }
 
+import {
+  CalendarIcon,
+  EnvelopeClosedIcon,
+  FaceIcon,
+  GearIcon,
+  PersonIcon,
+  RocketIcon,
+} from "@radix-ui/react-icons";
+
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+  CommandShortcut,
+} from "@/components/ui/command";
+import { CommandBox } from "./command-box";
+import ConnectionDialog from "./connection-dialog";
+
+export function CommandDemo() {
+  return (
+    <Command className="rounded-lg border shadow-md">
+      <CommandInput placeholder="Type a command or search..." />
+      <CommandList>
+        <CommandEmpty>No results found.</CommandEmpty>
+        <CommandGroup heading="Suggestions">
+          <CommandItem>
+            <CalendarIcon className="mr-2 h-4 w-4" />
+            <span>Calendar</span>
+          </CommandItem>
+          <CommandItem>
+            <FaceIcon className="mr-2 h-4 w-4" />
+            <span>Search Emoji</span>
+          </CommandItem>
+          <CommandItem>
+            <RocketIcon className="mr-2 h-4 w-4" />
+            <span>Launch</span>
+          </CommandItem>
+        </CommandGroup>
+        <CommandSeparator />
+        <CommandGroup heading="Settings">
+          <CommandItem>
+            <PersonIcon className="mr-2 h-4 w-4" />
+            <span>Profile</span>
+            <CommandShortcut>⌘P</CommandShortcut>
+          </CommandItem>
+          <CommandItem>
+            <EnvelopeClosedIcon className="mr-2 h-4 w-4" />
+            <span>Mail</span>
+            <CommandShortcut>⌘B</CommandShortcut>
+          </CommandItem>
+          <CommandItem>
+            <GearIcon className="mr-2 h-4 w-4" />
+            <span>Settings</span>
+            <CommandShortcut>⌘S</CommandShortcut>
+          </CommandItem>
+        </CommandGroup>
+      </CommandList>
+    </Command>
+  );
+}
+
 export function Header() {
   return (
     <header className="sticky top-0 z-50 flex items-center justify-between w-full h-16 px-4 border-b shrink-0 bg-gradient-to-b from-background/10 via-background/50 to-background/80 backdrop-blur-xl">
@@ -86,9 +151,13 @@ export function Header() {
           <ChatHistory />
         </SidebarMobile>
         <SidebarToggle />
-        <ConnectionSelector />  
-        <TabsPanel />
+        {/* <ConnectionSelector />   */}
+        <ConnectionDialog />
+        {/* <Button variant="outline">Schematic</Button>  */}
+        {/* <Button variant="outline">Functions</Button> */}
       </div>
+      {/* <TabsPanel /> */}
+      {/* <CommandDemo /> */}
       <div className="flex items-center justify-end space-x-2">
         {/* <a
           target="_blank"
@@ -99,7 +168,9 @@ export function Header() {
           <IconGitHub />
           <span className="hidden ml-2 md:flex">GitHub</span>
         </a> */}
-        <RaspberryPiConnect />
+        <CommandBox />
+
+        {/* <RaspberryPiConnect /> */}
         <ThemeToggle />
       </div>
     </header>

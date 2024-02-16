@@ -2,7 +2,7 @@ import "@/app/globals.css";
 import { cn } from "@/lib/utils";
 import { TailwindIndicator } from "@/components/tailwind-indicator";
 import { Providers } from "@/components/core/providers";
-import { Header } from "@/components/core/header";
+import { Header } from "@/components/core/top-bar/header";
 import { Toaster } from "@/components/ui/sonner";
 
 export const metadata = {

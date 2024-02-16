@@ -1,5 +1,12 @@
 "use client";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { CaretSortIcon } from "@radix-ui/react-icons";
 import React from "react";
 import {
   LineChart,
@@ -9,10 +16,9 @@ import {
   Tooltip,
   Legend,
   CartesianGrid,
-  ScatterChart,
-  Scatter,
 } from "recharts";
 import { ScatterCustomizedShape } from "recharts/types/cartesian/Scatter";
+import CollapsableMessage from "@/components/chat/messages/collapsable-message";
 
 export interface DataPoint {
   name: string;
@@ -73,67 +79,72 @@ export default function PlotMessage({ data, title, xLabel, yLabel }: DataPlot) {
   }));
 
   const maxTickCount = Math.max(...data.map((series) => series.data.length));
+
   return (
-    <LineChart
-      width={600}
-      height={320}
-      data={sortedData}
-      margin={{ top: 20, right: 30, left: 20, bottom: 10 }}
-    >
-      <CartesianGrid stroke="#4d4d4d" strokeDasharray="5 5" />
-      <XAxis
-        dataKey="x"
-        domain={["dataMin", "dataMax"]}
-        tickCount={maxTickCount}
-        type="number"
-        label={{ value: xLabel, position: "insideBottomMiddle", dy: 14 }}
-      />
-      <YAxis
-        // dataKey="y"
-        label={{
-          value: yLabel,
-          dx: 15,
-          angle: -90,
-          position: "insideLeft",
-        }}
-      />
-      <Tooltip
-        labelFormatter={() => ""}
-        content={({ payload }) => {
-          if (payload && payload.length > 0) {
-            const sensor = payload[0].payload;
-            return (
-              <Card className="p-2">
-                <p className="text-sm font-medium leading-none">
-                  {sensor.name}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {`x: ${sensor.x}, y: ${sensor.y}`}
-                </p>
-              </Card>
-            );
-          }
-          return null;
-        }}
-      />
-      <Legend
-        wrapperStyle={{ marginRight: "-10px" }}
-        align="right"
-        verticalAlign="top"
-        layout="vertical"
-      />
-      {sortedData.map((sensor, index) => (
-        <Line
-          // strokeWidth={2}
-          key={index}
-          type="monotone"
-          dataKey="y"
-          data={sensor.data}
-          name={sensor.name}
-          stroke={sensor.fill}
-          // dot={{ cursor: "pointer" }}
+    <CollapsableMessage title={`Plot of ${title} (${xLabel} vs ${yLabel})`}>
+      <LineChart
+        className="mr-5"
+        width={650}
+        height={380}
+        data={sortedData}
+        margin={{ top: 10, right: 35, left: -5, bottom: 10 }}
+      >
+        <CartesianGrid stroke="#4d4d4d" strokeDasharray="5 5" />
+        <XAxis
+          dataKey="x"
+          domain={["dataMin", "dataMax"]}
+          tickCount={maxTickCount}
+          type="number"
+          label={{ value: xLabel, position: "insideBottomMiddle", dy: 14 }}
         />
-      ))}
-    </LineChart>
+        <YAxis
+          // dataKey="y"
+          label={{
+            value: yLabel,
+            dx: 15,
+            angle: -90,
+            position: "insideLeft",
+          }}
+        />
+        <Tooltip
+          labelFormatter={() => ""}
+          content={({ payload }) => {
+            if (payload && payload.length > 0) {
+              const sensor = payload[0].payload;
+              return (
+                <Card className="p-2">
+                  <p className="text-sm font-medium leading-none">
+                    {sensor.name}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {`x: ${sensor.x}, y: ${sensor.y}`}
+                  </p>
+                </Card>
+              );
+            }
+            return null;
+          }}
+        />
+        <Legend
+          wrapperStyle={{ marginRight: "-10px" }}
+          align="center"
+          verticalAlign="top"
+          layout="horizontal"
+        />
+        {sortedData.map((sensor, index) => (
+          <Line
+            animationDuration={800}
+            strokeWidth={2}
+            key={index}
+            type="monotone"
+            dataKey="y"
+            data={sensor.data}
+            name={sensor.name}
+            stroke={sensor.fill}
+            // dot={{ cursor: "pointer" }}
+          />
+        ))}
+      </LineChart>
+    </CollapsableMessage>
   );
 }

@@ -176,9 +176,9 @@
   }
   
   .react-flow__pane {
-    cursor: default;
+    cursor: move;
   }
 
   .react-flow__pane:active {
-    cursor: default;
+    cursor: move;
   }

@@ -26,7 +26,7 @@ import FlowChart, {
 import PlotMessage, {
   PlotMessagesExample,
 } from "@/components/chat/plots/plot-message";
-import { ConnectionSelector } from "@/components/core/connection/connection-selector";
+import { ConnectionSelector } from "@/components/core/top-bar/connection-selector";
 import {
   CartesianGrid,
   Legend,
@@ -272,9 +272,107 @@ export function PlotTest2() {
   );
 }
 
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+import {
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useState } from "react";
+
+import { ReloadIcon } from "@radix-ui/react-icons";
+
+import { ping } from "ldrs";
+
+ping.register();
+
+// Default values shown
+import { ring } from "ldrs";
+
+ring.register();
+
+// Default values shown
+
+export function DialogDemo() {
+  const [isLoading, setIsLoading] = useState(false);
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline">Edit Connection</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[445px]">
+        <DialogHeader>
+          <DialogTitle>Edit Connection</DialogTitle>
+          <DialogDescription>
+            Edit current connection here. Click save when youre done.
+          </DialogDescription>
+        </DialogHeader>
+        <form>
+          <div className="grid w-full items-center gap-4">
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="name">IP</Label>
+              <Input id="ip" placeholder="IP of the raspberry Pi" />
+            </div>
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="name">Port</Label>
+              <Input id="port" placeholder="Port of the raspberry Pi" />
+            </div>
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="name">Port</Label>
+              <Input id="port" placeholder="Port of the raspberry Pi" />
+            </div>
+          </div>
+        </form>
+        <div className="flex justify-between">
+          <Button variant="outline" onClick={() => setIsLoading(false)}>
+            Cancel
+          </Button>
+          <Button onClick={() => setIsLoading(true)} disabled={isLoading}>
+            Connect
+            {isLoading && (
+              <div className="ml-2 mt-1">
+                <l-ring
+                  size="20"
+                  stroke="2"
+                  bg-opacity="0"
+                  speed="2"
+                  color="black" 
+                ></l-ring>
+              </div>
+            )}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export default function Home() {
   // return <FlowTest/>
   // return <PlotTest />
   // return <MenuTest />
-  return <PlotTest2 />;
+  // return <PlotTest2 />;
+  return <DialogDemo />;
 }
