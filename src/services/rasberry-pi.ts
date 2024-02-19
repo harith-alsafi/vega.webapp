@@ -4,9 +4,8 @@ import {
 } from "openai/resources";
 import { MessageSystem } from "./chat-completion";
 
-export interface PiComponentInfo {
-  name: string;
-  description: string;
+
+export interface PiComponentInfo extends Omit<ChatCompletionTool["function"], "parameters"> {
   type: string;
   pin: string;
 }
@@ -16,23 +15,64 @@ export const RunFunctionCallUrl = "/run-function-call";
 export const GetComponentsUrl = "/get-components";
 export const GetComponentInfoUrl = "/get-component-info";
 
+export const ToolsExample: Array<ChatCompletionTool["function"]> = [
+  {
+    name: "plot-data",
+    description:
+      "Plots and shows a line chart when user asks you will not show the plot instead you will ONLY mention to the user that the plot has been shown above",
+  },
+  {
+    name: "get_current_weather",
+    description: "Gets the current weather",
+  },
+];
+
+export const ComponentsExample: PiComponentInfo[] = [
+  {
+    type: "sensor",
+    name: "temperature",
+    pin: "A0",
+    description: "Temperature sensor",
+  },
+  {
+    type: "sensor",
+    name: "humidity",
+    pin: "A1",
+    description: "Humidity sensor",
+  },
+  {
+    type: "actuator",
+    name: "led",
+    pin: "D0",
+    description: "LED",
+  },
+  {
+    type: "actuator",
+    name: "motor",
+    pin: "D1",
+    description: "Motor",
+  },
+]
+
+export type PiInfo = PiComponentInfo | ChatCompletionTool["function"];
+
 export interface PiConnection {
   ip: string;
   port: number;
-  url?: string; 
+  url?: string;
   id: string;
   status: boolean;
   components: PiComponentInfo[];
-  functionCalls: Array<ChatCompletionTool["function"]>;
+  tools: Array<ChatCompletionTool["function"]>;
 }
 
 export interface PiDataResponse {
-    xValues: number[];
-    yValues: number[];
-    xLabel: string;
-    yLabel: string;
-    title: string;
-    xInterval: number;
+  xValues: number[];
+  yValues: number[];
+  xLabel: string;
+  yLabel: string;
+  title: string;
+  xInterval: number;
 }
 
 export interface PiFunctionCallResponse {
@@ -47,9 +87,9 @@ export const DefaultPiConnection: PiConnection = {
   url: "https://192.168.0.122:5000",
   id: "",
   status: false,
-  components: [],
-  functionCalls: [],
-}
+  components: ComponentsExample,
+  tools: ToolsExample,
+};
 
 export async function GetComponentInfo(
   url: string,
@@ -98,6 +138,6 @@ export async function ConnectRaspberryPi(
 export function CreateSystemPrompt(piConnection: PiConnection): MessageSystem {
   return {
     role: "system",
-    content: ""
+    content: "",
   };
 }

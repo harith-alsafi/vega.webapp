@@ -10,31 +10,23 @@ import {
 } from "@/components/ui/tooltip";
 import { IconArrowElbow, IconPlus } from "@/components/ui/icons";
 import { useRouter } from "next/navigation";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import ReactTextareaAutocomplete, {
-  TextareaProps,
-  ItemComponentProps,
-} from "@webscopeio/react-textarea-autocomplete";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ContextMenu } from "@/components/ui/context-menu";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-} from "@/components/ui/select";
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command";
+import FunctionIcon from "@/icons/FunctionIcon";
+import { ChatCompletion } from "@/services/chat-completion";
+import { useConnectionContext } from "@/lib/context/connection-context";
+import { PiInfo, PiComponentInfo } from "@/services/rasberry-pi";
+import { BoxModelIcon } from "@radix-ui/react-icons";
 
 export interface PromptProps
   extends Pick<ChatCompletion, "input" | "setInput"> {
@@ -70,107 +62,13 @@ export interface ItemInterface {
   char: string;
 }
 
-// export const CustomTextArea:React.FunctionComponent<TextareaAutosizeProps> = (props: TextareaProps<ItemInterface, TextareaAutosizeProps>) => {
-//   return <Textarea {...props} />
-// }
-
-export const CustomTextArea: React.FunctionComponent<TextareaAutosizeProps> = (
-  props: TextareaAutosizeProps
-) => (
-  <Textarea
-    className="min-h-[60px] w-full resize-none bg-transparent px-4 py-[1.3rem] focus-within:outline-none sm:text-sm"
-    {...props}
-    rows={1}
-    tabIndex={0}
-    placeholder="Send a message."
-  />
-);
-
-export const LoadingComponent = () => <div>Loading</div>;
-
-export const ItemComponent: React.FunctionComponent<
-  ItemComponentProps<ItemInterface>
-> = ({ selected, entity }: ItemComponentProps<ItemInterface>) => (
-  <div>{`${entity.name}: ${entity.char}`}</div>
-);
-
-export type TextAreaAutosizeProps = TextareaAutosizeProps &
-  React.RefAttributes<HTMLTextAreaElement>;
-
-export interface CompletionTextAreaProps<T> extends TextAreaAutosizeProps {
-  trigger: string;
-  GetItems: (token: string) => T[];
-}
-
-export function CompletionTextArea({
-  ref,
-  onChange,
-  tabIndex,
-  rows,
-  maxRows,
-  placeholder,
-  spellCheck,
-  onKeyDown,
-  value,
-  trigger,
-  className,
-}: CompletionTextAreaProps<ItemInterface>) {
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [items, setItems] = React.useState<ItemInterface[]>([]);
-
-  return (
-    <>
-      <Textarea
-        className={className}
-        ref={ref}
-        tabIndex={tabIndex}
-        rows={rows}
-        maxRows={maxRows}
-        value={value}
-        placeholder={placeholder}
-        spellCheck={spellCheck}
-        onKeyDown={onKeyDown}
-        onChange={(e) => {
-          if (e.target.value[e.target.value.length - 1] === trigger[0]) {
-            setItems(getItems(e.target.value));
-            setIsOpen(true);
-          }
-          onChange?.(e);
-        }}
-      />
-      <DropdownMenu onOpenChange={setIsOpen} open={isOpen}>
-        <DropdownMenuContent>
-          <DropdownMenuGroup>
-            <DropdownMenuItem>
-              {items.map((item) => (
-                <div key={item.name}>{item.name}</div>
-              ))}
-            </DropdownMenuItem>
-          </DropdownMenuGroup>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </>
-  );
-}
-
-import "./style.css";
-import { set } from "zod";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from "@/components/ui/command";
-import FunctionIcon from "@/icons/FunctionIcon";
-import { ChatCompletion } from "@/services/chat-completion";
-
 export function PromptForm({
   onSubmit,
   input,
   setInput,
   isLoading,
 }: PromptProps) {
+  const { connectionState } = useConnectionContext();
   const { formRef, onKeyDown } = useEnterSubmit();
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
   const selectRef = React.useRef<HTMLDivElement>(null);
@@ -180,10 +78,22 @@ export function PromptForm({
       inputRef.current.focus();
     }
   }, []);
+
+  const data: PiInfo[] = [
+    ...connectionState.tools,
+    ...connectionState.components,
+  ];
+
   const [isOpen, setIsOpen] = React.useState(false);
-  const [items, setItems] = React.useState<ItemInterface[]>([]);
+  const [items, setItems] = React.useState<PiInfo[]>([]);
   const [selected, setSelected] = React.useState<string>("");
-  // const [autoFocus, setAutoFocus] = React.useState(false);
+
+  const isComponent = () => {
+    if (items.length === 0 || !("pin" in items[0])) {
+      return false;
+    }
+    return "pin" in items[0];
+  }
 
   const setInputFocus = () => {
     if (inputRef.current) {
@@ -243,34 +153,43 @@ export function PromptForm({
             ref={selectRef}
             onKeyDown={(e) => {}}
             autoFocus={true}
-            className="max-h-96 grow p-0 min-h-[90px "
+            className="max-h-96 grow p-0 "
           >
-            <Command>
-              <CommandInput placeholder="Search..." className="h-9" />
+            <Command className="max-h-44 ">
+              <CommandInput placeholder={`Search ${isComponent() ? "Components" : "Functions"}...`} className="h-9" />
               <CommandEmpty>No result found.</CommandEmpty>
-              <CommandGroup>
+              <CommandGroup >
                 {items.map((item) => (
                   <CommandItem
+                    className=""
                     onSelect={(currentValue) => {
                       setSelected(currentValue);
                       const actualInput = input.slice(0, input.length - 1);
                       setInput(actualInput + currentValue);
-                      // setInputFocus();
                       setIsOpen(false);
                     }}
                     value={item.name}
                     key={item.name}
                   >
-                    <div className="mr-2">
-                      <FunctionIcon />
-                    </div>
+                    {"type" in item ? (
+                      <BoxModelIcon className="w-4 h-4 mr-2" />
+                    ) : (
+                      <div className="mr-2">
+                        <FunctionIcon />
+                      </div>
+                    )}
                     {item.name}
+
                   </CommandItem>
                 ))}
               </CommandGroup>
             </Command>
           </PopoverContent>
-          <PopoverTrigger asChild>
+          <PopoverTrigger asChild onClick={(e) => {
+            e.preventDefault();
+            setIsOpen(false);
+            setInputFocus();
+          }}>
             <Textarea
               autoFocus
               className="min-h-[60px] w-full resize-none bg-transparent px-4 py-[1.3rem] focus-within:outline-none sm:text-sm z-0"
@@ -288,8 +207,13 @@ export function PromptForm({
                 }
               }}
               onChange={(e) => {
-                if (e.target.value[e.target.value.length - 1] === "@") {
-                  setItems(getItems("s"));
+                if (e.target.value[e.target.value.length - 1] === "/") {
+                  setItems(connectionState.tools);
+                  setIsOpen(true);
+                  setInputFocus();
+                }
+                else if(e.target.value[e.target.value.length - 1] === "@"){
+                  setItems(connectionState.components);
                   setIsOpen(true);
                   setInputFocus();
                 }

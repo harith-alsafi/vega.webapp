@@ -100,7 +100,7 @@ export default function ConnectionDialog() {
         port: piConnection.port,
         url: piConnection.url,
         components: piConnection.components,
-        functionCalls: piConnection.functionCalls,
+        tools: piConnection.tools,
         id: piConnection.id,
         status: !connectionState.status,
       });
