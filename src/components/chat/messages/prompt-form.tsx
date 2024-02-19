@@ -79,11 +79,6 @@ export function PromptForm({
     }
   }, []);
 
-  const data: PiInfo[] = [
-    ...connectionState.tools,
-    ...connectionState.components,
-  ];
-
   const [isOpen, setIsOpen] = React.useState(false);
   const [items, setItems] = React.useState<PiInfo[]>([]);
   const [selected, setSelected] = React.useState<string>("");
