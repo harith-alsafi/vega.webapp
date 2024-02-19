@@ -26,7 +26,6 @@ import { useState } from "react";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { usePathname, useRouter } from "next/navigation";
-import { ChatRequest, nanoid } from "ai";
 import { toast } from "sonner";
 import {
   ChatCompletionCreateParams,
