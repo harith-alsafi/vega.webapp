@@ -7,35 +7,45 @@ import {
   ChatCompletionToolMessageParam,
   ChatCompletionUserMessageParam,
 } from "openai/resources";
-import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions";
+import {
+  ChatCompletionCreateParamsBase,
+  ChatCompletionTool,
+} from "openai/resources/chat/completions";
 import { useRef, useState } from "react";
 import { UpdateChat } from "./database";
+import {
+  GptFlowChartResult,
+  GptResultExample,
+} from "@/components/chat/flows/flow-chart";
 
+// System prompt
 export interface MessageSystem extends ChatCompletionSystemMessageParam {}
 
-export interface MessageUser extends ChatCompletionUserMessageParam {}
+// User message
+export interface MessageUser extends ChatCompletionUserMessageParam {
+  isIgnored?: boolean;
+}
 
+export type UiType = "flow-chart" | "plot" | "cards" | null;
+
+// Response to a tool call
 export interface MessageToolCallResponse
   extends ChatCompletionToolMessageParam {
   name?: string;
-  ui?: string | JSX.Element | JSX.Element[];
+  ui?: UiType;
   data?: object;
   status?: "loading" | "error" | "success";
+  isIgnored?: boolean;
 }
 
+// Assistant message
 export interface MessageAssistant
   extends Omit<ChatCompletionAssistantMessageParam, "function_call" | "name"> {
-  ui?: string | JSX.Element | JSX.Element[];
+  ui?: UiType;
+  data?: object;
+  isIgnored?: boolean;
 }
 
-export interface MessageToolCall extends ChatCompletionMessageToolCall.Function{
-  runCondition?: string
-}
-
-export interface GptToolCallResponse {
-  numberOfTools: number;
-  tools: MessageToolCall[];
-}
 
 export type Message =
   | MessageSystem
@@ -48,9 +58,20 @@ export type CompletionStatus =
   | "ToolCall"
   | "ToolCallResponse"
   | "Finish"
-  | "None";
+  | "None"
+  | "FlowChart";
 
-export interface Chat extends Omit<ChatCompletionCreateParamsBase, "messages">{
+export interface MessageToolCall
+  extends ChatCompletionMessageToolCall.Function {
+  runCondition?: string;
+}
+
+export interface GptToolCallResponse {
+  numberOfTools: number;
+  tools: MessageToolCall[];
+}
+
+export interface Chat extends Omit<ChatCompletionCreateParamsBase, "messages"> {
   id: string;
   path: string;
   title: string;
@@ -78,7 +99,8 @@ export interface ChatCompletion {
   setCurrentToolCall: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
-export interface UseChatParams extends Omit<Chat, "messages" | "model" | "id" | "title" | "path"> {
+export interface UseChatParams
+  extends Omit<Chat, "messages" | "model" | "id" | "title" | "path"> {
   id?: string;
   title?: string;
   path?: string;
@@ -120,6 +142,43 @@ interface MessageReturn {
   messageResponse: Message;
 }
 
+export async function getFlowToolCall(
+  messages: Message[],
+  tools: Array<ChatCompletionTool> | undefined,
+  abortController?: () => AbortController | null
+): Promise<Message | null> {
+  try {
+    const response = await fetch("/api/flowchart", {
+      method: "POST",
+      body: JSON.stringify({
+        temperature: 0.5,
+        messages,
+        tools,
+      } as Chat),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      signal: abortController?.()?.signal,
+    });
+    const json = await response.json();
+    console.log(json);
+    if (json) {
+      const message = json as Message;
+      if (message.role === "assistant" && message.data) {
+        const data = message.data as GptFlowChartResult;
+        if (data.nodes.length > 0 && data.edges.length > 0) {
+          return message;
+        }
+      }
+      return message;
+    }
+  } catch (err) {
+    console.log(err);
+  }
+
+  return null;
+}
+
 export function useChat(params: UseChatParams): ChatCompletion {
   let {
     api,
@@ -138,8 +197,8 @@ export function useChat(params: UseChatParams): ChatCompletion {
     onDbUpdate,
   } = params;
 
-  let actualId = id ?? nanoid()
-  let actualPath = path ?? `/chat/${id}`
+  let actualId = id ?? nanoid();
+  let actualPath = path ?? `/chat/${id}`;
   api = api ?? "/api/chat";
   initialMessages = initialMessages ?? [];
   temperature = temperature ?? 0.7;
@@ -154,8 +213,8 @@ export function useChat(params: UseChatParams): ChatCompletion {
   const [completionStatus, setCompletionStatus] =
     useState<CompletionStatus>("None");
 
-  const getChat = (messages: Message[]) : Chat => {
-    return  {
+  const getChat = (messages: Message[]): Chat => {
+    return {
       title: title as string,
       id: actualId,
       path: actualPath,
@@ -165,28 +224,31 @@ export function useChat(params: UseChatParams): ChatCompletion {
       temperature,
       tools,
     };
-  }
+  };
 
-  const updateDataBase = async (messages: Message[]) : Promise<void> => {
+  const updateDataBase = async (messages: Message[]): Promise<void> => {
     const chat = getChat(messages);
     console.log("Updating database with chat", chat);
     await UpdateChat(chat);
     if (onDbUpdate) {
       onDbUpdate(chat);
     }
-  }
+  };
 
   const sendMessages = async (
     newMessages: Message[],
     isAfterOnToolCall: boolean
   ): Promise<MessageReturn> => {
-
     const abortController = new AbortController();
     abortControllerRef.current = abortController;
-    
-    if(newMessages.length > 0 && newMessages[0].role === "user" && title === undefined){ 
-      const content = newMessages[0].content as string
-      title = content.substring(0, 50)
+
+    if (
+      newMessages.length > 0 &&
+      newMessages[0].role === "user" &&
+      title === undefined
+    ) {
+      const content = newMessages[0].content as string;
+      title = content.substring(0, 50);
     }
 
     const { message: messageResponse, response: response } = await SendGpt(
@@ -205,10 +267,8 @@ export function useChat(params: UseChatParams): ChatCompletion {
     newMessages = [...newMessages, messageResponse];
 
     await updateDataBase(newMessages);
-    
 
     setMessages(newMessages);
-
 
     if (onResponse) {
       onResponse(response, isAfterOnToolCall);
@@ -231,7 +291,25 @@ export function useChat(params: UseChatParams): ChatCompletion {
       currentMessage.tool_calls &&
       currentMessage.tool_calls.length > 0
     ) {
+
+      if (
+        newMessages.length > 1 &&
+        newMessages[newMessages.length - 2].role === "user"
+      ) {
+        setCompletionStatus("FlowChart")
+        const flowToolCall = await getFlowToolCall(
+          newMessages,
+          tools,
+          () => abortControllerRef.current
+        );
+        if (flowToolCall) {
+          newMessages = [...newMessages, flowToolCall];
+          setMessages(newMessages);
+        }
+      }
+
       setCompletionStatus("ToolCall");
+
       const toolMessages = await onToolCall(
         newMessages,
         currentMessage.tool_calls

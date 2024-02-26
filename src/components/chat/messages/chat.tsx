@@ -30,10 +30,18 @@ import { toast } from "sonner";
 import {
   ChatCompletionCreateParams,
   ChatCompletionFunctionCallOption,
+  ChatCompletionMessageToolCall,
   ChatCompletionTool,
 } from "openai/resources";
 import { emitUpdateSidebarEvent } from "@/lib/event-emmiter";
 import { useConnectionContext } from "@/lib/context/connection-context";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuShortcut,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 
 const IS_PREVIEW = process.env.VERCEL_ENV === "preview";
 export interface ChatProps extends React.ComponentProps<"div"> {
@@ -57,11 +65,76 @@ const tools: Array<ChatCompletionTool> = [
       description: "Gets the current weather",
     },
   },
+  {
+    type: "function",
+    function: {
+      name: "get-time-city",
+      description: "Gets the time for a specific city.",
+      parameters: {
+        type: "object",
+        properties: {
+          location: {
+            type: "string",
+            description: "The city and state, e.g. San Francisco, CA",
+          },
+        },
+        return: "string",
+        required: ["location"],
+      },
+    },
+  },
 ];
 
+async function getToolCall(
+  tools: Array<ChatCompletionTool>,
+  toolCall: ChatCompletionMessageToolCall
+): Promise<MessageToolCallResponse | undefined> {
+  if (toolCall.function.name === "plot-data") {
+    const toolResponse: MessageToolCallResponse = {
+      tool_call_id: toolCall.id,
+      role: "tool",
+      name: toolCall.function.name,
+      ui: "plot",
+      content:
+        "The plot has been ALREADY shown the user, just inform the user it is shown above",
+    };
+
+    return toolResponse;
+  } else if (toolCall.function.name === "get_current_weather") {
+    const temperature = Math.floor(Math.random() * (100 - 30 + 1) + 30);
+    const weather = ["sunny", "cloudy", "rainy", "snowy"][
+      Math.floor(Math.random() * 4)
+    ];
+    const toolResponse: MessageToolCallResponse = {
+      tool_call_id: toolCall.id,
+      role: "tool",
+      name: toolCall.function.name,
+      content: JSON.stringify({
+        temperature,
+        weather,
+        info: "This data is randomly generated and came from a fake weather API!",
+      }),
+    };
+
+    return toolResponse;
+  } else if (toolCall.function.name === "get-time-city") {
+    const data = toolCall.function.arguments;
+    if (data) {
+      // const location = JSON.parse(data).location;
+      // const time = new Date().toLocaleTimeString("en-US", { timeZone: location });
+      const toolResponse: MessageToolCallResponse = {
+        tool_call_id: toolCall.id,
+        role: "tool",
+        name: toolCall.function.name,
+        content: `The current time in John is 2pm`,
+      };
+      return toolResponse;
+    }
+  }
+  return undefined;
+}
+
 export function Chat({ id, initialMessages, className }: ChatProps) {
-
-
   const path = usePathname();
   const [updatedSideBar, setUpdatedSideBar] = useState(false);
   const {
@@ -73,7 +146,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
     input,
     setInput,
     setMessages,
-    completionStatus
+    completionStatus,
   } = useChat({
     api: "/api/chat/openai",
     initialMessages,
@@ -85,49 +158,26 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
       }
     },
     async onFinish(message, isAfterOnToolCall) {
-      if (!path.includes('chat')) {
-        window.history.pushState({}, '', `/chat/${id}`)
+      if (!path.includes("chat")) {
+        window.history.pushState({}, "", `/chat/${id}`);
       }
       console.log("OnFinish: ", message);
     },
     onError(error) {
       toast.error(error.name);
     },
-    onDbUpdate(chat){
-      if(!updatedSideBar && !path.includes('chat')){
+    onDbUpdate(chat) {
+      if (!updatedSideBar && !path.includes("chat")) {
         emitUpdateSidebarEvent();
         setUpdatedSideBar(true);
       }
     },
     async onToolCall(oldMessages, toolCalls) {
-      const toolCall = toolCalls[0];
-      if (toolCall.function.name === "plot-data") {
-        const toolResponse: MessageToolCallResponse = {
-          tool_call_id: toolCall.id,
-          role: "tool",
-          name: toolCall.function.name,
-          ui: "chart-message",
-          content:
-            "The plot has been ALREADY shown the user, just inform the user it is shown above",
-        };
-
-        return [...oldMessages, toolResponse] as Message[];
-      } else if (toolCall.function.name === "get_current_weather") {
-        const temperature = Math.floor(Math.random() * (100 - 30 + 1) + 30);
-        const weather = ["sunny", "cloudy", "rainy", "snowy"][
-          Math.floor(Math.random() * 4)
-        ];
-        const toolResponse: MessageToolCallResponse = {
-          tool_call_id: toolCall.id,
-          role: "tool",
-          name: toolCall.function.name,
-          content: JSON.stringify({
-            temperature,
-            weather,
-            info: "This data is randomly generated and came from a fake weather API!",
-          }),
-        };
-        return [...oldMessages, toolResponse] as Message[];
+      for (const toolCall of toolCalls) {
+        const toolResponse = await getToolCall(tools, toolCall);
+        if (toolResponse) {
+          oldMessages.push(toolResponse);
+        }
       }
       return oldMessages;
     },
@@ -135,27 +185,40 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
 
   return (
     <>
-      <div className={cn("mb-8 pb-[200px] pt-4 md:pt-10", className)}>
-        {messages.length ? (
-          <>
-            <ChatList completionStatus={completionStatus} isLoading={isLoading}  messages={messages} />
-            <ChatScrollAnchor trackVisibility={isLoading} />
-          </>
-        ) : (
-          <EmptyScreen setInput={setInput} />
-        )}
-      </div>
-      <ChatPanel
-        setMessages={setMessages}
-        id={id}
-        isLoading={isLoading}
-        stop={stop}
-        append={append}
-        reload={reload}
-        messages={messages}
-        input={input}
-        setInput={setInput}
-      />
+      <ContextMenu>
+        <ContextMenuTrigger>
+          <div className={cn("mb-8 pb-[200px] pt-4 md:pt-10", className)}>
+            {messages.length ? (
+              <>
+                <ChatList
+                  completionStatus={completionStatus}
+                  isLoading={isLoading}
+                  messages={messages}
+                />
+                <ChatScrollAnchor trackVisibility={isLoading} />
+              </>
+            ) : (
+              <EmptyScreen setInput={setInput} />
+            )}
+          </div>
+          <ChatPanel
+            setMessages={setMessages}
+            id={id}
+            isLoading={isLoading}
+            stop={stop}
+            append={append}
+            reload={reload}
+            messages={messages}
+            input={input}
+            setInput={setInput}
+          />
+        </ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuItem>Expand All</ContextMenuItem>
+          <ContextMenuItem>Collapse All</ContextMenuItem>
+          <ContextMenuItem>Rerun All</ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>
     </>
   );
 }

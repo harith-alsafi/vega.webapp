@@ -5,10 +5,12 @@ import { cn } from "@/lib/utils";
 import { IconOpenAI } from "../../ui/icons";
 import { ring } from "ldrs";
 import PlotMessage, { PlotMessagesExample } from "../plots/plot-message";
-import FlowChart, { GptResultExample } from "../flows/flow-chart";
+import FlowChart, {
+  GptFlowChartResult,
+  GptResultExample,
+} from "../flows/flow-chart";
 
 ring.register();
-
 
 export interface ChatList {
   messages: Message[];
@@ -16,12 +18,18 @@ export interface ChatList {
   completionStatus: CompletionStatus;
 }
 
-export function LoadingMessage({completionStatus}: {completionStatus: CompletionStatus}) {
+export function LoadingMessage({
+  completionStatus,
+}: {
+  completionStatus: CompletionStatus;
+}) {
   return (
-    <div>
-      {completionStatus === "GptResponse" ? <Separator className="my-4 md:my-8" /> : null} 
+    <div> 
+      {completionStatus === "GptResponse" ? (
+        <Separator className="my-4 md:my-8" />
+      ) : null}
       <div className="relative mx-auto max-w-2xl px-4">
-        <div className={cn("group relative mb-4 flex items-start md:-ml-12")}>
+        <div className="group relative mb-4 flex items-start md:-ml-12">
           <div
             className={cn(
               "flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-md border shadow",
@@ -38,6 +46,7 @@ export function LoadingMessage({completionStatus}: {completionStatus: Completion
               speed="2"
               color="white"
             ></l-ring>
+            {completionStatus}
           </div>
         </div>
       </div>
@@ -55,15 +64,23 @@ export function SingleChat({
   maxLength: number;
 }) {
   if (message.role === "tool" && message.name == "plot-data" && message.ui) {
-    return <div>  <PlotMessage {...PlotMessagesExample} />
-    </div>;
+    return (
+      <div>
+        <PlotMessage {...PlotMessagesExample} />
+      </div>
+    );
   }
-  if (message.role === "tool" && message.name == "get_current_weather") {
-    // return <div style={{ height: "42vh" }}><FlowChart nodes={GptResultExample.nodes} edges={GptResultExample.edges} /> </div>;
-    return <FlowChart nodes={GptResultExample.nodes} edges={GptResultExample.edges} />;
-  }   
   if (
-    (message.role === "assistant" && message.tool_calls == null) ||
+    message.role === "tool" &&
+    message.data &&
+    message.ui === "flow-chart"
+  ) {
+    const result = message.data as GptFlowChartResult;
+    // return <div style={{ height: "42vh" }}><FlowChart nodes={GptResultExample.nodes} edges={GptResultExample.edges} /> </div>;
+    return <FlowChart nodes={result.nodes} edges={result.edges} />;
+  }
+  if (
+    (message.role === "assistant" && message.content !== null) ||
     message.role === "user"
   ) {
     return (
@@ -91,7 +108,9 @@ export function ChatList({ messages, isLoading, completionStatus }: ChatList) {
           />
         );
       })}
-      {isLoading ? <LoadingMessage completionStatus={completionStatus}  /> : null}
+      {isLoading ? (
+        <LoadingMessage completionStatus={completionStatus} />
+      ) : null}
     </div>
   );
 }

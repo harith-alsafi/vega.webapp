@@ -1,11 +1,15 @@
+// "use server";
+import { io } from "socket.io-client";
+
 import {
   ChatCompletionMessageToolCall,
   ChatCompletionTool,
 } from "openai/resources";
 import { MessageSystem } from "./chat-completion";
+import { Socket } from "socket.io";
 
-
-export interface PiComponentInfo extends Omit<ChatCompletionTool["function"], "parameters"> {
+export interface PiComponentInfo
+  extends Omit<ChatCompletionTool["function"], "parameters"> {
   type: string;
   pin: string;
 }
@@ -14,6 +18,10 @@ export const FunctionCallUrl = "/get-function-calls";
 export const RunFunctionCallUrl = "/run-function-call";
 export const GetComponentsUrl = "/get-components";
 export const GetComponentInfoUrl = "/get-component-info";
+
+export interface ParameterType {
+
+}
 
 export const ToolsExample: Array<ChatCompletionTool["function"]> = [
   {
@@ -24,6 +32,21 @@ export const ToolsExample: Array<ChatCompletionTool["function"]> = [
   {
     name: "get_current_weather",
     description: "Gets the current weather",
+  },
+  {
+    name: "get-time-city",
+    description: "Gets the time for a specific city.",
+    parameters: {
+      type: "object",
+      properties: {
+        location: {
+          type: "string",
+          description: "The city and state, e.g. San Francisco, CA",
+        },
+      },
+      return: "string",
+      required: ["location"],
+    },
   },
 ];
 
@@ -52,7 +75,7 @@ export const ComponentsExample: PiComponentInfo[] = [
     pin: "D1",
     description: "Motor",
   },
-]
+];
 
 export type PiInfo = PiComponentInfo | ChatCompletionTool["function"];
 
@@ -64,6 +87,7 @@ export interface PiConnection {
   status: boolean;
   components: PiComponentInfo[];
   tools: Array<ChatCompletionTool["function"]>;
+  socket?: Socket;
 }
 
 export interface PiDataResponse {
@@ -131,6 +155,8 @@ export async function ConnectRaspberryPi(
   port: number,
   url?: string
 ): Promise<PiConnection> {
+  url = url || `https://${ip}:${port}`;
+
   await delay(2000);
   return DefaultPiConnection;
 }
