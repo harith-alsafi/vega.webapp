@@ -170,7 +170,7 @@ export async function getFlowToolCall(
           return message;
         }
       }
-      return message;
+      return null;
     }
   } catch (err) {
     console.log(err);

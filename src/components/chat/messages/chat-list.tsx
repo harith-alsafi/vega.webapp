@@ -2,7 +2,7 @@ import { CompletionStatus, Message } from "@/services/chat-completion";
 import { Separator } from "@/components/ui/separator";
 import { ChatMessage } from "@/components/chat/messages/chat-message";
 import { cn } from "@/lib/utils";
-import { IconOpenAI } from "../../ui/icons";
+import { IconOpenAI } from "@/components/ui/icons";
 import { ring } from "ldrs";
 import PlotMessage, { PlotMessagesExample } from "../plots/plot-message";
 import FlowChart, {
@@ -38,15 +38,15 @@ export function LoadingMessage({
           >
             <IconOpenAI />
           </div>
-          <div className="flex-1 px-1 ml-4 space-y-2 overflow-hidden">
+          <div className="flex px-1 ml-4 ">
             <l-ring
               size="30"
               stroke="5"
               bg-opacity="0.12"
               speed="2"
-              color="white"
+              // color="white"
             ></l-ring>
-            {completionStatus}
+            <div className="mt-1 space-y-1 ml-2">{completionStatus}</div>
           </div>
         </div>
       </div>

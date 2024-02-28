@@ -46,6 +46,7 @@
     "clsx": "^2.0.0",
     "cmdk": "^0.2.0",
     "dagrejs": "^0.2.1",
+    "embla-carousel-react": "^8.0.0",
     "framer-motion": "^10.16.16",
     "huggingface": "^1.4.0",
     "langchain": "^0.1.5",

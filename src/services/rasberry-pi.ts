@@ -1,27 +1,78 @@
 // "use server";
 import { io } from "socket.io-client";
-
 import {
   ChatCompletionMessageToolCall,
   ChatCompletionTool,
+  FunctionParameters,
 } from "openai/resources";
 import { MessageSystem } from "./chat-completion";
 import { Socket } from "socket.io";
+import { DataPoint } from "@/components/chat/plots/plot-message";
+import { nanoid } from "@/lib/utils";
 
-export interface PiComponentInfo
-  extends Omit<ChatCompletionTool["function"], "parameters"> {
-  type: string;
-  pin: string;
+export interface ParameterType extends FunctionParameters {
+  type: "object";
+  properties: Record<
+    string,
+    {
+      type: string;
+      description: string;
+    }
+  >;
+  required: string[];
+  return: string;
 }
 
-export const FunctionCallUrl = "/get-function-calls";
-export const RunFunctionCallUrl = "/run-function-call";
-export const GetComponentsUrl = "/get-components";
-export const GetComponentInfoUrl = "/get-component-info";
+export type PiBaseInfo =  Omit<ChatCompletionTool["function"], "parameters">;
 
-export interface ParameterType {
-
+export interface PiToolInfo  extends PiBaseInfo{
+  parameters?: ParameterType;
 }
+
+export type ToolType = PiToolInfo | ChatCompletionTool["function"];
+
+export type DeviceType = "pwm" | "digital" | "analog" | "i2c";
+
+export interface PiDeviceInfo extends PiBaseInfo{
+  type: DeviceType;
+  pins: string[];
+  isInput: boolean;
+  isConnected: boolean;
+  value: string;
+  hasData: boolean;
+  frequency?: number;
+}
+
+export type PiInfo = PiDeviceInfo | ToolType;
+
+export interface PiConnection {
+  ip: string;
+  port: number;
+  url?: string;
+  id: string;
+  status: boolean;
+  devices: PiDeviceInfo[];
+  tools: Array<ToolType>;
+  socket?: Socket;
+}
+
+export interface PiDataResponse {
+  data: DataPoint[];
+  xLabel: string;
+  yLabel: string;
+  title: string;
+}
+
+export interface PiFunctionCallResponse {
+  name: string;
+  result: string;
+  status: boolean;
+  data?: PiDataResponse;
+}
+
+export const GetToolCalslUrl = "/get-tools";
+export const RunToolCallUrl = "/run-tools";
+export const GetDevicesUrl = "/get-devices";
 
 export const ToolsExample: Array<ChatCompletionTool["function"]> = [
   {
@@ -50,60 +101,49 @@ export const ToolsExample: Array<ChatCompletionTool["function"]> = [
   },
 ];
 
-export const ComponentsExample: PiComponentInfo[] = [
+export const DevicesExample: PiDeviceInfo[] = [
   {
-    type: "sensor",
+    type: "analog",
     name: "temperature",
-    pin: "A0",
+    pins: ["0"],
     description: "Temperature sensor",
+    isInput: false,
+    isConnected: true,
+    value: "30",
+    hasData: true,
   },
   {
-    type: "sensor",
-    name: "humidity",
-    pin: "A1",
-    description: "Humidity sensor",
+    type: "digital",
+    name: "button",
+    pins: ["D2"],
+    description: "Button",
+    isInput: true,
+    isConnected: true,
+    value: "0",
+    hasData: true,
   },
   {
-    type: "actuator",
+    type: "pwm",
     name: "led",
-    pin: "D0",
+    pins: ["D3"],
     description: "LED",
+    isInput: false,
+    isConnected: true,
+    value: "0",
+    hasData: true,
+    frequency: 100,
   },
   {
-    type: "actuator",
-    name: "motor",
-    pin: "D1",
-    description: "Motor",
+    type: "i2c",
+    name: "oled",
+    pins: ["SDA", "SCL"],
+    description: "OLED Display",
+    isInput: false,
+    isConnected: true,
+    value: "Hello World",
+    hasData: true,
   },
 ];
-
-export type PiInfo = PiComponentInfo | ChatCompletionTool["function"];
-
-export interface PiConnection {
-  ip: string;
-  port: number;
-  url?: string;
-  id: string;
-  status: boolean;
-  components: PiComponentInfo[];
-  tools: Array<ChatCompletionTool["function"]>;
-  socket?: Socket;
-}
-
-export interface PiDataResponse {
-  xValues: number[];
-  yValues: number[];
-  xLabel: string;
-  yLabel: string;
-  title: string;
-  xInterval: number;
-}
-
-export interface PiFunctionCallResponse {
-  status: boolean;
-  error?: string;
-  data?: any;
-}
 
 export const DefaultPiConnection: PiConnection = {
   ip: "192.168.0.122",
@@ -111,35 +151,50 @@ export const DefaultPiConnection: PiConnection = {
   url: "https://192.168.0.122:5000",
   id: "",
   status: false,
-  components: ComponentsExample,
+  devices: DevicesExample,
   tools: ToolsExample,
 };
 
-export async function GetComponentInfo(
+export async function RunToolCalls(
   url: string,
-  component: PiComponentInfo
-): Promise<PiComponentInfo | null> {
-  return null;
-}
-
-export async function RunFunctionCall(
-  url: string,
-  functionInfo: ChatCompletionTool["function"],
-  functionCall: ChatCompletionMessageToolCall
+  toolCall: ChatCompletionMessageToolCall[]
 ): Promise<PiFunctionCallResponse | null> {
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(toolCall),
+  });
   return null;
 }
 
-export async function GetComponents(
-  url: string
-): Promise<PiComponentInfo[] | null> {
-  return null;
+export async function GetDevices(
+  url: string,
+  names: string[] = []
+): Promise<PiDeviceInfo[]> {
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(names),
+  });
+  const data = (await response.json()) as PiDeviceInfo[];
+  return data;
 }
 
-export async function GetFunctionCalls(
-  url: string
-): Promise<Array<ChatCompletionTool["function"]> | null> {
-  return null;
+export async function GetToolCalls(
+  url: string,
+): Promise<Array<ToolType>> {
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  const data = (await response.json()) as ToolType[];
+  return data;
 }
 
 async function delay(milliseconds: number) {
@@ -155,10 +210,28 @@ export async function ConnectRaspberryPi(
   port: number,
   url?: string
 ): Promise<PiConnection> {
-  url = url || `https://${ip}:${port}`;
-
-  await delay(2000);
-  return DefaultPiConnection;
+  // await delay(2000);
+  // return DefaultPiConnection;
+  url = url || `http://${ip}:${port}`;
+  const [devices, tools] = await Promise.all([
+    GetDevices(url+GetDevicesUrl),
+    GetToolCalls(url+GetToolCalslUrl),
+  ]);
+  if (!devices) {
+    throw new Error("Failed to fetch devices");
+  }
+  if (!tools) {
+    throw new Error("Failed to fetch tools");
+  }
+  return{
+    ip,
+    port,
+    url,
+    id: nanoid(),
+    status: true,
+    devices,
+    tools,
+  };
 }
 
 export function CreateSystemPrompt(piConnection: PiConnection): MessageSystem {

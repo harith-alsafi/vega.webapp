@@ -1,47 +1,47 @@
-"use client";
+// "use client";
 
 import Image from "next/image";
-import {
-  Menubar,
-  MenubarCheckboxItem,
-  MenubarContent,
-  MenubarItem,
-  MenubarMenu,
-  MenubarRadioGroup,
-  MenubarRadioItem,
-  MenubarSeparator,
-  MenubarShortcut,
-  MenubarSub,
-  MenubarSubContent,
-  MenubarSubTrigger,
-  MenubarTrigger,
-} from "@/components/ui/menubar";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TabsPanel } from "@/components/core/top-bar/tabs-panel";
+// import {
+//   Menubar,
+//   MenubarCheckboxItem,
+//   MenubarContent,
+//   MenubarItem,
+//   MenubarMenu,
+//   MenubarRadioGroup,
+//   MenubarRadioItem,
+//   MenubarSeparator,
+//   MenubarShortcut,
+//   MenubarSub,
+//   MenubarSubContent,
+//   MenubarSubTrigger,
+//   MenubarTrigger,
+// } from "@/components/ui/menubar";
+// import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+// import { TabsPanel } from "@/components/core/top-bar/tabs-panel";
 
 import Visualizer from "next-route-visualizer";
-import FlowChart, {
-  GptResultExample,
-} from "@/components/chat/flows/flow-chart";
-import PlotMessage, {
-  PlotMessagesExample,
-} from "@/components/chat/plots/plot-message";
-import { ConnectionSelector } from "@/components/core/top-bar/connection-selector";
-import {
-  CartesianGrid,
-  Legend,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Scatter,
-  ScatterChart,
-  Tooltip,
-  XAxis,
-  YAxis,
-  ZAxis,
-} from "recharts";
-import { ScatterCustomizedShape } from "recharts/types/cartesian/Scatter";
-import { Card } from "@/components/ui/card";
+// import FlowChart, {
+//   GptResultExample,
+// } from "@/components/chat/flows/flow-chart";
+// import PlotMessage, {
+//   PlotMessagesExample,
+// } from "@/components/chat/plots/plot-message";
+// import { ConnectionSelector } from "@/components/core/top-bar/connection-selector";
+// import {
+//   CartesianGrid,
+//   Legend,
+//   Line,
+//   LineChart,
+//   ResponsiveContainer,
+//   Scatter,
+//   ScatterChart,
+//   Tooltip,
+//   XAxis,
+//   YAxis,
+//   ZAxis,
+// } from "recharts";
+// import { ScatterCustomizedShape } from "recharts/types/cartesian/Scatter";
+// import { Card } from "@/components/ui/card";
 
 export function MenuTest() {
   return (
@@ -272,46 +272,46 @@ export function PlotTest2() {
   );
 }
 
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+// import { Button } from "@/components/ui/button";
+// import {
+//   Dialog,
+//   DialogContent,
+//   DialogDescription,
+//   DialogFooter,
+//   DialogHeader,
+//   DialogTitle,
+//   DialogTrigger,
+// } from "@/components/ui/dialog";
+// import { Input } from "@/components/ui/input";
+// import { Label } from "@/components/ui/label";
 
-import {
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+// import {
+//   CardContent,
+//   CardDescription,
+//   CardFooter,
+//   CardHeader,
+//   CardTitle,
+// } from "@/components/ui/card";
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { forwardRef, useImperativeHandle, useState } from "react";
+// import {
+//   Select,
+//   SelectContent,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from "@/components/ui/select";
+// import { forwardRef, useImperativeHandle, useState } from "react";
 
-import { ReloadIcon } from "@radix-ui/react-icons";
+// import { ReloadIcon } from "@radix-ui/react-icons";
 
-import { ping } from "ldrs";
+// import { ping } from "ldrs";
 
-ping.register();
+// ping.register();
 
-// Default values shown
-import { ring } from "ldrs";
+// // Default values shown
+// import { ring } from "ldrs";
 
-ring.register();
+// ring.register();
 
 // Default values shown
 
@@ -371,6 +371,7 @@ export function DialogDemo() {
 
 
 export default function Home() {
+  return <Visualizer />
   return <FlowTest/>
   // return <PlotTest />
   // return <MenuTest />

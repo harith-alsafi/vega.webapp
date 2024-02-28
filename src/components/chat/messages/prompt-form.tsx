@@ -25,7 +25,7 @@ import {
 import FunctionIcon from "@/icons/FunctionIcon";
 import { ChatCompletion } from "@/services/chat-completion";
 import { useConnectionContext } from "@/lib/context/connection-context";
-import { PiInfo, PiComponentInfo } from "@/services/rasberry-pi";
+import { PiInfo, PiDeviceInfo } from "@/services/rasberry-pi";
 import { BoxModelIcon } from "@radix-ui/react-icons";
 
 export interface PromptProps
@@ -151,7 +151,7 @@ export function PromptForm({
             className="max-h-96 grow p-0 "
           >
             <Command className="max-h-44 ">
-              <CommandInput placeholder={`Search ${isComponent() ? "Components" : "Functions"}...`} className="h-9" />
+              <CommandInput placeholder={`Search ${isComponent() ? "Devices" : "Functions"}...`} className="h-9" />
               <CommandEmpty>No result found.</CommandEmpty>
               <CommandGroup >
                 {items.map((item) => (
@@ -208,7 +208,7 @@ export function PromptForm({
                   setInputFocus();
                 }
                 else if(e.target.value[e.target.value.length - 1] === "@"){
-                  setItems(connectionState.components);
+                  setItems(connectionState.devices);
                   setIsOpen(true);
                   setInputFocus();
                 }

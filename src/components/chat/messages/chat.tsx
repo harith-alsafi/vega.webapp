@@ -1,35 +1,19 @@
 "use client";
 
-// import { useChat, type Message } from "ai/react";
-
 import {
   useChat,
   Message,
   MessageToolCallResponse,
 } from "@/services/chat-completion";
-
 import { cn } from "@/lib/utils";
 import { ChatList } from "@/components/chat/messages/chat-list";
 import { ChatPanel } from "@/components/chat/messages/chat-panel";
 import { EmptyScreen } from "@/components/chat/messages/empty-screen";
 import { ChatScrollAnchor } from "@/components/chat/messages/chat-scroll-anchor";
-import { useLocalStorage } from "@/lib/hooks/use-local-storage";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { useState } from "react";
-import { Button } from "../../ui/button";
-import { Input } from "../../ui/input";
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
-  ChatCompletionCreateParams,
-  ChatCompletionFunctionCallOption,
   ChatCompletionMessageToolCall,
   ChatCompletionTool,
 } from "openai/resources";
@@ -39,11 +23,9 @@ import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
-  ContextMenuShortcut,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 
-const IS_PREVIEW = process.env.VERCEL_ENV === "preview";
 export interface ChatProps extends React.ComponentProps<"div"> {
   initialMessages?: Message[];
   id?: string;
@@ -135,6 +117,7 @@ async function getToolCall(
 }
 
 export function Chat({ id, initialMessages, className }: ChatProps) {
+  const { connectionState } = useConnectionContext();
   const path = usePathname();
   const [updatedSideBar, setUpdatedSideBar] = useState(false);
   const {

@@ -14,24 +14,18 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { AvatarIcon, Pencil1Icon, PlusIcon } from "@radix-ui/react-icons";
+import { Pencil1Icon } from "@radix-ui/react-icons";
 import { useConnectionContext } from "@/lib/context/connection-context";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  ConnectRaspberryPi,
-  DefaultPiConnection,
-} from "@/services/rasberry-pi";
-import { Avatar } from "@radix-ui/react-avatar";
+import { ConnectRaspberryPi } from "@/services/rasberry-pi";
 import { toast } from "sonner";
 
 ring.register();
@@ -53,23 +47,6 @@ const formSchema = z.object({
     .int({ message: "Port must be a number" })
     .min(0, { message: "Port must be a positive number" })
     .max(65535, { message: "Port must be less than 65535" }),
-  url: z
-    .string()
-    .optional()
-    .refine(
-      (value) => {
-        if (!value) return true;
-        try {
-          new URL(value);
-          return true;
-        } catch (error) {
-          return false;
-        }
-      },
-      {
-        message: "Invalid URL format",
-      }
-    ),
 });
 
 export default function ConnectionDialog() {
@@ -81,7 +58,6 @@ export default function ConnectionDialog() {
     defaultValues: {
       ip: connectionState.ip,
       port: connectionState.port,
-      url: connectionState.url,
     },
   });
 
@@ -89,20 +65,15 @@ export default function ConnectionDialog() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     try {
-      const piConnection = await ConnectRaspberryPi(
-        values.ip,
-        values.port,
-        values.url
-      );
-      // setConnectionState(piConnection)
+      const piConnection = await ConnectRaspberryPi(values.ip, values.port);
       setConnectionState({
         ip: piConnection.ip,
         port: piConnection.port,
         url: piConnection.url,
-        components: piConnection.components,
+        devices: piConnection.devices,
         tools: piConnection.tools,
         id: piConnection.id,
-        status: !connectionState.status,
+        status: connectionState.status,
       });
 
       toast.success("Connection successful", {
@@ -110,10 +81,11 @@ export default function ConnectionDialog() {
       });
     } catch (error) {
       if (error instanceof Error) {
-        form.setError("root", { message: "Connection failed" });
+        form.setError("root", {
+          message: "Couldn't connect to Pi with IP " + values.ip,
+        });
         toast.error("Connection failed", {
-          description:
-            "Did not manage to connect to Raspberry Pi with IP " + values.ip,
+          description: error.message,
         });
       }
     } finally {
@@ -150,7 +122,7 @@ export default function ConnectionDialog() {
         <DialogHeader>
           <DialogTitle>Edit Connection</DialogTitle>
           <DialogDescription>
-            Edit current connection here. Click save when youre done.
+            Edit current connection here. Click connect when youre done.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -181,23 +153,6 @@ export default function ConnectionDialog() {
                     <Input
                       type="number"
                       // placeholder={`Ex: ${DefaultPiConnection.port}`}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="url"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Connection Url</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="url"
-                      // placeholder={`Ex: ${DefaultPiConnection.url}`}
                       {...field}
                     />
                   </FormControl>
