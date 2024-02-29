@@ -9,6 +9,8 @@ import FlowChart, {
   GptFlowChartResult,
   GptResultExample,
 } from "../flows/flow-chart";
+import { DevicesExample } from "@/services/rasberry-pi";
+import DeviceCarousel from "@/components/chat/device-carousel/device-carousel";
 
 ring.register();
 
@@ -63,6 +65,14 @@ export function SingleChat({
   index: number;
   maxLength: number;
 }) {
+  if(message.role === "tool" && message.name === "get-time-city"){
+    return (
+      <div>
+        <DeviceCarousel devices={DevicesExample}/>
+      </div>
+    )
+  }
+
   if (message.role === "tool" && message.name == "plot-data" && message.ui) {
     return (
       <div>

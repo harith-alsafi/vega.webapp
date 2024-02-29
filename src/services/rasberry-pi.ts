@@ -118,9 +118,9 @@ export const DevicesExample: PiDeviceInfo[] = [
     pins: ["D2"],
     description: "Button",
     isInput: true,
-    isConnected: true,
+    isConnected: false,
     value: "0",
-    hasData: true,
+    hasData: false,
   },
   {
     type: "pwm",

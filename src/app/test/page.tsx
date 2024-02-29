@@ -20,6 +20,10 @@ import Image from "next/image";
 // import { TabsPanel } from "@/components/core/top-bar/tabs-panel";
 
 import Visualizer from "next-route-visualizer";
+import CollapsableMessage from "@/components/chat/messages/collapsable-message";
+import DeviceCarousel from "@/components/chat/device-carousel/device-carousel";
+import { useConnectionContext } from "@/lib/context/connection-context";
+import { DevicesExample } from "@/services/rasberry-pi";
 // import FlowChart, {
 //   GptResultExample,
 // } from "@/components/chat/flows/flow-chart";
@@ -371,6 +375,7 @@ export function DialogDemo() {
 
 
 export default function Home() {
+  return <DeviceCarousel devices={DevicesExample}/>
   return <Visualizer />
   return <FlowTest/>
   // return <PlotTest />
