@@ -72,7 +72,7 @@ export function ChatPanel({
               Stop generating
             </Button>
           ) : (
-            messages?.length >= 2 && (
+            messages?.length > 0 && (
               <div className="flex space-x-2">
                 <Button
                   className="bg-background"

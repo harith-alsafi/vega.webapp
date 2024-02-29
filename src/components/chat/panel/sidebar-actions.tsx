@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Chat } from "@/services/chat-completion";
 import { RemoveChat } from "@/services/database";
+import { emitUpdateSidebarEvent } from "@/lib/event-emmiter";
 
 interface SidebarActionsProps {
   chat: Chat;
@@ -76,6 +77,7 @@ export function SidebarActions({ chat, removeChat }: SidebarActionsProps) {
                   router.refresh();
                   router.push("/");
                   toast.success("Chat deleted");
+                  emitUpdateSidebarEvent();
                 });
               }}
             >

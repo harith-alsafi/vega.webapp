@@ -144,7 +144,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
       if (!path.includes("chat")) {
         window.history.pushState({}, "", `/chat/${id}`);
       }
-      console.log("OnFinish: ", message);
+      // console.log("OnFinish: ", message);
     },
     onError(error) {
       toast.error(error.name);

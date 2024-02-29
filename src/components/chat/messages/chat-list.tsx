@@ -11,6 +11,7 @@ import FlowChart, {
 } from "../flows/flow-chart";
 import { DevicesExample } from "@/services/rasberry-pi";
 import DeviceCarousel from "@/components/chat/device-carousel/device-carousel";
+import { useTheme } from "next-themes";
 
 ring.register();
 
@@ -25,34 +26,30 @@ export function LoadingMessage({
 }: {
   completionStatus: CompletionStatus;
 }) {
+  const { theme } = useTheme();
   return (
-    <div> 
+    <>
       {completionStatus === "GptResponse" ? (
         <Separator className="my-4 md:my-8" />
       ) : null}
-      <div className="relative mx-auto max-w-2xl px-4">
-        <div className="group relative mb-4 flex items-start md:-ml-12">
-          <div
-            className={cn(
-              "flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-md border shadow",
-              "bg-primary text-primary-foreground"
-            )}
-          >
-            <IconOpenAI />
-          </div>
-          <div className="flex px-1 ml-4 ">
+      <div className="group relative mb-4 flex items-start md:-ml-12">
+        <div className="flex mt-[0.23rem] size-8 shrink-0 select-none items-center justify-center rounded-md border shadow bg-primary text-primary-foreground">
+          <IconOpenAI />
+        </div>
+        <div className="flex px-1 ml-4 mb-10">
+          <div className="mb-5 pb-6 ">
             <l-ring
               size="30"
               stroke="5"
               bg-opacity="0.12"
               speed="2"
-              // color="white"
+              color={theme === "dark" ? "white" : ""}
             ></l-ring>
-            <div className="mt-1 space-y-1 ml-2">{completionStatus}</div>
           </div>
+          <p className="mb-2 ml-2 last:mb-0">{completionStatus}</p>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -65,12 +62,12 @@ export function SingleChat({
   index: number;
   maxLength: number;
 }) {
-  if(message.role === "tool" && message.name === "get-time-city"){
+  if (message.role === "tool" && message.name === "get-time-city") {
     return (
       <div>
-        <DeviceCarousel devices={DevicesExample}/>
+        <DeviceCarousel devices={DevicesExample} />
       </div>
-    )
+    );
   }
 
   if (message.role === "tool" && message.name == "plot-data" && message.ui) {
@@ -80,11 +77,7 @@ export function SingleChat({
       </div>
     );
   }
-  if (
-    message.role === "tool" &&
-    message.data &&
-    message.ui === "flow-chart"
-  ) {
+  if (message.role === "tool" && message.data && message.ui === "flow-chart") {
     const result = message.data as GptFlowChartResult;
     // return <div style={{ height: "42vh" }}><FlowChart nodes={GptResultExample.nodes} edges={GptResultExample.edges} /> </div>;
     return <FlowChart nodes={result.nodes} edges={result.edges} />;
@@ -106,15 +99,29 @@ export function ChatList({ messages, isLoading, completionStatus }: ChatList) {
   if (!messages.length) {
     return null;
   }
+  const combinedMessages: Message[] = [];
+  let currentMessage: Message | null = null;
+  for (const message of messages) {
+    if (!currentMessage || message.role !== currentMessage.role) {
+      // If the current message is null or has a different role, push the message as is
+      combinedMessages.push({ ...message });
+      currentMessage = { ...message };
+    } else {
+      // If the current message has the same role, combine the content with a newline
+      currentMessage.content += `\n${message.content}`;
+    }
+  }
+  
+
   return (
     <div className="relative mx-auto max-w-2xl px-4">
-      {messages.map((message, index) => {
+      {combinedMessages.map((message, index) => {
         return (
           <SingleChat
             key={index}
             message={message}
             index={index}
-            maxLength={messages.length}
+            maxLength={combinedMessages.length}
           />
         );
       })}

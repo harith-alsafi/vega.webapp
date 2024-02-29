@@ -46,7 +46,6 @@ export interface MessageAssistant
   isIgnored?: boolean;
 }
 
-
 export type Message =
   | MessageSystem
   | MessageUser
@@ -179,6 +178,15 @@ export async function getFlowToolCall(
   return null;
 }
 
+function findLastUserMessage(arr: Message[]): number {
+  for (let i = arr.length - 1; i >= 0; i--) {
+    if (arr[i].role === "user") {
+      return arr.length - i;
+    }
+  }
+  return -1; // If no element with role 'user' is found
+}
+
 export function useChat(params: UseChatParams): ChatCompletion {
   let {
     api,
@@ -203,7 +211,7 @@ export function useChat(params: UseChatParams): ChatCompletion {
   initialMessages = initialMessages ?? [];
   temperature = temperature ?? 0.7;
   let finalModel = model ?? "gpt-3.5-turbo";
-
+  let lastUserMessageIndex = 0;
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -228,7 +236,7 @@ export function useChat(params: UseChatParams): ChatCompletion {
 
   const updateDataBase = async (messages: Message[]): Promise<void> => {
     const chat = getChat(messages);
-    console.log("Updating database with chat", chat);
+    // console.log("Updating database with chat", chat);
     await UpdateChat(chat);
     if (onDbUpdate) {
       onDbUpdate(chat);
@@ -291,12 +299,11 @@ export function useChat(params: UseChatParams): ChatCompletion {
       currentMessage.tool_calls &&
       currentMessage.tool_calls.length > 0
     ) {
-
       if (
         newMessages.length > 1 &&
         newMessages[newMessages.length - 2].role === "user"
       ) {
-        setCompletionStatus("FlowChart")
+        setCompletionStatus("FlowChart");
         const flowToolCall = await getFlowToolCall(
           newMessages,
           tools,
@@ -336,12 +343,14 @@ export function useChat(params: UseChatParams): ChatCompletion {
     if (message != undefined) {
       newMessages = [...messages, message];
       setMessages(newMessages);
-    } else if (
-      messages.length > 0 &&
-      messages[messages.length - 1].role == "assistant"
-    ) {
-      newMessages = messages.slice(0, messages.length - 1);
-      setMessages(newMessages);
+    } else if (messages.length > 0) {
+      if (lastUserMessageIndex > 0) {
+        newMessages = messages.slice(0, lastUserMessageIndex + 1);
+        setMessages(newMessages);
+      } else if (lastUserMessageIndex === 0 && newMessages.length > 0) {
+        newMessages = [messages[0]];
+        setMessages(newMessages);
+      }
     }
     try {
       setCompletionStatus("GptResponse");
@@ -381,6 +390,9 @@ export function useChat(params: UseChatParams): ChatCompletion {
   };
 
   const reload = () => {
+    lastUserMessageIndex = messages.findLastIndex(
+      (message) => message.role === "user"
+    );
     sendMessage();
   };
 
