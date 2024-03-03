@@ -15,11 +15,12 @@ import { useRef, useState } from "react";
 import { UpdateChat } from "./database";
 import {
   GptFlowChartResult,
-  GptResultExample,
 } from "@/components/chat/flows/flow-chart";
 
 // System prompt
-export interface MessageSystem extends ChatCompletionSystemMessageParam {}
+export interface MessageSystem extends ChatCompletionSystemMessageParam {
+  isIgnored?: boolean;
+}
 
 // User message
 export interface MessageUser extends ChatCompletionUserMessageParam {
@@ -141,7 +142,7 @@ interface MessageReturn {
   messageResponse: Message;
 }
 
-export async function getFlowToolCall(
+export async function GetFlowChart(
   messages: Message[],
   tools: Array<ChatCompletionTool> | undefined,
   abortController?: () => AbortController | null
@@ -160,10 +161,9 @@ export async function getFlowToolCall(
       signal: abortController?.()?.signal,
     });
     const json = await response.json();
-    console.log(json);
     if (json) {
       const message = json as Message;
-      if (message.role === "assistant" && message.data) {
+      if (message.role === "tool" && message.data) {
         const data = message.data as GptFlowChartResult;
         if (data.nodes.length > 0 && data.edges.length > 0) {
           return message;
@@ -176,15 +176,6 @@ export async function getFlowToolCall(
   }
 
   return null;
-}
-
-function findLastUserMessage(arr: Message[]): number {
-  for (let i = arr.length - 1; i >= 0; i--) {
-    if (arr[i].role === "user") {
-      return arr.length - i;
-    }
-  }
-  return -1; // If no element with role 'user' is found
 }
 
 export function useChat(params: UseChatParams): ChatCompletion {
@@ -301,10 +292,10 @@ export function useChat(params: UseChatParams): ChatCompletion {
     ) {
       if (
         newMessages.length > 1 &&
-        newMessages[newMessages.length - 2].role === "user"
+        lastUserMessageIndex === newMessages.length - 2
       ) {
         setCompletionStatus("FlowChart");
-        const flowToolCall = await getFlowToolCall(
+        const flowToolCall = await GetFlowChart(
           newMessages,
           tools,
           () => abortControllerRef.current
@@ -386,6 +377,7 @@ export function useChat(params: UseChatParams): ChatCompletion {
   };
 
   const append = async (message: Message) => {
+    lastUserMessageIndex = messages.length;
     sendMessage(message);
   };
 

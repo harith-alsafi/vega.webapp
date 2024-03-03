@@ -99,8 +99,8 @@ export async function RemoveChat(id: string, path: string) {
   const redisClient = await getClient();
 
   await redisClient.del(`${chatNameSpace}${id}`);
-  revalidatePath("/");
-  return revalidatePath(path);
+  // revalidatePath("/");
+  // return revalidatePath(path);
 }
 
 export async function ClearChats(): Promise<void> {

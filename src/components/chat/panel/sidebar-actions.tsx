@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import * as React from "react";
 import { toast } from "sonner";
 import {
@@ -26,10 +26,11 @@ import { emitUpdateSidebarEvent } from "@/lib/event-emmiter";
 
 interface SidebarActionsProps {
   chat: Chat;
-  removeChat: ( id: string, path: string) => Promise<any>;
+  removeChat: (id: string, path: string) => Promise<any>;
 }
 
 export function SidebarActions({ chat, removeChat }: SidebarActionsProps) {
+  const path = usePathname();
   const router = useRouter();
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [isRemovePending, startRemoveTransition] = React.useTransition();
@@ -71,11 +72,12 @@ export function SidebarActions({ chat, removeChat }: SidebarActionsProps) {
                 event.preventDefault();
                 // @ts-ignore
                 startRemoveTransition(async () => {
-                  const result = await RemoveChat(chat.id, chat.path);
-
+                  await RemoveChat(chat.id, chat.path);
                   setDeleteDialogOpen(false);
-                  router.refresh();
-                  router.push("/");
+                  if (path.includes(`/chat/[id]`)) {
+                    router.refresh();
+                    router.push("/");
+                  }
                   toast.success("Chat deleted");
                   emitUpdateSidebarEvent();
                 });

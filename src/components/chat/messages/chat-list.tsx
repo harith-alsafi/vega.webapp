@@ -99,29 +99,36 @@ export function ChatList({ messages, isLoading, completionStatus }: ChatList) {
   if (!messages.length) {
     return null;
   }
-  const combinedMessages: Message[] = [];
-  let currentMessage: Message | null = null;
-  for (const message of messages) {
-    if (!currentMessage || message.role !== currentMessage.role) {
-      // If the current message is null or has a different role, push the message as is
-      combinedMessages.push({ ...message });
-      currentMessage = { ...message };
-    } else {
-      // If the current message has the same role, combine the content with a newline
-      currentMessage.content += `\n${message.content}`;
-    }
-  }
+  // const combinedMessages: Message[] = [];
+  // let currentMessage: Message | null = null;
+  // for (const message of messages) {
+  //   if (message.role === "user" || message.role === "assistant") {
+  //     if (!currentMessage || message.role !== currentMessage.role) {
+  //       // If the current message is null or has a different role, push the message as is
+  //       combinedMessages.push({ ...message });
+  //       currentMessage = { ...message };
+  //     } else {
+  //       // If the current message has the same role, combine the content with a newline
+  //       currentMessage.content += `\n${message.content}`;
+  //     }
+  //   } else {
+  //     // If the role is "tool", push it directly without combining
+  //     combinedMessages.push({ ...message });
+  //     currentMessage = null;
+  //   }
+  // }
+  // console.log("messages", messages);
+  // console.log("combinedMessages", combinedMessages);
   
-
   return (
     <div className="relative mx-auto max-w-2xl px-4">
-      {combinedMessages.map((message, index) => {
+      {messages.map((message, index) => {
         return (
           <SingleChat
             key={index}
             message={message}
             index={index}
-            maxLength={combinedMessages.length}
+            maxLength={messages.length}
           />
         );
       })}

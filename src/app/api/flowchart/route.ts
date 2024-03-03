@@ -82,40 +82,27 @@ export async function POST(req: Request) {
   ];
   const messages: Array<ChatCompletionMessageParam> = chatResponse.messages
     .map((message) => {
+      if (message.isIgnored === true) {
+        return null;
+      }
       if (message.role === "system") {
         return {
           role: message.role,
           content: message.content,
         };
-      } else if (
-        message.role == "tool" &&
-        (message.isIgnored === null ||
-          message.isIgnored === false ||
-          message.isIgnored === undefined)
-      ) {
+      } else if (message.role == "tool") {
         // return {
         //   role: message.role,
         //   content: message.content,
         //   tool_call_id: message.tool_call_id,
         // } as ChatCompletionToolMessageParam;
-      } else if (
-        message.role == "assistant" &&
-        (message.isIgnored === null ||
-          message.isIgnored === false ||
-          message.isIgnored === undefined) &&
-        message.content
-      ) {
+      } else if (message.role == "assistant" && message.content) {
         return {
           role: message.role,
           content: message.content,
           //   tool_calls: message.tool_calls,
         } as ChatCompletionAssistantMessageParam;
-      } else if (
-        message.role == "user" &&
-        (message.isIgnored === null ||
-          message.isIgnored === false ||
-          message.isIgnored === undefined)
-      ) {
+      } else if (message.role == "user") {
         return {
           role: message.role,
           content: message.content,
@@ -145,6 +132,7 @@ export async function POST(req: Request) {
     });
 
     const message = res.choices[0].message;
+    console.log(message);
     if (message.content) {
       const parsedMessage: GptFlowChartResult = JSON.parse(message.content);
       finalMessage = {

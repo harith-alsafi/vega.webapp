@@ -16,34 +16,22 @@ export async function POST(req: Request) {
   const chatResponse = json as Chat;
   const messages: Array<ChatCompletionMessageParam> = chatResponse.messages
     .map((message) => {
-      if (
-        message.role == "tool" &&
-        (message.isIgnored === null ||
-          message.isIgnored === false ||
-          message.isIgnored === undefined)
-      ) {
+      if (message.isIgnored === true) {
+        return null;
+      }
+      if (message.role == "tool") {
         return {
           role: message.role,
           content: message.content,
           tool_call_id: message.tool_call_id,
         } as ChatCompletionToolMessageParam;
-      } else if (
-        message.role == "assistant" &&
-        (message.isIgnored === null ||
-          message.isIgnored === false ||
-          message.isIgnored === undefined)
-      ) {
+      } else if (message.role == "assistant") {
         return {
           role: message.role,
           content: message.content,
           tool_calls: message.tool_calls,
         } as ChatCompletionAssistantMessageParam;
-      } else if (
-        message.role == "user" &&
-        (message.isIgnored === null ||
-          message.isIgnored === false ||
-          message.isIgnored === undefined)
-      ) {
+      } else if (message.role == "user") {
         return {
           role: message.role,
           content: message.content,
@@ -55,7 +43,9 @@ export async function POST(req: Request) {
         };
       }
     })
-    .filter((message) => message !== undefined && message !== null) as Array<ChatCompletionMessageParam>;
+    .filter(
+      (message) => message !== undefined && message !== null
+    ) as Array<ChatCompletionMessageParam>;
   console.log(messages);
   const res = await openai.chat.completions.create({
     model: "gpt-3.5-turbo-0613",
