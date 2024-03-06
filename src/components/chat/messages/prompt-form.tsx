@@ -157,10 +157,13 @@ export function PromptForm({
                 {items.map((item) => (
                   <CommandItem
                     className=""
+                    onFocus={() => {
+                      console.log("focused");
+                    }}
                     onSelect={(currentValue) => {
                       setSelected(currentValue);
                       const actualInput = input.slice(0, input.length - 1);
-                      setInput(actualInput + currentValue);
+                      setInput(actualInput + `*${currentValue}*`);
                       setIsOpen(false);
                     }}
                     value={item.name}

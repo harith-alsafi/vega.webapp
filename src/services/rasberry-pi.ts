@@ -5,10 +5,12 @@ import {
   ChatCompletionTool,
   FunctionParameters,
 } from "openai/resources";
-import { MessageSystem } from "./chat-completion";
+import { MessageSystem, UiType } from "./chat-completion";
 import { Socket } from "socket.io";
 import { DataPoint } from "@/components/chat/plots/plot-message";
 import { nanoid } from "@/lib/utils";
+import { GptFlowChartResult } from "@/components/chat/flows/flow-chart";
+import { PiFunction } from "react-icons/pi";
 
 export interface ParameterType extends FunctionParameters {
   type: "object";
@@ -63,12 +65,33 @@ export interface PiDataResponse {
   title: string;
 }
 
-export interface PiFunctionCallResponse {
+export interface PiFunctionCallResponseBase {
   name: string;
   result: string;
-  status: boolean;
+  error?: string;
+}
+
+export interface PiFunctionCallResponseData extends PiFunctionCallResponseBase {
+  ui?: Extract<UiType, "plot">;
   data?: PiDataResponse;
 }
+
+export interface PiFunctionCallResponseString extends PiFunctionCallResponseBase {
+  ui?: Extract<UiType, "image" >;  
+  data?: string;
+}
+
+export interface PiFunctionCallResponseFlow extends PiFunctionCallResponseBase {
+  ui?: Extract<UiType, "flow-chart">;
+  data?: GptFlowChartResult;
+}
+
+export interface PiFunctionCallResponseCard extends PiFunctionCallResponseBase {
+  ui?: Extract<UiType, "card">;
+  data?: PiDeviceInfo;
+}
+
+export type PiFunctionCallResponse = PiFunctionCallResponseData | PiFunctionCallResponseString | PiFunctionCallResponseFlow | PiFunctionCallResponseCard;
 
 export const GetToolCalslUrl = "/get-tools";
 export const RunToolCallUrl = "/run-tools";

@@ -27,7 +27,7 @@ export interface MessageUser extends ChatCompletionUserMessageParam {
   isIgnored?: boolean;
 }
 
-export type UiType = "flow-chart" | "plot" | "cards" | null;
+export type UiType = "flow-chart" | "plot" | "cards" | "image"  | null;
 
 // Response to a tool call
 export interface MessageToolCallResponse

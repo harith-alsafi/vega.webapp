@@ -1,28 +1,21 @@
 "use client";
-
 import * as React from "react";
-import { useRouter } from "next/navigation";
 import { DialogProps } from "@radix-ui/react-alert-dialog";
 import {
+  BoxModelIcon,
   CalendarIcon,
-  CircleIcon,
   EnvelopeClosedIcon,
   FaceIcon,
-  FileIcon,
   GearIcon,
-  LaptopIcon,
   MagnifyingGlassIcon,
-  MoonIcon,
   PersonIcon,
   RocketIcon,
-  SunIcon,
 } from "@radix-ui/react-icons";
-import { useTheme } from "next-themes";
 
-// import { docsConfig } from "@/config/docs"
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
+  Command,
   CommandDialog,
   CommandEmpty,
   CommandGroup,
@@ -32,38 +25,54 @@ import {
   CommandSeparator,
   CommandShortcut,
 } from "@/components/ui/command";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useConnectionContext } from "@/lib/context/connection-context";
+import {
+  PiDeviceInfo,
+  PiInfo,
+  PiToolInfo,
+  ToolType,
+} from "@/services/rasberry-pi";
+import FunctionIcon from "@/icons/FunctionIcon";
+
+export function ToolCard({ tool }: { tool: ToolType }) {
+  return (
+    <div className="flex items-center">
+      {tool.name}
+    </div>
+  );
+}
+
+export function DeviceCard({ device }: { device: PiDeviceInfo }) {
+  return (
+    <div className="flex items-center">
+      {device.name}
+    </div>
+  );
+}
+
+export function CommandCard({ item }: { item: PiInfo }) {
+  if ("parameters" in item) {
+    return <ToolCard tool={item} />;
+  }
+  if ("pins" in item) {
+    return <DeviceCard device={item} />;
+  }
+  return null;
+}
 
 export function CommandBox({ ...props }: DialogProps) {
-  const router = useRouter();
   const [open, setOpen] = React.useState(false);
-  const { setTheme } = useTheme();
-
-//   React.useEffect(() => {
-//     const down = (e: KeyboardEvent) => {
-//       if ((e.key === "k" && (e.metaKey || e.ctrlKey)) || e.key === "/") {
-//         if (
-//           (e.target instanceof HTMLElement && e.target.isContentEditable) ||
-//           e.target instanceof HTMLInputElement ||
-//           e.target instanceof HTMLTextAreaElement ||
-//           e.target instanceof HTMLSelectElement
-//         ) {
-//           return;
-//         }
-
-//         e.preventDefault();
-//         setOpen((open) => !open);
-//       }
-//     };
-
-//     document.addEventListener("keydown", down);
-//     return () => document.removeEventListener("keydown", down);
-//   }, []);
-
-  const runCommand = React.useCallback((command: () => unknown) => {
-    setOpen(false);
-    command();
-  }, []);
-
+  const { connectionState } = useConnectionContext();
+  const [selectedItem, setSelectedItem] = React.useState<PiInfo | undefined>(
+    undefined
+  );
+  const [value, setValue] = React.useState("");
   return (
     <>
       <Button
@@ -81,42 +90,77 @@ export function CommandBox({ ...props }: DialogProps) {
         </div>
       </Button>
       <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder="Type a command or search..." />
-        <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
-          <CommandGroup heading="Suggestions">
-            <CommandItem>
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              <span>Calendar</span>
-            </CommandItem>
-            <CommandItem>
-              <FaceIcon className="mr-2 h-4 w-4" />
-              <span>Search Emoji</span>
-            </CommandItem>
-            <CommandItem>
-              <RocketIcon className="mr-2 h-4 w-4" />
-              <span>Launch</span>
-            </CommandItem>
-          </CommandGroup>
-          <CommandSeparator />
-          <CommandGroup heading="Settings">
-            <CommandItem>
-              <PersonIcon className="mr-2 h-4 w-4" />
-              <span>Profile</span>
-              <CommandShortcut>⌘P</CommandShortcut>
-            </CommandItem>
-            <CommandItem>
-              <EnvelopeClosedIcon className="mr-2 h-4 w-4" />
-              <span>Mail</span>
-              <CommandShortcut>⌘B</CommandShortcut>
-            </CommandItem>
-            <CommandItem>
-              <GearIcon className="mr-2 h-4 w-4" />
-              <span>Settings</span>
-              <CommandShortcut>⌘S</CommandShortcut>
-            </CommandItem>
-          </CommandGroup>
-        </CommandList>
+        <Command value={value} onValueChange={(v) => {
+          setValue(v)
+          const isTool = connectionState?.tools.find((tool) => tool.name === v)
+          if (isTool) {
+            setSelectedItem(isTool)
+            return
+          }
+          const isDevice = connectionState?.devices.find((device) => device.name === v)
+          if (isDevice) {
+            setSelectedItem(isDevice)
+          }
+        }}>
+          <CommandInput autoFocus placeholder="Search through everything..." />
+          <ResizablePanelGroup direction="horizontal">
+            <ResizablePanel defaultSize={40} minSize={40}>
+              <CommandList
+                className="mr-[0.1rem]"
+                style={{
+                  WebkitOverflowScrolling: "touch", // Enables momentum scrolling in iOS
+                  scrollbarWidth: "thin", // For Firefox
+                  scrollbarColor: "transparent transparent", // For Firefox
+                }}
+              >
+                <ScrollArea className="h-72 rounded-md pr-3 pl-3 mt-1 mb-1">
+                  <CommandEmpty>No results found.</CommandEmpty>
+                  <CommandGroup  heading="Tools">
+                    {connectionState?.tools.map((tool) => (
+                      <CommandItem
+                        className="flex items-center"
+                        onSelect={() =>{
+                          console.log("focused")
+                        }}
+                        value={tool.name}
+                        key={tool.name} 
+                      >
+                        <div className="mr-2" onSelect={() => {
+                          console.log("focused")
+                        }}>
+                          <FunctionIcon />
+                        </div>
+                        {tool.name}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                  <CommandSeparator />
+                  <CommandGroup heading="Devices">
+                    {connectionState?.devices.map((device) => (
+                      <CommandItem
+                        
+                        className=""
+                        onSelect={() =>{
+                          
+                        }}
+                        
+                        value={device.name}
+                        key={device.name}
+                      >
+                        <BoxModelIcon className="w-4 h-4 mr-2" />
+                        {device.name}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </ScrollArea>
+              </CommandList>
+            </ResizablePanel>
+            <ResizableHandle />
+            <ResizablePanel>
+              {selectedItem && <span>{selectedItem.name}</span>}
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        </Command>
       </CommandDialog>
     </>
   );
