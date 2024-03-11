@@ -28,7 +28,7 @@ export interface MessageUser extends ChatCompletionUserMessageParam {
   isIgnored?: boolean;
 }
 
-export type UiType = "flow-chart" | "plot" | "cards" | "image"  | null;
+export type UiType = "flow-chart" | "plot" | "cards" | "image"  | "table" | "map" | null;
 
 // Response to a tool call
 export interface MessageToolCallResponse
@@ -133,7 +133,37 @@ export const preprocessLaTeX = (content: string) => {
   return inlineProcessedContent;
 };
 
-export async function GetImageDescription(message: string, imageUrl: string): Promise<string | null>{
+export interface ChatImageCapttion {
+  text: string;
+  url: string;
+}
+
+export async function GetImageDescription(text: string, imageUrl: string,  abortController?: () => AbortController | null): Promise<MessageAssistant | null>{
+  try{
+    const response = await fetch("/api/caption", {
+      method: "POST",
+      body: JSON.stringify({
+        text: text,
+        url: imageUrl,
+      } as ChatImageCapttion),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      signal: abortController?.()?.signal,
+    });
+
+
+    const message = (await response.json()) as MessageAssistant;
+    if(message.content){
+      message.content = preprocessLaTeX(message.content as string);
+    }
+
+    return message;
+  }
+  catch(err){
+    console.log(err);
+  }
+
   return null;
 }
 

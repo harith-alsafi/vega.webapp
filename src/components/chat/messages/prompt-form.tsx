@@ -25,7 +25,7 @@ import {
 import FunctionIcon from "@/icons/FunctionIcon";
 import { ChatCompletion } from "@/services/chat-completion";
 import { useConnectionContext } from "@/lib/context/connection-context";
-import { PiInfo, PiDeviceInfo } from "@/services/rasberry-pi";
+import { PiInfo, PiDeviceInfo, ToolType, ParameterProperty } from "@/services/rasberry-pi";
 import { BoxModelIcon } from "@radix-ui/react-icons";
 
 export interface PromptProps
@@ -60,6 +60,22 @@ function getItems(token: string) {
 export interface ItemInterface {
   name: string;
   char: string;
+}
+
+export function getDetails(item: ToolType) : string {
+  if (item.parameters !== undefined && item.parameters !== null && "properties" in item.parameters){
+    const properties = item.parameters.properties as Record<string, ParameterProperty>;
+
+    const stringValues: string[] = (Object.keys(properties) as Array<string>)
+    let params = ""
+    stringValues.forEach((value, index) => {
+      params += value + " : " + properties[value].type + (index != stringValues.length-1 ? ", " : "");
+    });
+
+    return item.name + "(" + params + ")";
+  }
+
+  return item.name + "()";
 }
 
 export function PromptForm({
@@ -148,9 +164,9 @@ export function PromptForm({
             ref={selectRef}
             onKeyDown={(e) => {}}
             autoFocus={true}
-            className="max-h-96 grow p-0 "
+            className="max-h-96 grow p-0 w-full "
           >
-            <Command className="max-h-44 ">
+            <Command className="max-h-44 w-full">
               <CommandInput placeholder={`Search ${isComponent() ? "Devices" : "Functions"}...`} className="h-9" />
               <CommandEmpty>No result found.</CommandEmpty>
               <CommandGroup >
@@ -161,9 +177,15 @@ export function PromptForm({
                       console.log("focused");
                     }}
                     onSelect={(currentValue) => {
-                      setSelected(currentValue);
                       const actualInput = input.slice(0, input.length - 1);
-                      setInput(actualInput + `*${currentValue}*`);
+                      let appendedValue = item.name;
+                      if (!("type" in item) && item.parameters){
+                        
+                        appendedValue += " with parameters ";
+                      }
+                      
+                      setSelected(currentValue);
+                      setInput(actualInput + `${appendedValue}`);
                       setIsOpen(false);
                     }}
                     value={item.name}
@@ -176,8 +198,7 @@ export function PromptForm({
                         <FunctionIcon />
                       </div>
                     )}
-                    {item.name}
-
+                    {!("type" in item) ? getDetails(item) :item.name}
                   </CommandItem>
                 ))}
               </CommandGroup>

@@ -12,14 +12,16 @@ import { nanoid } from "@/lib/utils";
 import { GptFlowChartResult } from "@/components/chat/flows/flow-chart";
 import { PiFunction } from "react-icons/pi";
 
+export interface ParameterProperty {
+  type: string;
+  description: string;
+}
+
 export interface ParameterType extends FunctionParameters {
   type: "object";
   properties: Record<
     string,
-    {
-      type: string;
-      description: string;
-    }
+    ParameterProperty
   >;
   required: string[];
   return: string;
