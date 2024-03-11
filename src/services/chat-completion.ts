@@ -118,6 +118,25 @@ export interface UseChatParams
   onDbUpdate?: (chat: Chat) => void;
 }
 
+export const preprocessLaTeX = (content: string) => {
+  // Replace block-level LaTeX delimiters \[ \] with $$ $$
+
+  const blockProcessedContent = content.replace(
+    /\\\[(.*?)\\\]/gs,
+    (_, equation) => `$$${equation}$$`
+  );
+  // Replace inline LaTeX delimiters \( \) with $ $
+  const inlineProcessedContent = blockProcessedContent.replace(
+    /\\\((.*?)\\\)/gs,
+    (_, equation) => `$${equation}$`
+  );
+  return inlineProcessedContent;
+};
+
+export async function GetImageDescription(message: string, imageUrl: string): Promise<string | null>{
+  return null;
+}
+
 export async function SendGpt(
   api: string,
   chat: Chat,
@@ -135,6 +154,10 @@ export async function SendGpt(
   });
 
   const message = (await response.json()) as Message;
+  if(message.content){
+    message.content = preprocessLaTeX(message.content as string);
+  }
+
   return { message, response };
 }
 
