@@ -50,7 +50,7 @@ export type PiInfo = PiDeviceInfo | ToolType;
 export interface PiConnection {
   ip: string;
   port: number;
-  url?: string;
+  url: string;
   id: string;
   status: boolean;
   devices: PiDeviceInfo[];
@@ -91,7 +91,7 @@ export interface PiFunctionCallResponseCard extends PiFunctionCallResponseBase {
   data?: PiDeviceInfo;
 }
 
-export type PiFunctionCallResponse = PiFunctionCallResponseData | PiFunctionCallResponseString | PiFunctionCallResponseFlow | PiFunctionCallResponseCard;
+export type PiFunctionCallResponse =  PiFunctionCallResponseData | PiFunctionCallResponseString | PiFunctionCallResponseFlow | PiFunctionCallResponseCard;
 
 export const GetToolCalslUrl = "/get-tools";
 export const RunToolCallUrl = "/run-tools";
@@ -181,15 +181,17 @@ export const DefaultPiConnection: PiConnection = {
 export async function RunToolCalls(
   url: string,
   toolCall: ChatCompletionMessageToolCall[]
-): Promise<PiFunctionCallResponse | null> {
+): Promise<PiFunctionCallResponse[] | null> {
   const response = await fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(toolCall),
+    body: JSON.stringify(toolCall.map((call) => call.function)),
   });
-  return null;
+  const json = await response.json()
+  const data = json as PiFunctionCallResponse[];
+  return data;
 }
 
 export async function GetDevices(

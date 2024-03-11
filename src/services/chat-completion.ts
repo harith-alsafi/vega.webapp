@@ -16,6 +16,7 @@ import { UpdateChat } from "./database";
 import {
   GptFlowChartResult,
 } from "@/components/chat/flows/flow-chart";
+import { PiDataResponse, PiDeviceInfo } from "./rasberry-pi";
 
 // System prompt
 export interface MessageSystem extends ChatCompletionSystemMessageParam {
@@ -34,7 +35,7 @@ export interface MessageToolCallResponse
   extends ChatCompletionToolMessageParam {
   name?: string;
   ui?: UiType;
-  data?: object;
+  data?: string | object | PiDataResponse | GptFlowChartResult | PiDeviceInfo;
   status?: "loading" | "error" | "success";
   isIgnored?: boolean;
 }
@@ -164,8 +165,8 @@ export async function GetFlowChart(
     if (json) {
       const message = json as Message;
       if (message.role === "tool" && message.data) {
-        const data = message.data as GptFlowChartResult;
-        if (data.nodes.length > 0 && data.edges.length > 0) {
+        const data = message.data as GptFlowChartResult; 
+        if (data.nodes && data.nodes.length && data.nodes.length > 1 && data.edges) {
           return message;
         }
       }
@@ -210,7 +211,7 @@ export function useChat(params: UseChatParams): ChatCompletion {
   const [isMultipleToolCall, setIsMultipleToolCall] = useState(false);
   const [currentToolCall, setCurrentToolCall] = useState<string | null>(null);
   const [completionStatus, setCompletionStatus] =
-    useState<CompletionStatus>("None");
+    useState<CompletionStatus>("None"); 
 
   const getChat = (messages: Message[]): Chat => {
     return {

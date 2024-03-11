@@ -1,17 +1,15 @@
+/* eslint-disable @next/next/no-img-element */
 import { CompletionStatus, Message } from "@/services/chat-completion";
 import { Separator } from "@/components/ui/separator";
 import { ChatMessage } from "@/components/chat/messages/chat-message";
-import { cn } from "@/lib/utils";
 import { IconOpenAI } from "@/components/ui/icons";
 import { ring } from "ldrs";
 import PlotMessage, { PlotMessagesExample } from "../plots/plot-message";
-import FlowChart, {
-  GptFlowChartResult,
-  GptResultExample,
-} from "../flows/flow-chart";
+import FlowChart, { GptFlowChartResult } from "../flows/flow-chart";
 import { DevicesExample } from "@/services/rasberry-pi";
 import DeviceCarousel from "@/components/chat/device-carousel/device-carousel";
 import { useTheme } from "next-themes";
+import CollapsableMessage from "./collapsable-message";
 
 ring.register();
 
@@ -62,6 +60,18 @@ export function SingleChat({
   index: number;
   maxLength: number;
 }) {
+  if (message.role === "tool" && message.ui === "image") {
+    const src = message.data as string;
+    return (
+      <CollapsableMessage title="Raspberry Pi Image">
+        <img
+          src={src}
+          alt="Image raspberry pi"
+          className="object-cover object-center h-full w-full"
+        />
+      </CollapsableMessage>
+    );
+  }
   if (message.role === "tool" && message.name === "get-time-city") {
     return (
       <div>
@@ -79,7 +89,6 @@ export function SingleChat({
   }
   if (message.role === "tool" && message.data && message.ui === "flow-chart") {
     const result = message.data as GptFlowChartResult;
-    // return <div style={{ height: "42vh" }}><FlowChart nodes={GptResultExample.nodes} edges={GptResultExample.edges} /> </div>;
     return <FlowChart nodes={result.nodes} edges={result.edges} />;
   }
   if (
@@ -119,7 +128,7 @@ export function ChatList({ messages, isLoading, completionStatus }: ChatList) {
   // }
   // console.log("messages", messages);
   // console.log("combinedMessages", combinedMessages);
-  
+
   return (
     <div className="relative mx-auto max-w-2xl px-4">
       {messages.map((message, index) => {

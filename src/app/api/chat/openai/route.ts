@@ -14,6 +14,7 @@ export const openai = new OpenAI({
 export async function POST(req: Request) {
   const json = await req.json();
   const chatResponse = json as Chat;
+  console.log(chatResponse);
   const messages: Array<ChatCompletionMessageParam> = chatResponse.messages
     .map((message) => {
       if (message.isIgnored === true) {

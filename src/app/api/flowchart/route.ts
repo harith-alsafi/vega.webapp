@@ -67,9 +67,9 @@ const GptResultExample: GptFlowChartResult = {
   ],
 };
 
-const systemPrompt = `WHEN you are about to execute multiple function calls, use the following JSON schema ${JSON.stringify(
+const systemPrompt = `Your purpose is to generate flow chart based on user input and given set of functions, WHEN you are about to execute multiple function calls, use the following JSON schema ${JSON.stringify(
   GptResultExample
-)} to give all functions you are about to call with their arguments and any conditions given by user`;
+)} to give all functions you are about to call with their arguments and any conditions given by user, I repeat ONLY use this JSON schema. No matter what the user stated, make sure the edges list is not empty meaning the nodes MUST ALWAYYS be connected using the edges, you can also use "AND" and "OR" as labels to the edges, make sure you only generate for the given message and thats it`;
 
 export async function POST(req: Request) {
   const json = await req.json();
@@ -115,15 +115,21 @@ export async function POST(req: Request) {
 
   finalMessages.push(...messages);
 
-  console.log(finalMessages);
+  let lastMsg = finalMessages[finalMessages.length - 1];
+  if (lastMsg.role === "user" && lastMsg.content) {
+    finalMessages[finalMessages.length - 1].content =
+      "Can you get me the flow chart of ONLY the following using the JSON schema given " +
+      ` "${lastMsg.content}"`;
+  }
 
   let finalMessage: MessageToolCallResponse | undefined = undefined;
+  console.log(finalMessages);
 
   try {
     const res = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: finalMessages,
-      temperature: chatResponse.temperature,
+      temperature: 0.7,
       tool_choice: "none",
       response_format: {
         type: "json_object",
