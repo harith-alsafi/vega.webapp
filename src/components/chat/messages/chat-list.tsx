@@ -4,12 +4,28 @@ import { Separator } from "@/components/ui/separator";
 import { ChatMessage } from "@/components/chat/messages/chat-message";
 import { IconOpenAI } from "@/components/ui/icons";
 import { ring } from "ldrs";
-import PlotMessage, { PlotMessagesExample } from "../plots/plot-message";
+import PlotMessage, {
+  DataPlot,
+  PlotMessagesExample,
+} from "../plots/plot-message";
 import FlowChart, { GptFlowChartResult } from "../flows/flow-chart";
-import { DevicesExample } from "@/services/rasberry-pi";
+import { DevicesExample, PiDeviceInfo } from "@/services/rasberry-pi";
 import DeviceCarousel from "@/components/chat/device-carousel/device-carousel";
 import { useTheme } from "next-themes";
 import CollapsableMessage from "./collapsable-message";
+import { MemoizedReactMarkdown } from "@/components/ui/markdown";
+import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 ring.register();
 
@@ -60,7 +76,7 @@ export function SingleChat({
   index: number;
   maxLength: number;
 }) {
-  if (message.role === "tool" && message.ui === "image") {
+  if (message.role === "tool" && message.ui === "image" && message.data) {
     const src = message.data as string;
     return (
       <CollapsableMessage title="Raspberry Pi Image">
@@ -72,24 +88,64 @@ export function SingleChat({
       </CollapsableMessage>
     );
   }
-  if (message.role === "tool" && message.name === "get-time-city") {
+  if (message.role === "tool" && message.ui === "cards" && message.data) {
+    const data = message.data as PiDeviceInfo[];
     return (
       <div>
-        <DeviceCarousel devices={DevicesExample} />
+        <DeviceCarousel devices={data} />
       </div>
     );
   }
-
-  if (message.role === "tool" && message.name == "plot-data" && message.ui) {
+  if (message.role === "tool" && message.ui == "plot" && message.data) {
+    const data = message.data as DataPlot;
     return (
       <div>
-        <PlotMessage {...PlotMessagesExample} />
+        <PlotMessage {...data} />
       </div>
     );
   }
   if (message.role === "tool" && message.data && message.ui === "flow-chart") {
     const result = message.data as GptFlowChartResult;
     return <FlowChart nodes={result.nodes} edges={result.edges} />;
+  }
+  if (message.role === "tool" && message.data && message.ui === "table") {
+    const data = message.data as string;
+    <CollapsableMessage title="Table">
+      <MemoizedReactMarkdown
+        className="prose break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0"
+        remarkPlugins={[remarkGfm, remarkMath]}
+        rehypePlugins={[rehypeKatex]}
+        components={{
+          thead: ({ children }) => (
+            <TableHeader className="divide-y text-center">
+              {children}
+            </TableHeader>
+          ),
+          th: ({ children }) => (
+            <TableHead className="divide-y text-center">{children}</TableHead>
+          ),
+          tfoot: ({ children }) => (
+            <TableFooter className="divide-y">{children}</TableFooter>
+          ),
+          td: ({ children }) => (
+            <TableCell className="divide-y">{children}</TableCell>
+          ),
+          tbody: ({ children }) => (
+            <TableBody className="divide-y">{children}</TableBody>
+          ),
+          tr: ({ children }) => (
+            <TableRow className="border-t text-center">{children}</TableRow>
+          ),
+          table: ({ children }) => (
+            <div className="rounded-md border mb-2 mt-2">
+              <Table className="">{children}</Table>
+            </div>
+          ),
+        }}
+      >
+        {data}
+      </MemoizedReactMarkdown>
+    </CollapsableMessage>;
   }
   if (
     (message.role === "assistant" && message.content !== null) ||
