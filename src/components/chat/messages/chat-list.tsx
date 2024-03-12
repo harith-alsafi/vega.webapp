@@ -104,11 +104,11 @@ export function SingleChat({
       </div>
     );
   }
-  if (message.role === "tool" && message.data && message.ui === "flow-chart") {
+  if (message.role === "tool" && message.ui === "flow-chart" && message.data ) {
     const result = message.data as GptFlowChartResult;
     return <FlowChart nodes={result.nodes} edges={result.edges} />;
   }
-  if (message.role === "tool" && message.data && message.ui === "table") {
+  if (message.role === "tool" && message.ui === "table" && message.data ) {
     const data = message.data as string;
     <CollapsableMessage title="Table">
       <MemoizedReactMarkdown
