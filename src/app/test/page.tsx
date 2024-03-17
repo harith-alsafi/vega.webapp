@@ -1,4 +1,4 @@
-// "use client";
+"use client";
 
 import Image from "next/image";
 // import {
@@ -19,7 +19,7 @@ import Image from "next/image";
 // import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 // import { TabsPanel } from "@/components/core/top-bar/tabs-panel";
 
-import Visualizer from "next-route-visualizer";
+// import Visualizer from "next-route-visualizer";
 import CollapsableMessage from "@/components/chat/messages/collapsable-message";
 import DeviceCarousel from "@/components/chat/device-carousel/device-carousel";
 import { useConnectionContext } from "@/lib/context/connection-context";
@@ -373,9 +373,201 @@ export function DialogDemo() {
   );
 }
 
+import React, { useState } from "react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ReferenceArea,
+  ReferenceAreaProps,
+  LineProps,
+  XAxisProps,
+  YAxisProps,
+} from "recharts";
+
+const initialData = [
+  { name: 1, cost: 4.11, impression: 100 },
+  { name: 2, cost: 2.39, impression: 120 },
+  { name: 3, cost: 1.37, impression: 150 },
+  { name: 4, cost: 1.16, impression: 180 },
+  { name: 5, cost: 2.29, impression: 200 },
+  { name: 6, cost: 3, impression: 499 },
+  { name: 7, cost: 0.53, impression: 50 },
+  { name: 8, cost: 2.52, impression: 100 },
+  { name: 9, cost: 1.79, impression: 200 },
+  { name: 10, cost: 2.94, impression: 222 },
+  { name: 11, cost: 4.3, impression: 210 },
+  { name: 12, cost: 4.41, impression: 300 },
+  { name: 13, cost: 2.1, impression: 50 },
+  { name: 14, cost: 8, impression: 190 },
+  { name: 15, cost: 0, impression: 300 },
+  { name: 16, cost: 9, impression: 400 },
+  { name: 17, cost: 3, impression: 200 },
+  { name: 18, cost: 2, impression: 50 },
+  { name: 19, cost: 3, impression: 100 },
+  { name: 20, cost: 7, impression: 100 },
+];
+
+const getAxisYDomain = (
+  from: number,
+  to: number,
+  ref: string,
+  offset: number
+) => {
+  const refData = initialData.slice(from - 1, to);
+  let [bottom, top] = [refData[0][ref as keyof typeof refData[0]], refData[0][ref as keyof typeof refData[0]]];
+
+  refData.forEach((d) => {
+    if (d[ref as keyof typeof d] > top) top = d[ref as keyof typeof d];
+    if (d[ref as keyof typeof d] < bottom) bottom = d[ref as keyof typeof d];
+  });
+
+  return [(bottom | 0) - offset, (top | 0) + offset];
+};
+
+interface State {
+  data: Array<{
+    name: number;
+    cost: number;
+    impression: number;
+  }>;
+  left: string;
+  right: string;
+  refAreaLeft: string;
+  refAreaRight: string;
+  top: string |number;
+  bottom: string |number;
+  top2: string | number;
+  bottom2: string | number;
+  animation: boolean ;
+}
+
+const ZoomPlot: React.FC = () => {
+  const [state, setState] = useState<State>({
+    data: initialData,
+    left: "dataMin",
+    right: "dataMax",
+    refAreaLeft: "",
+    refAreaRight: "",
+    top: "dataMax+1",
+    bottom: "dataMin-1",
+    top2: "dataMax+20",
+    bottom2: "dataMin-20",
+    animation: true,
+  });
+
+  const zoom = () => {
+    let { refAreaLeft, refAreaRight } = state;
+    const { data } = state;
+
+    if (refAreaLeft === refAreaRight || refAreaRight === "") {
+      setState((prevState) => ({
+        ...prevState,
+        refAreaLeft: "",
+        refAreaRight: "",
+      }));
+      return;
+    }
+
+    // xAxis domain
+    if (refAreaLeft > refAreaRight)
+      [refAreaLeft, refAreaRight] = [refAreaRight, refAreaLeft];
+
+    // yAxis domain
+    const [bottom, top] = getAxisYDomain(+refAreaLeft, +refAreaRight, "cost", 1);
+    const [bottom2, top2] = getAxisYDomain(
+      +refAreaLeft,
+      +refAreaRight,
+      "impression",
+      50
+    );
+
+    setState((prevState) => ({
+      ...prevState,
+      refAreaLeft: "",
+      refAreaRight: "",
+      data: data.slice(),
+      left: refAreaLeft,
+      right: refAreaRight,
+      bottom,
+      top,
+      bottom2,
+      top2,
+    }));
+  };
+
+  const zoomOut = () => {
+    const { data } = state;
+    setState((prevState) => ({
+      ...prevState,
+      data: data.slice(),
+      refAreaLeft: "",
+      refAreaRight: "",
+      left: "dataMin",
+      right: "dataMax",
+      top: "dataMax+1",
+      bottom: "dataMin",
+      top2: "dataMax+50",
+      bottom2: "dataMin+50",
+    }));
+  };
+
+  const { data, left, right, refAreaLeft, refAreaRight, top, bottom, top2, bottom2 } = state;
+
+  return (
+    <div className="highlight-bar-charts" style={{ userSelect: "none" }}>
+      <button type="button" className="btn update" onClick={zoomOut}>
+        Zoom Out
+      </button>
+
+      <LineChart
+        width={800}
+        height={400}
+        data={data}
+        onMouseDown={(e) => {
+          if (e !== undefined && e.activeLabel !== undefined && refAreaLeft !== undefined) {
+            return setState((prevState) => ({ ...prevState, refAreaLeft: e.activeLabel }));
+          }
+        }}
+        onMouseMove={(e) =>
+          refAreaLeft &&
+          setState((prevState) => ({ ...prevState, refAreaRight: e.activeLabel }))
+        }
+        onMouseUp={zoom}
+      >
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis allowDataOverflow dataKey="name" domain={[left, right]} type="number" />
+        <YAxis allowDataOverflow domain={[bottom, top]} type="number"  />
+        <Tooltip />
+        <Line
+          type="natural"
+          dataKey="cost"
+          stroke="#8884d8"
+          animationDuration={300}
+        />
+        <Line
+          type="natural"
+          dataKey="impression"
+          stroke="#82ca9d"
+          animationDuration={300}
+        />
+
+        {refAreaLeft && refAreaRight ? (
+          <ReferenceArea  x1={refAreaLeft} x2={refAreaRight} strokeOpacity={0.3} />
+        ) : null}
+      </LineChart>
+    </div>
+  );
+};
+
 
 export default function Home() {
-  return <DeviceCarousel devices={DevicesExample}/>
+  return <ZoomPlot/>
+
+  // return <DeviceCarousel devices={DevicesExample}/>
   return <Visualizer />
   return <FlowTest/>
   // return <PlotTest />

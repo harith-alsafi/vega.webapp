@@ -7,7 +7,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { CaretSortIcon } from "@radix-ui/react-icons";
-import React from "react";
+import React, { useState } from "react";
 import {
   LineChart,
   Line,
@@ -16,9 +16,12 @@ import {
   Tooltip,
   Legend,
   CartesianGrid,
+  ReferenceLine,
+  ReferenceArea,
 } from "recharts";
 import { ScatterCustomizedShape } from "recharts/types/cartesian/Scatter";
 import CollapsableMessage from "@/components/chat/messages/collapsable-message";
+import { useTheme } from "next-themes";
 
 export interface DataPoint {
   name: string;
@@ -29,7 +32,7 @@ export interface DataPoint {
 export interface DataSeries {
   name: string;
   data: DataPoint[];
-  fill: string;
+  fill?: string;
   shape?: ScatterCustomizedShape;
 }
 
@@ -39,6 +42,8 @@ export interface DataPlot {
   xLabel: string;
   yLabel: string;
 }
+
+const colors = ["#82ca9d", "#8884d8", "#ffc658", "pink", "#ff7300"];
 
 export const PlotMessagesExample: DataPlot = {
   title: "test",
@@ -71,7 +76,28 @@ export const PlotMessagesExample: DataPlot = {
   yLabel: "voltage",
 };
 
+export function getRange(yValues: number[]): [number, number] {
+  const yMin = Math.min(...yValues);
+  const yMax = Math.max(...yValues);
+  const range = yMax - yMin;
+  return [yMin - range * 0.1, yMax + range * 0.1];
+}
+
 export default function PlotMessage({ data, title, xLabel, yLabel }: DataPlot) {
+  const [refAreaLeft, setRefAreaLeft] = useState<string>("");
+  const [refAreaRight, setRefAreaRight] = useState<string>("");
+
+  const handleZoom = () => {
+    // Handle zoom logic here
+    console.log("Zooming...");
+  };
+
+  const handleZoomOut = () => {
+    // Handle zoom out logic here
+    console.log("Zooming out...");
+  };
+
+
   // Sort each series data based on x values
   const sortedData = data.map((series) => ({
     ...series,
@@ -79,6 +105,11 @@ export default function PlotMessage({ data, title, xLabel, yLabel }: DataPlot) {
   }));
 
   const maxTickCount = Math.max(...data.map((series) => series.data.length));
+  const yValues = data.flatMap((series) => series.data.map((point) => point.y));
+  const range = getRange(yValues);
+  const isNegative = range[0] < 0;
+
+  const { theme } = useTheme();
 
   return (
     <CollapsableMessage title={`Plot of ${title} (${xLabel} vs ${yLabel})`}>
@@ -88,24 +119,38 @@ export default function PlotMessage({ data, title, xLabel, yLabel }: DataPlot) {
         height={380}
         data={sortedData}
         margin={{ top: 10, right: 35, left: -5, bottom: 10 }}
+        onMouseDown={(e) => setRefAreaLeft(String(e.activeLabel))}
+        onMouseMove={(e) =>
+          refAreaLeft &&
+          setRefAreaRight(String(e.activeLabel))
+        }
+        onMouseUp={handleZoom}
       >
-        <CartesianGrid stroke="#4d4d4d" strokeDasharray="5 5" />
+        <CartesianGrid stroke={theme === "light" ? "#d1d1d1": "#383838"} strokeDasharray="5 5" />
         <XAxis
           dataKey="x"
           domain={["dataMin", "dataMax"]}
           tickCount={maxTickCount}
           type="number"
           label={{ value: xLabel, position: "insideBottomMiddle", dy: 14 }}
+          strokeWidth={isNegative ? 0 : 1}
         />
         <YAxis
-          // dataKey="y"
+          tickFormatter={(value) => value.toFixed(2)}
+          allowDecimals={true}
+          allowDataOverflow={true}
+          domain={range}
+          tickCount={maxTickCount}
+          type="number"
           label={{
             value: yLabel,
             dx: 15,
-            angle: -90,
-            position: "insideLeft",
+            dy: -30,
+            angle: 0,
+            position: "insideTopLeft",
           }}
         />
+        {isNegative && <ReferenceLine y={0} strokeWidth={1} stroke="#666666" />}
         <Tooltip
           labelFormatter={() => ""}
           content={({ payload }) => {
@@ -140,10 +185,17 @@ export default function PlotMessage({ data, title, xLabel, yLabel }: DataPlot) {
             dataKey="y"
             data={sensor.data}
             name={sensor.name}
-            stroke={sensor.fill}
+            stroke={colors[index % colors.length]}
             // dot={{ cursor: "pointer" }}
           />
         ))}
+        {refAreaLeft && refAreaRight && (
+          <ReferenceArea
+            x1={refAreaLeft}
+            x2={refAreaRight}
+            strokeOpacity={0.3}
+          />
+        )}
       </LineChart>
     </CollapsableMessage>
   );

@@ -38,26 +38,6 @@ export interface ChatProps extends React.ComponentProps<"div"> {
   id?: string;
 }
 
-const uiTools: Array<ChatCompletionTool> = [
-  {
-    type: "function",
-    function: {
-      name: "get_devices_status",
-      description:
-        "Gets the status of connected devices on the Raspberry Pi if the user specefied all devices just leave the parameter empty",
-      parameters: {
-        type: "object",
-        properties: {
-          device: {
-            type: "string",
-            description: "The device name",
-          },
-        },
-      },
-    },
-  },
-];
-
 const tools: Array<ChatCompletionTool> = [
   {
     type: "function",
@@ -148,21 +128,8 @@ async function getToolCallRaspi(
   tools: Array<ChatCompletionTool>,
   toolCall: ChatCompletionMessageToolCall
 ): Promise<MessageToolCallResponse | undefined> {
-  if (toolCall.function.name === "get_devices_status") {
-    const args = toolCall.function.arguments;
-    const device = args ? JSON.parse(args).device : undefined;
-    const toolCallUrl = pi.url + GetDevicesUrl;
-    const devices = await GetDevices(toolCallUrl, device);
-
-    const toolResponse: MessageToolCallResponse = {
-      tool_call_id: toolCall.id,
-      role: "tool",
-      name: toolCall.function.name,
-      content: JSON.stringify(devices),
-    };
-  }
-
   const data = await RunToolCalls(pi.url + RunToolCallUrl, [toolCall]);
+  console.log(data)
   if (data && data.length > 0) {
     const firstData = data[0];
     const toolResponse: MessageToolCallResponse = {
@@ -173,6 +140,7 @@ async function getToolCallRaspi(
       data: firstData.data,
       content: firstData.result,
     };
+    console.log("Tool Response: ", toolResponse);
     return toolResponse;
   }
 
@@ -181,7 +149,7 @@ async function getToolCallRaspi(
 
 export function Chat({ id, initialMessages, className }: ChatProps) {
   const { connectionState } = useConnectionContext();
-  const tools = uiTools.concat(
+  const tools = 
     connectionState.tools.map((tool) => ({
       type: "function",
       function: {
@@ -190,7 +158,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
         parameters: tool.parameters,
       },
     })) as Array<ChatCompletionTool>
-  );
+  ;
   const path = usePathname();
   const [updatedSideBar, setUpdatedSideBar] = useState(false);
   const {
@@ -220,6 +188,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
       // console.log("OnFinish: ", message);
     },
     onError(error) {
+      console.log("messages error", messages);
       toast.error(error.message);
     },
     onDbUpdate(chat) {
@@ -230,7 +199,6 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
     },
     async onToolCall(oldMessages, toolCalls) {
       for (const toolCall of toolCalls) {
-        // const toolResponse = await getToolCall(tools, toolCall);
         const toolResponse = await getToolCallRaspi(
           connectionState,
           tools,

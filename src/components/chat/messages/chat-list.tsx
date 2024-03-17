@@ -110,7 +110,7 @@ export function SingleChat({
   }
   if (message.role === "tool" && message.ui === "table" && message.data ) {
     const data = message.data as string;
-    <CollapsableMessage title="Table">
+    return <CollapsableMessage title="Table">
       <MemoizedReactMarkdown
         className="prose break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0"
         remarkPlugins={[remarkGfm, remarkMath]}
