@@ -48,6 +48,7 @@
     "dagrejs": "^0.2.1",
     "embla-carousel-react": "^8.0.0",
     "framer-motion": "^10.16.16",
+    "google-map-react": "^2.2.1",
     "huggingface": "^1.4.0",
     "langchain": "^0.1.5",
     "ldrs": "^1.0.1",

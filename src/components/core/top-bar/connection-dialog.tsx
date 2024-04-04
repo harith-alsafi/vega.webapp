@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { z } from "zod";
 import { ring } from "ldrs";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -60,6 +60,11 @@ export default function ConnectionDialog() {
       port: connectionState.port,
     },
   });
+
+  useEffect(() => {
+    form.setValue("ip", connectionState.ip);
+    form.setValue("port", connectionState.port);
+  }, [connectionState, form]);
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {

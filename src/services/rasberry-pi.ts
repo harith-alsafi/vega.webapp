@@ -7,7 +7,6 @@ import {
 } from "openai/resources";
 import { MessageSystem, UiType } from "./chat-completion";
 import { Socket } from "socket.io";
-import { DataPoint } from "@/components/chat/plots/plot-message";
 import { nanoid } from "@/lib/utils";
 import { GptFlowChartResult } from "@/components/chat/flows/flow-chart";
 import { PiFunction } from "react-icons/pi";
@@ -60,6 +59,12 @@ export interface PiConnection {
   socket?: Socket;
 }
 
+export interface DataPoint {
+  name: string;
+  x: number;
+  y: number;
+}
+
 export interface PiDataResponse {
   data: DataPoint[];
   xLabel: string;
@@ -71,6 +76,11 @@ export interface PiFunctionCallResponseBase {
   name: string;
   result: string;
   error?: string;
+}
+
+export interface PiMapResponse {
+  longitude: string;
+  latitude: string;
 }
 
 export interface PiFunctionCallResponseData extends PiFunctionCallResponseBase {
@@ -93,7 +103,13 @@ export interface PiFunctionCallResponseCard extends PiFunctionCallResponseBase {
   data?: PiDeviceInfo;
 }
 
-export type PiFunctionCallResponse =  PiFunctionCallResponseData | PiFunctionCallResponseString | PiFunctionCallResponseFlow | PiFunctionCallResponseCard;
+export interface PiFunctionCallResponseMap extends PiFunctionCallResponseBase {
+  ui?: Extract<UiType, "map">;
+  data?: PiMapResponse;
+}
+
+
+export type PiFunctionCallResponse =  PiFunctionCallResponseData | PiFunctionCallResponseString | PiFunctionCallResponseFlow | PiFunctionCallResponseCard | PiFunctionCallResponseMap;
 
 export const GetToolCalslUrl = "/get-tools";
 export const RunToolCallUrl = "/run-tools";

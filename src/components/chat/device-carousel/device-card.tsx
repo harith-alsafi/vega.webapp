@@ -68,7 +68,7 @@ export default function DeviceCard({ device }: { device: PiDeviceInfo }) {
       </CardHeader>
       <CardContent className="-mt-3">
         <div className="flex items-center text-center content-center">
-          <p className="grow mb-4 p-1 text-2xl font-bold bg-primary text-primary-foreground shadow rounded-md whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50">
+          <p className="grow mb-4 p-1 text-2xl font-bold bg-primary text-primary-foreground shadow rounded-md whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 overflow-clip">
             {value}
           </p>
           {frequency ? (

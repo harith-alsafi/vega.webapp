@@ -138,6 +138,31 @@ export interface ChatImageCapttion {
   url: string;
 }
 
+export async function RunCode(
+  code: string,
+  abortController?: () => AbortController | null
+): Promise<MessageAssistant | null> {
+  try {
+    const response = await fetch("/api/code", {
+      method: "POST",
+      body: JSON.stringify({ code }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      signal: abortController?.()?.signal,
+    });
+    const message = (await response.json()) as MessageAssistant;
+    if (message.content) {
+      message.content = preprocessLaTeX(message.content as string);
+    }
+    return message;
+  } catch (err) {
+    console.log(err);
+  }
+
+  return null;
+}
+
 export async function GetImageDescription(text: string, imageUrl: string,  abortController?: () => AbortController | null): Promise<MessageAssistant | null>{
   try{
     const response = await fetch("/api/caption", {
@@ -151,13 +176,10 @@ export async function GetImageDescription(text: string, imageUrl: string,  abort
       },
       signal: abortController?.()?.signal,
     });
-
-
     const message = (await response.json()) as MessageAssistant;
     if(message.content){
       message.content = preprocessLaTeX(message.content as string);
     }
-
     return message;
   }
   catch(err){

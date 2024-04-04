@@ -276,48 +276,147 @@ export function PlotTest2() {
   );
 }
 
-// import { Button } from "@/components/ui/button";
-// import {
-//   Dialog,
-//   DialogContent,
-//   DialogDescription,
-//   DialogFooter,
-//   DialogHeader,
-//   DialogTitle,
-//   DialogTrigger,
-// } from "@/components/ui/dialog";
-// import { Input } from "@/components/ui/input";
-// import { Label } from "@/components/ui/label";
+import { ScatterChart, Scatter, ReferenceArea, XAxis, YAxis, Line, LineChart } from "recharts";
+import React, { useState } from "react";
 
-// import {
-//   CardContent,
-//   CardDescription,
-//   CardFooter,
-//   CardHeader,
-//   CardTitle,
-// } from "@/components/ui/card";
+const data = [
+  { x: 50, y: 200 },
+  { x: 70, y: 100 },
+  { x: 140, y: 250 },
+  { x: 150, y: 400 },
+  { x: 170, y: 300 },
+];
+const MIN_ZOOM = 5; // adjust based on your data
+const DEFAULT_ZOOM = { x1: null, y1: null, x2: null, y2: null };
+import "./index.css";
+import PlotMessage, { PlotMessagesExample } from "@/components/chat/plots/plot-message";
 
-// import {
-//   Select,
-//   SelectContent,
-//   SelectItem,
-//   SelectTrigger,
-//   SelectValue,
-// } from "@/components/ui/select";
-// import { forwardRef, useImperativeHandle, useState } from "react";
+export function PlotZoom(){
+ // data currently on the plot
+ const [filteredData, setFilteredData] = useState(data);
 
-// import { ReloadIcon } from "@radix-ui/react-icons";
+ // zoom coordinates
+ const [zoomArea, setZoomArea] = useState(DEFAULT_ZOOM);
+ // flag if currently zooming (press and drag)
+ const [isZooming, setIsZooming] = useState(false);
+ // flag if zoomed in
+ const isZoomed = filteredData?.length !== data?.length;
 
-// import { ping } from "ldrs";
+ // flag to show the zooming area (ReferenceArea)
+ const showZoomBox =
+   isZooming &&
+   !(Math.abs(zoomArea.x1 - zoomArea.x2) < MIN_ZOOM) &&
+   !(Math.abs(zoomArea.y1 - zoomArea.y2) < MIN_ZOOM);
 
-// ping.register();
+ // reset the states on zoom out
+ function handleZoomOut() {
+   setFilteredData(data);
+   setZoomArea(DEFAULT_ZOOM);
+ }
 
-// // Default values shown
-// import { ring } from "ldrs";
+ /**
+  * Two possible events:
+  * 1. Clicking on a dot(data point) to select
+  * 2. Clicking on the plot to start zooming
+  */
+ function handleMouseDown(e, offset) {
+   setIsZooming(true);
+   console.log(e)
+   
+   const { chartX, chartY, activePayload, activeCoordinates } = e || {};
+   const {SyntheticEvent, nativeEvent} = offset || {};
+    console.log(nativeEvent)
+   console.log("chartX", chartX, "chartY", chartY, "activePayload", activePayload);
 
-// ring.register();
+  const {offsetX, offsetY} = nativeEvent || {};
+  console.log("offsetX", offsetX, "offsetY", offsetY);
+  const xValue = activePayload[0] && activePayload[0].payload.x;
+    const yValue = activePayload[0] && activePayload[0].payload.y;
+    setZoomArea({ x1: chartX-offsetX, y1: chartY-offsetY, x2: chartX-offsetX, y2: chartY -offsetY});
+   
+ }
 
-// Default values shown
+ // Update zoom end coordinates
+ function handleMouseMove(e, offset) {
+   if (isZooming) {
+     // console.log("zoom selecting");
+     const { chartX, chartY, activePayload } = e || {};
+   const {offsetX, offsetY} = offset || {};
+
+     const xValue = activePayload[0] && activePayload[0].payload.x;
+     const yValue = activePayload[0] && activePayload[0].payload.y;
+
+     
+     setZoomArea((prev) => ({ ...prev, x2: chartX-offsetX, y2: chartY-offsetY }));
+   }
+ }
+
+ // When zooming stops, update with filtered data points
+ // Ignore if not enough zoom
+ function handleMouseUp(e) {
+   if (isZooming) {
+     setIsZooming(false);
+     let { x1, y1, x2, y2 } = zoomArea;
+
+     // ensure x1 <= x2 and y1 <= y2
+     if (x1 > x2) [x1, x2] = [x2, x1];
+     if (y1 > y2) [y1, y2] = [y2, y1];
+
+     if (x2 - x1 < MIN_ZOOM || y2 - y1 < MIN_ZOOM) {
+       // console.log("zoom cancel");
+     } else {
+       // console.log("zoom stop");
+       const dataPointsInRange = filteredData.filter(
+         (d) => d.x >= x1 && d.x <= x2 && d.y >= y1 && d.y <= y2
+       );
+       setFilteredData(dataPointsInRange);
+       setZoomArea(DEFAULT_ZOOM);
+     }
+   }
+ }
+ console.log(zoomArea)
+ return (
+   <div className="plot-container">
+     {isZoomed && <button onClick={handleZoomOut}>Zoom Out</button>}
+     <LineChart
+       width={400}
+       height={400}
+       margin={{ top: 50 }}
+       onMouseDown={handleMouseDown}
+       onMouseMove={handleMouseMove}
+       onMouseUp={handleMouseUp}
+     >
+       <XAxis
+        // allowDataOverflow
+         type="number"
+         dataKey="x"
+         domain={["dataMin - 20", "dataMax + 20"]}
+       />
+       <YAxis
+        // allowDataOverflow
+         type="number"
+         dataKey="y"
+         domain={["dataMin - 50", "dataMax + 50"]}
+       />
+           <Line
+        dataKey="y"
+         data={data}
+         animationDuration={300}
+       />
+       {showZoomBox && (
+         <ReferenceArea
+
+           x1={zoomArea?.x1}
+           x2={zoomArea?.x2}
+           y1={zoomArea?.y1}
+           y2={zoomArea?.y2}
+         />
+       )}
+   
+     </LineChart>
+   </div>
+ );
+}
 
 export function DialogDemo() {
   const [isLoading, setIsLoading] = useState(false);
@@ -373,199 +472,12 @@ export function DialogDemo() {
   );
 }
 
-import React, { useState } from "react";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ReferenceArea,
-  ReferenceAreaProps,
-  LineProps,
-  XAxisProps,
-  YAxisProps,
-} from "recharts";
-
-const initialData = [
-  { name: 1, cost: 4.11, impression: 100 },
-  { name: 2, cost: 2.39, impression: 120 },
-  { name: 3, cost: 1.37, impression: 150 },
-  { name: 4, cost: 1.16, impression: 180 },
-  { name: 5, cost: 2.29, impression: 200 },
-  { name: 6, cost: 3, impression: 499 },
-  { name: 7, cost: 0.53, impression: 50 },
-  { name: 8, cost: 2.52, impression: 100 },
-  { name: 9, cost: 1.79, impression: 200 },
-  { name: 10, cost: 2.94, impression: 222 },
-  { name: 11, cost: 4.3, impression: 210 },
-  { name: 12, cost: 4.41, impression: 300 },
-  { name: 13, cost: 2.1, impression: 50 },
-  { name: 14, cost: 8, impression: 190 },
-  { name: 15, cost: 0, impression: 300 },
-  { name: 16, cost: 9, impression: 400 },
-  { name: 17, cost: 3, impression: 200 },
-  { name: 18, cost: 2, impression: 50 },
-  { name: 19, cost: 3, impression: 100 },
-  { name: 20, cost: 7, impression: 100 },
-];
-
-const getAxisYDomain = (
-  from: number,
-  to: number,
-  ref: string,
-  offset: number
-) => {
-  const refData = initialData.slice(from - 1, to);
-  let [bottom, top] = [refData[0][ref as keyof typeof refData[0]], refData[0][ref as keyof typeof refData[0]]];
-
-  refData.forEach((d) => {
-    if (d[ref as keyof typeof d] > top) top = d[ref as keyof typeof d];
-    if (d[ref as keyof typeof d] < bottom) bottom = d[ref as keyof typeof d];
-  });
-
-  return [(bottom | 0) - offset, (top | 0) + offset];
-};
-
-interface State {
-  data: Array<{
-    name: number;
-    cost: number;
-    impression: number;
-  }>;
-  left: string;
-  right: string;
-  refAreaLeft: string;
-  refAreaRight: string;
-  top: string |number;
-  bottom: string |number;
-  top2: string | number;
-  bottom2: string | number;
-  animation: boolean ;
-}
-
-const ZoomPlot: React.FC = () => {
-  const [state, setState] = useState<State>({
-    data: initialData,
-    left: "dataMin",
-    right: "dataMax",
-    refAreaLeft: "",
-    refAreaRight: "",
-    top: "dataMax+1",
-    bottom: "dataMin-1",
-    top2: "dataMax+20",
-    bottom2: "dataMin-20",
-    animation: true,
-  });
-
-  const zoom = () => {
-    let { refAreaLeft, refAreaRight } = state;
-    const { data } = state;
-
-    if (refAreaLeft === refAreaRight || refAreaRight === "") {
-      setState((prevState) => ({
-        ...prevState,
-        refAreaLeft: "",
-        refAreaRight: "",
-      }));
-      return;
-    }
-
-    // xAxis domain
-    if (refAreaLeft > refAreaRight)
-      [refAreaLeft, refAreaRight] = [refAreaRight, refAreaLeft];
-
-    // yAxis domain
-    const [bottom, top] = getAxisYDomain(+refAreaLeft, +refAreaRight, "cost", 1);
-    const [bottom2, top2] = getAxisYDomain(
-      +refAreaLeft,
-      +refAreaRight,
-      "impression",
-      50
-    );
-
-    setState((prevState) => ({
-      ...prevState,
-      refAreaLeft: "",
-      refAreaRight: "",
-      data: data.slice(),
-      left: refAreaLeft,
-      right: refAreaRight,
-      bottom,
-      top,
-      bottom2,
-      top2,
-    }));
-  };
-
-  const zoomOut = () => {
-    const { data } = state;
-    setState((prevState) => ({
-      ...prevState,
-      data: data.slice(),
-      refAreaLeft: "",
-      refAreaRight: "",
-      left: "dataMin",
-      right: "dataMax",
-      top: "dataMax+1",
-      bottom: "dataMin",
-      top2: "dataMax+50",
-      bottom2: "dataMin+50",
-    }));
-  };
-
-  const { data, left, right, refAreaLeft, refAreaRight, top, bottom, top2, bottom2 } = state;
-
-  return (
-    <div className="highlight-bar-charts" style={{ userSelect: "none" }}>
-      <button type="button" className="btn update" onClick={zoomOut}>
-        Zoom Out
-      </button>
-
-      <LineChart
-        width={800}
-        height={400}
-        data={data}
-        onMouseDown={(e) => {
-          if (e !== undefined && e.activeLabel !== undefined && refAreaLeft !== undefined) {
-            return setState((prevState) => ({ ...prevState, refAreaLeft: e.activeLabel }));
-          }
-        }}
-        onMouseMove={(e) =>
-          refAreaLeft &&
-          setState((prevState) => ({ ...prevState, refAreaRight: e.activeLabel }))
-        }
-        onMouseUp={zoom}
-      >
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis allowDataOverflow dataKey="name" domain={[left, right]} type="number" />
-        <YAxis allowDataOverflow domain={[bottom, top]} type="number"  />
-        <Tooltip />
-        <Line
-          type="natural"
-          dataKey="cost"
-          stroke="#8884d8"
-          animationDuration={300}
-        />
-        <Line
-          type="natural"
-          dataKey="impression"
-          stroke="#82ca9d"
-          animationDuration={300}
-        />
-
-        {refAreaLeft && refAreaRight ? (
-          <ReferenceArea  x1={refAreaLeft} x2={refAreaRight} strokeOpacity={0.3} />
-        ) : null}
-      </LineChart>
-    </div>
-  );
-};
-
 
 export default function Home() {
-  return <ZoomPlot/>
+  // return <DataPlotUi/>
+  // return <MapMessage latitude="18.5495" longitude="73.7916"/>
+  // return <PlotZoom  />
+  return <PlotMessage {...PlotMessagesExample} />;
 
   // return <DeviceCarousel devices={DevicesExample}/>
   return <Visualizer />

@@ -18,7 +18,7 @@ export default function DeviceCarousel({
   return (
     <CollapsableMessage title="Current Devices">
       <div className="flex justify-center items-center">
-        <Carousel className="max-w-xs">
+        <Carousel className="max-w-[15rem] sm:max-w-[20rem] md:max-w-[20rem] lg:max-w-[20rem] xl:max-w-[20rem]">
           <CarouselContent>
             {devices.map((device, index) => (
               <CarouselItem key={index}>

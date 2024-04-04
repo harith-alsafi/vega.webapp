@@ -1,0 +1,12 @@
+.recharts-wrapper {
+    cursor: crosshair !important;
+  }
+  
+  .recharts-line-symbol {
+    cursor: pointer;
+  }
+  
+  .recharts-cartesian-axis-tick {
+    user-select: none;
+  }
+  

@@ -214,8 +214,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
 
   return (
     <>
-      <ContextMenu>
-        <ContextMenuTrigger>
+
           <div className={cn("mb-8 pb-[200px] pt-4 md:pt-10", className)}>
             {messages.length ? (
               <>
@@ -230,6 +229,8 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
               <EmptyScreen setInput={setInput} />
             )}
           </div>
+          <ContextMenu>
+        <ContextMenuTrigger>
           <ChatPanel
             setMessages={setMessages}
             id={id}

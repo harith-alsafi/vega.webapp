@@ -23,7 +23,6 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-  CommandShortcut,
 } from "@/components/ui/command";
 import {
   ResizableHandle,
@@ -39,6 +38,7 @@ import {
   ToolType,
 } from "@/services/rasberry-pi";
 import FunctionIcon from "@/icons/FunctionIcon";
+import DeviceCard from "@/components/chat/device-carousel/device-card";
 
 export function ToolCard({ tool }: { tool: ToolType }) {
   return (
@@ -48,13 +48,7 @@ export function ToolCard({ tool }: { tool: ToolType }) {
   );
 }
 
-export function DeviceCard({ device }: { device: PiDeviceInfo }) {
-  return (
-    <div className="flex items-center">
-      {device.name}
-    </div>
-  );
-}
+
 
 export function CommandCard({ item }: { item: PiInfo }) {
   if ("parameters" in item) {
@@ -92,13 +86,13 @@ export function CommandBox({ ...props }: DialogProps) {
       <CommandDialog open={open} onOpenChange={setOpen}>
         <Command value={value} onValueChange={(v) => {
           setValue(v)
-          const isTool = connectionState?.tools.find((tool) => tool.name === v)
-          if (isTool) {
+          const isTool = connectionState?.tools.find((tool) => tool.name.toLowerCase() === v)
+          if (isTool !== undefined) {
             setSelectedItem(isTool)
             return
           }
-          const isDevice = connectionState?.devices.find((device) => device.name === v)
-          if (isDevice) {
+          const isDevice = connectionState?.devices.find((device) => device.name.toLowerCase() === v)
+          if (isDevice !== undefined) {
             setSelectedItem(isDevice)
           }
         }}>
@@ -113,7 +107,7 @@ export function CommandBox({ ...props }: DialogProps) {
                   scrollbarColor: "transparent transparent", // For Firefox
                 }}
               >
-                <ScrollArea className="h-72 rounded-md pr-3 pl-3 mt-1 mb-1">
+                <ScrollArea  className="h-72 rounded-md pr-3 pl-3 mt-1 mb-1">
                   <CommandEmpty>No results found.</CommandEmpty>
                   <CommandGroup  heading="Tools">
                     {connectionState?.tools.map((tool) => (
@@ -139,13 +133,12 @@ export function CommandBox({ ...props }: DialogProps) {
                     {connectionState?.devices.map((device) => (
                       <CommandItem
                         
-                        className=""
+                        className="flex items-center"
                         onSelect={() =>{
-                          
+                          console.log("focused")
                         }}
-                        
                         value={device.name}
-                        key={device.name}
+                        key={device.name} 
                       >
                         <BoxModelIcon className="w-4 h-4 mr-2" />
                         {device.name}
@@ -157,7 +150,9 @@ export function CommandBox({ ...props }: DialogProps) {
             </ResizablePanel>
             <ResizableHandle />
             <ResizablePanel>
-              {selectedItem && <span>{selectedItem.name}</span>}
+              {selectedItem && ("pins" in selectedItem ? (
+                <DeviceCard device={selectedItem}/>
+              ): <span>{selectedItem?.name}</span>)}
             </ResizablePanel>
           </ResizablePanelGroup>
         </Command>
