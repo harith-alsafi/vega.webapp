@@ -1,5 +1,4 @@
-"use client";
-
+"use client"
 import Image from "next/image";
 // import {
 //   Menubar,
@@ -291,6 +290,7 @@ const DEFAULT_ZOOM = { x1: null, y1: null, x2: null, y2: null };
 import "./index.css";
 import PlotMessage, { PlotMessagesExample } from "@/components/chat/plots/plot-message";
 import MapMessage from "@/components/chat/map/map-message";
+import Visualizer from "next-route-visualizer";
 
 export function PlotZoom(){
  // data currently on the plot
@@ -481,8 +481,7 @@ export default function Home() {
   // return <PlotMessage {...PlotMessagesExample} />;
 
   // return <DeviceCarousel devices={DevicesExample}/>
-  return <Visualizer />
-  return <FlowTest/>
+  // return <FlowTest/>
   // return <PlotTest />
   // return <MenuTest />
   // return <PlotTest2 />;

@@ -85,6 +85,7 @@ export function PromptForm({
   isLoading,
 }: PromptProps) {
   const { connectionState } = useConnectionContext();
+  const isConnected = connectionState.status;
   const { formRef, onKeyDown } = useEnterSubmit();
   const inputRef = React.useRef<HTMLTextAreaElement>(null);
   const selectRef = React.useRef<HTMLDivElement>(null);
@@ -216,7 +217,7 @@ export function PromptForm({
               tabIndex={0}
               rows={1}
               value={input}
-              placeholder="Send a message."
+              placeholder={isConnected ? "Type a message..." : "Please connect to a raspberry pi to send a message."}
               spellCheck={false}
               onKeyDown={(e) => {
                 if (e.key === "ArrowUp") {
@@ -247,7 +248,7 @@ export function PromptForm({
               <Button
                 type="submit"
                 size="icon"
-                disabled={isLoading || input === ""}
+                disabled={isLoading || input === "" }
               >
                 <IconArrowElbow />
                 <span className="sr-only">Send message</span>

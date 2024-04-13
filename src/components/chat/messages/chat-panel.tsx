@@ -48,6 +48,7 @@ export function ChatPanel({
 }: ChatPanelProps) {
   const [isOpen, setIsOpen] = React.useState(false);
   const { connectionState } = useConnectionContext();
+  const isConnected = connectionState.status;
 
   // if(!connectionState.status){
   //   return null
@@ -72,7 +73,7 @@ export function ChatPanel({
               Stop generating
             </Button>
           ) : (
-            messages?.length > 0 && (
+            messages?.length > 0 && isConnected && (
               <div className="flex space-x-2">
                 <Button
                   className="bg-background"
