@@ -1,26 +1,9 @@
 import * as React from "react";
-import Link from "next/link";
-
-import { cn } from "@/lib/utils";
-// import { auth } from '@/auth'
-import { clearChats } from "@/app/actions";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Sidebar } from "@/components/chat/panel/sidebar";
-import { SidebarList } from "@/components/chat/panel/sidebar-list";
-import {
-  IconGitHub,
-  IconNextChat,
-  IconSeparator,
-  IconVercel,
-} from "@/components/ui/icons";
-import { SidebarFooter } from "@/components/chat/panel/sidebar-footer";
+import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/core/top-bar/theme-toggle";
-import { ClearHistory } from "@/components/chat/messages/clear-history";
-import { UserMenu } from "@/components/user-menu";
-import { SidebarMobile } from "../../chat/panel/sidebar-mobile";
-import { SidebarToggle } from "../../chat/panel/sidebar-toggle";
-import { ChatHistory } from "../../chat/messages/chat-history";
-import { TabsPanel } from "./tabs-panel";
+import { SidebarMobile } from "@/components/chat/panel/sidebar-mobile";
+import { SidebarToggle } from "@/components/chat/panel/sidebar-toggle";
+import { ChatHistory } from "@/components/chat/messages/chat-history";
 
 import {
   Dialog,
@@ -33,7 +16,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ConnectionSelector } from "./connection-selector";
 
 export function RaspberryPiConnect() {
   return (

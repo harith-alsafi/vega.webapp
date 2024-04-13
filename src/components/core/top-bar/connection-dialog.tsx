@@ -25,7 +25,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { ConnectRaspberryPi } from "@/services/rasberry-pi";
+import { ConnectRaspberryPi, PingRaspberryPi } from "@/services/rasberry-pi";
 import { toast } from "sonner";
 
 ring.register();
@@ -60,7 +60,7 @@ export default function ConnectionDialog() {
       port: connectionState.port,
     },
   });
-
+  let periodicCheck: NodeJS.Timeout | undefined = undefined;
   useEffect(() => {
     form.setValue("ip", connectionState.ip);
     form.setValue("port", connectionState.port);
@@ -84,6 +84,26 @@ export default function ConnectionDialog() {
       toast.success("Connection successful", {
         description: "Managed to connect to Raspberry Pi with IP " + values.ip,
       });
+      if (periodicCheck) {
+        clearInterval(periodicCheck);
+      }
+      periodicCheck = setInterval(async () => {
+        const pinged = await PingRaspberryPi(
+          connectionState.ip,
+          connectionState.port
+        );
+        if (!pinged) {
+          setConnectionState({
+            ip: connectionState.ip,
+            port: connectionState.port,
+            url: connectionState.url,
+            devices: connectionState.devices,
+            tools: connectionState.tools,
+            id: connectionState.id,
+            status: false,
+          });
+        }
+      }, 15000);
     } catch (error) {
       if (error instanceof Error) {
         form.setError("root", {

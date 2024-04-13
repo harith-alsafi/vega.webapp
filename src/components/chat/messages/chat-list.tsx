@@ -3,14 +3,14 @@ import { Separator } from "@/components/ui/separator";
 import { ChatMessage } from "@/components/chat/messages/chat-message";
 import { IconOpenAI } from "@/components/ui/icons";
 import { ring } from "ldrs";
-import PlotMessage, { DataPlot } from "../plots/plot-message";
-import FlowChart, { GptFlowChartResult } from "../flows/flow-chart";
+import FlowChart, { GptFlowChartResult } from "@/components/chat/flows/flow-chart";
 import { PiDeviceInfo, PiMapResponse } from "@/services/rasberry-pi";
 import DeviceCarousel from "@/components/chat/device-carousel/device-carousel";
 import { useTheme } from "next-themes";
-import MapMessage from "../map/map-message";
-import TableMessage from "../table-message/table-message";
-import ImageMessage from "../image-message/image-message";
+import MapMessage from "@/components/chat/map/map-message";
+import TableMessage from "@/components/chat/table-message/table-message";
+import ImageMessage from "@/components/chat/image-message/image-message";
+import PlotMessage, { DataPlot } from "@/components/chat/plots/plot-message";
 
 ring.register();
 
@@ -63,7 +63,12 @@ export function SingleChat({
 }) {
   if (message.role === "tool" && message.ui === "image" && message.data) {
     const src = message.data as string;
-    return <ImageMessage src={src} />;
+    return (
+      <div key={index}>
+        <ImageMessage src={src} />
+        <ChatMessage message={message} />
+      </div>
+    )
   }
   if (message.role === "tool" && message.ui === "map" && message.data) {
     const data = message.data as PiMapResponse;

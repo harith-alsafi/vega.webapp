@@ -1,6 +1,6 @@
 "use client"
 import { GetPiConnection, UpdatePiConnection } from "@/services/database";
-import { DefaultPiConnection, PiConnection } from "@/services/rasberry-pi";
+import { ConnectRaspberryPi, DefaultPiConnection, PiConnection } from "@/services/rasberry-pi";
 import {
   ReactNode,
   createContext,
@@ -31,7 +31,17 @@ export function ConnectionProvider({ children }: ConnectionProviderProps) {
       try {
         const connection = await GetPiConnection();
         if (connection) {
-          setConnectionState(connection);
+          const piConnection = await ConnectRaspberryPi(connection.ip, connection.port);
+          console.log('piConnection:', piConnection);
+          setConnectionState({
+            ip: piConnection.ip,
+            port: piConnection.port,
+            url: piConnection.url,
+            devices: piConnection.devices,
+            tools: piConnection.tools,
+            id: piConnection.id,
+            status: connectionState.status,
+          });
         }
         else{
           await UpdatePiConnection(DefaultPiConnection);
@@ -42,7 +52,7 @@ export function ConnectionProvider({ children }: ConnectionProviderProps) {
     };
 
     getState();
-  }, []); // Run once on component mount
+  }, [connectionState]); // Run once on component mount
 
   const updateState = async (newState: PiConnection) => {
     try {

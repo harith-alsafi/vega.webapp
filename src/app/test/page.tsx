@@ -290,6 +290,7 @@ const MIN_ZOOM = 5; // adjust based on your data
 const DEFAULT_ZOOM = { x1: null, y1: null, x2: null, y2: null };
 import "./index.css";
 import PlotMessage, { PlotMessagesExample } from "@/components/chat/plots/plot-message";
+import MapMessage from "@/components/chat/map/map-message";
 
 export function PlotZoom(){
  // data currently on the plot
@@ -475,9 +476,9 @@ export function DialogDemo() {
 
 export default function Home() {
   // return <DataPlotUi/>
-  // return <MapMessage latitude="18.5495" longitude="73.7916"/>
+  return <MapMessage latitude="53.80978957968428" longitude="-1.5547106082858528"/>
   // return <PlotZoom  />
-  return <PlotMessage {...PlotMessagesExample} />;
+  // return <PlotMessage {...PlotMessagesExample} />;
 
   // return <DeviceCarousel devices={DevicesExample}/>
   return <Visualizer />

@@ -4,6 +4,8 @@ import {
   useChat,
   Message,
   MessageToolCallResponse,
+  DefaultOnToolCall,
+  CreateSystemPrompt,
 } from "@/services/chat-completion";
 import { cn } from "@/lib/utils";
 import { ChatList } from "@/components/chat/messages/chat-list";
@@ -11,7 +13,7 @@ import { ChatPanel } from "@/components/chat/messages/chat-panel";
 import { EmptyScreen } from "@/components/chat/messages/empty-screen";
 import { ChatScrollAnchor } from "@/components/chat/messages/chat-scroll-anchor";
 import { useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { toast } from "sonner";
 import {
   ChatCompletionMessageToolCall,
@@ -25,13 +27,6 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import {
-  GetDevices,
-  GetDevicesUrl,
-  PiConnection,
-  RunToolCallUrl,
-  RunToolCalls,
-} from "@/services/rasberry-pi";
 
 export interface ChatProps extends React.ComponentProps<"div"> {
   initialMessages?: Message[];
@@ -123,42 +118,24 @@ async function getToolCall(
   return undefined;
 }
 
-async function getToolCallRaspi(
-  pi: PiConnection,
-  tools: Array<ChatCompletionTool>,
-  toolCall: ChatCompletionMessageToolCall
-): Promise<MessageToolCallResponse | undefined> {
-  const data = await RunToolCalls(pi.url + RunToolCallUrl, [toolCall]);
-  console.log(data)
-  if (data && data.length > 0) {
-    const firstData = data[0];
-    const toolResponse: MessageToolCallResponse = {
-      tool_call_id: toolCall.id,
-      role: "tool",
-      name: toolCall.function.name,
-      ui: firstData.ui,
-      data: firstData.data,
-      content: firstData.result,
-    };
-    console.log("Tool Response: ", toolResponse);
-    return toolResponse;
-  }
-
-  return undefined;
-}
-
 export function Chat({ id, initialMessages, className }: ChatProps) {
   const { connectionState } = useConnectionContext();
-  const tools = 
-    connectionState.tools.map((tool) => ({
-      type: "function",
-      function: {
-        name: tool.name,
-        description: tool.description,
-        parameters: tool.parameters,
-      },
-    })) as Array<ChatCompletionTool>
-  ;
+  const hasSystemPrompt = initialMessages && initialMessages.length > 0 && initialMessages.find((m) => m.role === "system") !== undefined;
+  if (!hasSystemPrompt) {
+    const systemPrompt = CreateSystemPrompt(connectionState);
+    initialMessages = [
+      systemPrompt,
+      ...(initialMessages || []) 
+    ];
+  }
+  const tools = connectionState.tools.map((tool) => ({
+    type: "function",
+    function: {
+      name: tool.name,
+      description: tool.description,
+      parameters: tool.parameters,
+    },
+  })) as Array<ChatCompletionTool>;
   const path = usePathname();
   const [updatedSideBar, setUpdatedSideBar] = useState(false);
   const {
@@ -198,38 +175,32 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
       }
     },
     async onToolCall(oldMessages, toolCalls) {
-      for (const toolCall of toolCalls) {
-        const toolResponse = await getToolCallRaspi(
-          connectionState,
-          tools,
-          toolCall
-        );
-        if (toolResponse) {
-          oldMessages.push(toolResponse);
-        }
-      }
-      return oldMessages;
+      return await DefaultOnToolCall(
+        connectionState,
+        tools,
+        oldMessages,
+        toolCalls
+      );
     },
   });
 
   return (
     <>
-
-          <div className={cn("mb-8 pb-[200px] pt-4 md:pt-10", className)}>
-            {messages.length ? (
-              <>
-                <ChatList
-                  completionStatus={completionStatus}
-                  isLoading={isLoading}
-                  messages={messages}
-                />
-                <ChatScrollAnchor trackVisibility={isLoading} />
-              </>
-            ) : (
-              <EmptyScreen setInput={setInput} />
-            )}
-          </div>
-          <ContextMenu>
+      <div className={cn("mb-8 pb-[200px] pt-4 md:pt-10", className)}>
+        {messages.length ? (
+          <>
+            <ChatList
+              completionStatus={completionStatus}
+              isLoading={isLoading}
+              messages={messages}
+            />
+            <ChatScrollAnchor trackVisibility={isLoading} />
+          </>
+        ) : (
+          <EmptyScreen setInput={setInput} />
+        )}
+      </div>
+      <ContextMenu>
         <ContextMenuTrigger>
           <ChatPanel
             setMessages={setMessages}

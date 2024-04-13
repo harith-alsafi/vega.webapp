@@ -10,6 +10,7 @@ import { Socket } from "socket.io";
 import { nanoid } from "@/lib/utils";
 import { GptFlowChartResult } from "@/components/chat/flows/flow-chart";
 import { PiFunction } from "react-icons/pi";
+import { time } from "console";
 
 export interface ParameterProperty {
   type: string;
@@ -34,7 +35,7 @@ export interface PiToolInfo  extends PiBaseInfo{
 
 export type ToolType = PiToolInfo | ChatCompletionTool["function"];
 
-export type DeviceType = "pwm" | "digital" | "analog" | "i2c";
+export type DeviceType = "pwm" | "digital" | "analog" | "i2c" | "serial";
 
 export interface PiDeviceInfo extends PiBaseInfo{
   type: DeviceType;
@@ -247,6 +248,24 @@ async function delay(milliseconds: number) {
     }, milliseconds);
   });
 }
+// a polyfill for it would be:
+AbortSignal.timeout ??= function timeout(ms) {
+  const ctrl = new AbortController()
+  setTimeout(() => ctrl.abort(), ms)
+  return ctrl.signal
+}
+
+export async function PingRaspberryPi(ip: string, port: number): Promise<boolean> {
+  try {
+    const response = await fetch(`http://${ip}:${port}/`, {
+      method: "GET",
+      signal: AbortSignal.timeout(5000)
+    });
+    return response.ok;
+  } catch (error) {
+    return false;
+  }
+}
 
 export async function ConnectRaspberryPi(
   ip: string,
@@ -277,9 +296,3 @@ export async function ConnectRaspberryPi(
   };
 }
 
-export function CreateSystemPrompt(piConnection: PiConnection): MessageSystem {
-  return {
-    role: "system",
-    content: "",
-  };
-}

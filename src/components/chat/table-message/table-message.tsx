@@ -1,5 +1,4 @@
 import React from "react";
-import CollapsableMessage from "../messages/collapsable-message";
 import { MemoizedReactMarkdown } from "@/components/ui/markdown";
 import remarkGfm from "remark-gfm";
 import {
@@ -13,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
+import CollapsableMessage from "@/components/chat/messages/collapsable-message";
 
 export interface TableMessageProps {
   data: string;

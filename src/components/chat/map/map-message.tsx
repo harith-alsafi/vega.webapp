@@ -1,6 +1,6 @@
+import CollapsableMessage from "@/components/chat/messages/collapsable-message";
 import { PiMapResponse } from "@/services/rasberry-pi";
 import React from "react";
-import CollapsableMessage from "../messages/collapsable-message";
 
 const googleMapKey = process.env.GOOGLE_API;
 

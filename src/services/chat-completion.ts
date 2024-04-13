@@ -12,11 +12,14 @@ import {
   ChatCompletionTool,
 } from "openai/resources/chat/completions";
 import { useRef, useState } from "react";
-import { UpdateChat } from "./database";
+import { UpdateChat, UpdateChatWithNameSpace } from "./database";
 import {
   GptFlowChartResult,
 } from "@/components/chat/flows/flow-chart";
-import { PiDataResponse, PiDeviceInfo } from "./rasberry-pi";
+import { PiConnection, PiDataResponse, PiDeviceInfo, RunToolCallUrl, RunToolCalls } from "./rasberry-pi";
+
+export const chatNameSpace = "chat:";
+export const piNameSpace = "pi:1";
 
 // System prompt
 export interface MessageSystem extends ChatCompletionSystemMessageParam {
@@ -38,6 +41,7 @@ export interface MessageToolCallResponse
   data?: string | object | PiDataResponse | GptFlowChartResult | PiDeviceInfo;
   status?: "loading" | "error" | "success";
   isIgnored?: boolean;
+  comments?: string;
 }
 
 // Assistant message
@@ -102,6 +106,7 @@ export interface ChatCompletion {
 
 export interface UseChatParams
   extends Omit<Chat, "messages" | "model" | "id" | "title" | "path"> {
+  chatDbName?: string;
   id?: string;
   title?: string;
   path?: string;
@@ -254,6 +259,58 @@ export async function GetFlowChart(
   return null;
 }
 
+export async function GetToolCallRaspi(
+  pi: PiConnection,
+  tools: Array<ChatCompletionTool>,
+  toolCall: ChatCompletionMessageToolCall
+): Promise<MessageToolCallResponse | undefined> {
+  const data = await RunToolCalls(pi.url + RunToolCallUrl, [toolCall]);
+  console.log(data);
+  if (data && data.length > 0) {
+    const firstData = data[0];
+
+    const toolResponse: MessageToolCallResponse = {
+      tool_call_id: toolCall.id,
+      role: "tool",
+      name: toolCall.function.name,
+      ui: firstData.ui,
+      data: firstData.data,
+      content: firstData.result,
+    };
+    if (firstData.ui === "image" && firstData.data) {
+      const src = firstData.data as string;
+      const message = await GetImageDescription(
+        "Get the description of the image",
+        src
+      );
+      if (message?.content) {
+        toolResponse.content = message?.content;
+      }
+    }
+    console.log("Tool Response: ", toolResponse);
+    return toolResponse;
+  }
+
+  return undefined;
+}
+
+export async function DefaultOnToolCall(connectionState: PiConnection, 
+  tools: Array<ChatCompletionTool>,
+  oldMessages: Message[],
+  toolCalls: ChatCompletionMessageToolCall[]): Promise<Message[]> {
+    for (const toolCall of toolCalls) {
+      const toolResponse = await GetToolCallRaspi(
+        connectionState,
+        tools,
+        toolCall
+      );
+      if (toolResponse) {
+        oldMessages.push(toolResponse);
+      }
+    }
+    return oldMessages;
+}
+
 export function useChat(params: UseChatParams): ChatCompletion {
   let {
     api,
@@ -270,8 +327,10 @@ export function useChat(params: UseChatParams): ChatCompletion {
     onToolCall,
     initialMessages,
     onDbUpdate,
+    chatDbName
   } = params;
 
+  let actualChatDbName = chatDbName ?? chatNameSpace;
   let actualId = id ?? nanoid();
   let actualPath = path ?? `/chat/${id}`;
   api = api ?? "/api/chat";
@@ -304,7 +363,7 @@ export function useChat(params: UseChatParams): ChatCompletion {
   const updateDataBase = async (messages: Message[]): Promise<void> => {
     const chat = getChat(messages);
     // console.log("Updating database with chat", chat);
-    await UpdateChat(chat);
+    await UpdateChatWithNameSpace(actualChatDbName, chat);
     if (onDbUpdate) {
       onDbUpdate(chat);
     }
@@ -479,4 +538,21 @@ export function useChat(params: UseChatParams): ChatCompletion {
     currentToolCall,
     setCurrentToolCall,
   } as ChatCompletion;
+}
+
+
+export function CreateSystemPrompt(piConnection: PiConnection): MessageSystem {
+  const devices = piConnection.devices.map((device) => {
+    return JSON.stringify({
+      name: device.name,
+      description: device.description,
+      isInput: device.isInput,
+      hasData: device.hasData,
+    });
+  });
+  const devicesString = devices.join(", ");
+  return {
+    role: "system",
+    content: "You are connected to a raspberry pi which has the following connected circuit components as a JSON object in which isInput field indicates if its an input or output device and hasData field indicates if the device has stored data which can be fetched: " + devicesString + " \n When you are tasked with any tool call make sure you ONLY reply with the given information and don't add anything else unless instructed to",
+  };
 }

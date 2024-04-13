@@ -23,7 +23,7 @@ import "reactflow/dist/base.css";
 import "./index.css";
 import FunctionIcon from "@/icons/FunctionIcon";
 import { Label } from "@/components/ui/label";
-import CollapsableMessage from "../messages/collapsable-message";
+import CollapsableMessage from "@/components/chat/messages/collapsable-message";
 
 export interface GptFlowChartResult {
   nodes: GptNode[];

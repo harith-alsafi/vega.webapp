@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
+import CollapsableMessage from "@/components/chat/messages/collapsable-message";
 import React from "react";
-import CollapsableMessage from "../messages/collapsable-message";
 
 export interface ImageMessageProps {
   src: string;
