@@ -66,11 +66,16 @@ export interface DataPoint {
   y: number;
 }
 
-export interface PiDataResponse {
+export interface DataSeries {
+  name: string;
   data: DataPoint[];
+}
+
+export interface PiPlotResponse {
+  title: string;
+  data: DataSeries[];
   xLabel: string;
   yLabel: string;
-  title: string;
 }
 
 export interface PiFunctionCallResponseBase {
@@ -86,7 +91,7 @@ export interface PiMapResponse {
 
 export interface PiFunctionCallResponseData extends PiFunctionCallResponseBase {
   ui?: Extract<UiType, "plot">;
-  data?: PiDataResponse;
+  data?: PiPlotResponse;
 }
 
 export interface PiFunctionCallResponseString extends PiFunctionCallResponseBase {

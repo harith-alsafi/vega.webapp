@@ -1,16 +1,26 @@
-import { CompletionStatus, Message } from "@/services/chat-completion";
+import {
+  CompletionStatus,
+  Message,
+  RegressionModel,
+} from "@/services/chat-completion";
 import { Separator } from "@/components/ui/separator";
 import { ChatMessage } from "@/components/chat/messages/chat-message";
 import { IconOpenAI } from "@/components/ui/icons";
 import { ring } from "ldrs";
-import FlowChart, { GptFlowChartResult } from "@/components/chat/flows/flow-chart";
-import { PiDeviceInfo, PiMapResponse } from "@/services/rasberry-pi";
+import FlowChart, {
+  GptFlowChartResult,
+} from "@/components/chat/flows/flow-chart";
+import {
+  PiDeviceInfo,
+  PiMapResponse,
+  PiPlotResponse,
+} from "@/services/rasberry-pi";
 import DeviceCarousel from "@/components/chat/device-carousel/device-carousel";
 import { useTheme } from "next-themes";
 import MapMessage from "@/components/chat/map/map-message";
 import TableMessage from "@/components/chat/table-message/table-message";
 import ImageMessage from "@/components/chat/image-message/image-message";
-import PlotMessage, { DataPlot } from "@/components/chat/plots/plot-message";
+import PlotMessage from "@/components/chat/plots/plot-message";
 
 ring.register();
 
@@ -55,12 +65,14 @@ export function LoadingMessage({
 export function SingleChat({
   message,
   index,
-  maxLength,
+  previousMessage,
 }: {
   message: Message;
   index: number;
-  maxLength: number;
+  previousMessage?: Message ;
 }) {
+  const isResponseToLast = message.role === "assistant" && previousMessage && previousMessage.role === "user";
+
   if (message.role === "tool" && message.ui === "image" && message.data) {
     const src = message.data as string;
     return (
@@ -68,7 +80,7 @@ export function SingleChat({
         <ImageMessage src={src} />
         <ChatMessage message={message} />
       </div>
-    )
+    );
   }
   if (message.role === "tool" && message.ui === "map" && message.data) {
     const data = message.data as PiMapResponse;
@@ -79,8 +91,17 @@ export function SingleChat({
     return <DeviceCarousel devices={data} />;
   }
   if (message.role === "tool" && message.ui == "plot" && message.data) {
-    const data = message.data as DataPlot;
-    return <PlotMessage {...data} />;
+    const data = message.data as PiPlotResponse;
+    const poly = RegressionModel(data.data);
+    if (poly) {
+      message.content = `Here is the **regression models**: \n ${poly}`;
+    }
+    return (
+      <div key={index}>
+        <PlotMessage {...data} />
+        <ChatMessage message={message} />
+      </div>
+    );
   }
   if (message.role === "tool" && message.ui === "flow-chart" && message.data) {
     const result = message.data as GptFlowChartResult;
@@ -96,8 +117,14 @@ export function SingleChat({
   ) {
     return (
       <div key={index}>
-        <ChatMessage message={message} />
-        {index < maxLength - 1 && <Separator className="my-4 md:my-8" />}
+        {message.role === "user" && index > 1 && (
+          <Separator className="h-[2px] my-4 md:my-8" />
+        )}
+        <ChatMessage
+          message={message}
+          
+        />
+        {message.role === "user" && <Separator className="h-[2px] my-4 md:my-8" />}
       </div>
     );
   }
@@ -127,7 +154,9 @@ export function ChatList({ messages, isLoading, completionStatus }: ChatList) {
   // }
   // console.log("messages", messages);
   // console.log("combinedMessages", combinedMessages);
-
+  const lastUserMessageIndex = messages.findLastIndex(
+    (message) => message.role === "user"
+  );
   return (
     <div className="relative mx-auto max-w-2xl px-4">
       {messages.map((message, index) => {
@@ -136,7 +165,7 @@ export function ChatList({ messages, isLoading, completionStatus }: ChatList) {
             key={index}
             message={message}
             index={index}
-            maxLength={messages.length}
+            previousMessage={index > 0 ? messages[index - 1]: undefined}
           />
         );
       })}

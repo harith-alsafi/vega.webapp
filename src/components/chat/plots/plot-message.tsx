@@ -27,27 +27,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { DataPoint } from "@/services/rasberry-pi";
+import { DataPoint, PiPlotResponse } from "@/services/rasberry-pi";
 import "./style.css";
 import { CategoricalChartState } from "recharts/types/chart/generateCategoricalChart";
 
-export interface DataSeries {
-  name: string;
-  data: DataPoint[];
-  fill?: string;
-  shape?: ScatterCustomizedShape;
-}
-
-export interface DataPlot {
-  title: string;
-  data: DataSeries[];
-  xLabel: string;
-  yLabel: string;
-}
-
 const colors = ["#82ca9d", "#8884d8", "#ffc658", "pink", "#ff7300"];
 
-export const PlotMessagesExample: DataPlot = {
+export const PlotMessagesExample: PiPlotResponse = {
   title: "test",
   data: [
     {
@@ -60,7 +46,6 @@ export const PlotMessagesExample: DataPlot = {
         { name: "Sensor 1", x: 5, y: 4 },
         { name: "Sensor 1", x: 6, y: 5 },
       ],
-      fill: "#82ca9d",
     },
     {
       name: "Sensor 2",
@@ -71,7 +56,7 @@ export const PlotMessagesExample: DataPlot = {
         { name: "Sensor 2", x: 5, y: 2 },
         { name: "Sensor 2", x: 10, y: 4 },
       ],
-      fill: "#8884d8",
+
     },
   ],
   xLabel: "time",
@@ -199,7 +184,7 @@ interface ZoomData {
   x2: number | null;
 }
 
-export default function PlotMessage({ data, title, xLabel, yLabel }: DataPlot) {
+export default function PlotMessage({ data, title, xLabel, yLabel }: PiPlotResponse) {
   // Sort each series data based on x values
   const sortedData = data.map((series) => ({
     ...series,

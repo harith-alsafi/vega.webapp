@@ -6,6 +6,7 @@ import {
     AccordionItem,
     AccordionTrigger,
   } from "@/components/ui/accordion";
+import MessageContainer from "@/components/chat/messages/message-container";
 
 
 export interface CollapsableMessageProps {
@@ -19,6 +20,7 @@ export default function CollapsableMessage({
 }: CollapsableMessageProps) {
 
   return (
+    <MessageContainer isUser={false} showIcon={true}>
     <Card className="p-1 pr-2 mb-3 ">
       <Accordion type="single" collapsible className="w-full" defaultValue="1">
         <AccordionItem defaultChecked={true} className="border-b-0" value="1">
@@ -33,5 +35,7 @@ export default function CollapsableMessage({
         </AccordionItem>
       </Accordion>
     </Card>
+    </MessageContainer>
+
   );
 }

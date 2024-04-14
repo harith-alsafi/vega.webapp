@@ -16,7 +16,9 @@ import { UpdateChat, UpdateChatWithNameSpace } from "./database";
 import {
   GptFlowChartResult,
 } from "@/components/chat/flows/flow-chart";
-import { PiConnection, PiDataResponse, PiDeviceInfo, RunToolCallUrl, RunToolCalls } from "./rasberry-pi";
+import { PiConnection, PiPlotResponse, PiDeviceInfo, RunToolCallUrl, RunToolCalls, DataSeries } from "./rasberry-pi";
+import regression from 'regression';
+import {markdownTable} from 'markdown-table'
 
 export const chatNameSpace = "chat:";
 export const piNameSpace = "pi:1";
@@ -38,7 +40,7 @@ export interface MessageToolCallResponse
   extends ChatCompletionToolMessageParam {
   name?: string;
   ui?: UiType;
-  data?: string | object | PiDataResponse | GptFlowChartResult | PiDeviceInfo;
+  data?: string | object | PiPlotResponse | GptFlowChartResult | PiDeviceInfo;
   status?: "loading" | "error" | "success";
   isIgnored?: boolean;
   comments?: string;
@@ -168,7 +170,30 @@ export async function RunCode(
   return null;
 }
 
-export async function GetImageDescription(text: string, imageUrl: string,  abortController?: () => AbortController | null): Promise<MessageAssistant | null>{
+export function RegressionModel(data: DataSeries[]): string | null {
+  let resultData: Array<{
+    name: string;
+    result: regression.Result
+  }> = [];
+  for (let i = 0; i < data.length; i++) {
+    const dataSeries: regression.DataPoint[] = data[i].data.map(d => [d.x, d.y]);
+    const result = regression.polynomial(dataSeries, { precision: 2 });
+    resultData.push({
+      name: data[i].name,
+      result: result
+    });
+  }
+  // convert into markdown table with following collums 
+  // colum 1: name of the data series, colum 2: equation of polynomial regression in latex such that equation: [ai, .... , a0] in the form aixj ... + a0x0
+
+  const markdown = markdownTable([
+    ['Name', 'Equation'],
+    ...resultData.map((data) => [data.name, `$${data.result.string}$`])
+  ])
+  return markdown;
+}
+
+export async function ImageDescriptionAgent(text: string, imageUrl: string,  abortController?: () => AbortController | null): Promise<MessageAssistant | null>{
   try{
     const response = await fetch("/api/caption", {
       method: "POST",
@@ -223,7 +248,7 @@ interface MessageReturn {
   messageResponse: Message;
 }
 
-export async function GetFlowChart(
+export async function FlowChartAgent(
   messages: Message[],
   tools: Array<ChatCompletionTool> | undefined,
   abortController?: () => AbortController | null
@@ -279,7 +304,7 @@ export async function GetToolCallRaspi(
     };
     if (firstData.ui === "image" && firstData.data) {
       const src = firstData.data as string;
-      const message = await GetImageDescription(
+      const message = await ImageDescriptionAgent(
         "Get the description of the image",
         src
       );
@@ -430,7 +455,7 @@ export function useChat(params: UseChatParams): ChatCompletion {
         lastUserMessageIndex === newMessages.length - 2
       ) {
         setCompletionStatus("FlowChart");
-        const flowToolCall = await GetFlowChart(
+        const flowToolCall = await FlowChartAgent(
           newMessages,
           tools,
           () => abortControllerRef.current
