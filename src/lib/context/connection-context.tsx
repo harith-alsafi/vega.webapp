@@ -1,6 +1,10 @@
-"use client"
+"use client";
 import { GetPiConnection, UpdatePiConnection } from "@/services/database";
-import { ConnectRaspberryPi, DefaultPiConnection, PiConnection } from "@/services/rasberry-pi";
+import {
+  ConnectRaspberryPi,
+  DefaultPiConnection,
+  PiConnection,
+} from "@/services/rasberry-pi";
 import {
   ReactNode,
   createContext,
@@ -31,8 +35,11 @@ export function ConnectionProvider({ children }: ConnectionProviderProps) {
       try {
         const connection = await GetPiConnection();
         if (connection) {
-          const piConnection = await ConnectRaspberryPi(connection.ip, connection.port);
-          console.log('piConnection:', piConnection);
+          const piConnection = await ConnectRaspberryPi(
+            connection.ip,
+            connection.port
+          );
+          console.log("piConnection:", piConnection);
           setConnectionState({
             ip: piConnection.ip,
             port: piConnection.port,
@@ -40,19 +47,18 @@ export function ConnectionProvider({ children }: ConnectionProviderProps) {
             devices: piConnection.devices,
             tools: piConnection.tools,
             id: piConnection.id,
-            status: connectionState.status,
+            status: piConnection.status,
           });
-        }
-        else{
+        } else {
           await UpdatePiConnection(DefaultPiConnection);
         }
       } catch (error) {
-        console.error('Error fetching state:', error);
+        console.error("Error fetching state:", error);
       }
     };
 
     getState();
-  }, [connectionState]); // Run once on component mount
+  }, []); // Run once on component mount
 
   const updateState = async (newState: PiConnection) => {
     try {
@@ -60,7 +66,7 @@ export function ConnectionProvider({ children }: ConnectionProviderProps) {
       await UpdatePiConnection(newState);
       setConnectionState(newState);
     } catch (error) {
-      console.error('Error updating state:', error);
+      console.error("Error updating state:", error);
     }
   };
 
@@ -84,4 +90,4 @@ export function useConnectionContext() {
     );
   }
   return context;
-};
+}

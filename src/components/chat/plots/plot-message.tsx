@@ -27,9 +27,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { DataPoint, PiPlotResponse } from "@/services/rasberry-pi";
+import { DataPoint, DataSeries, PiPlotResponse } from "@/services/rasberry-pi";
 import "./style.css";
-import { CategoricalChartState } from "recharts/types/chart/generateCategoricalChart";
+import {
+  CategoricalChartFunc,
+  CategoricalChartState,
+} from "recharts/types/chart/generateCategoricalChart";
+import { markdownTable } from "markdown-table";
+import regression from "regression";
 
 const colors = ["#82ca9d", "#8884d8", "#ffc658", "pink", "#ff7300"];
 
@@ -56,7 +61,6 @@ export const PlotMessagesExample: PiPlotResponse = {
         { name: "Sensor 2", x: 5, y: 2 },
         { name: "Sensor 2", x: 10, y: 4 },
       ],
-
     },
   ],
   xLabel: "time",
@@ -184,12 +188,17 @@ interface ZoomData {
   x2: number | null;
 }
 
-export default function PlotMessage({ data, title, xLabel, yLabel }: PiPlotResponse) {
-  // Sort each series data based on x values
-  const sortedData = data.map((series) => ({
-    ...series,
-    data: series.data.slice().sort((a, b) => a.x - b.x),
-  }));
+export interface PlotInterfaceProps  {
+  sortedData: DataSeries[];
+  xLabel: string;
+  yLabel: string;
+}
+
+export function PlotInterface({
+  sortedData,
+  xLabel,
+  yLabel,
+}: PlotInterfaceProps) {
 
   // data currently on the plot
   const [filteredData, setFilteredData] = useState(sortedData);
@@ -244,7 +253,118 @@ export default function PlotMessage({ data, title, xLabel, yLabel }: PiPlotRespo
   const isNegative = range[0] < 0;
   const { theme } = useTheme();
 
-  const analyticsData = data
+  return (
+    <ResponsiveContainer width={"100%"}>
+      <LineChart
+        data={sortedData}
+        margin={{ top: 10, right: 35, left: -5, bottom: 10 }}
+        onMouseDown={mouseDown}
+        onMouseMove={mouseMove}
+        onMouseUp={mouseUp}
+      >
+        <CartesianGrid
+          style={{ userSelect: "none" }}
+          stroke={theme === "light" ? "#d1d1d1" : "#383838"}
+          strokeDasharray="5 5"
+        />
+        <XAxis
+          style={{ userSelect: "none" }}
+          dataKey="x"
+          domain={["dataMin", "dataMax"]}
+          tickCount={maxTickCount}
+          type="number"
+          label={{
+            style: { userSelect: "none" },
+            value: xLabel,
+            position: "insideBottomMiddle",
+            dy: 14,
+          }}
+          strokeWidth={isNegative ? 0 : 1}
+        />
+        <YAxis
+          style={{ userSelect: "none" }}
+          tickFormatter={(value) => value.toFixed(2)}
+          allowDecimals={true}
+          allowDataOverflow={true}
+          domain={range}
+          tickCount={maxTickCount}
+          type="number"
+          label={{
+            style: { userSelect: "none" },
+            value: yLabel,
+            dx: 15,
+            dy: -30,
+            angle: 0,
+            position: "insideTopLeft",
+          }}
+        />
+
+        {isNegative && <ReferenceLine y={0} strokeWidth={1} stroke="#666666" />}
+        <Tooltip
+          labelFormatter={() => ""}
+          content={({ payload }) => {
+            if (payload && payload.length > 0) {
+              const sensor = payload[0].payload;
+              return (
+                <Card className="p-2">
+                  <p className="text-sm font-medium leading-none">
+                    {sensor.name}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {`x: ${sensor.x}, y: ${sensor.y}`}
+                  </p>
+                </Card>
+              );
+            }
+            return null;
+          }}
+        />
+        <Legend
+          wrapperStyle={{ marginRight: "-10px" }}
+          align="center"
+          verticalAlign="top"
+          layout="horizontal"
+        />
+        {filteredData.map((sensor, index) => (
+          <Line
+            cursor={"pointer"}
+            animationDuration={1200}
+            strokeWidth={2}
+            key={index}
+            type="monotone"
+            dataKey="y"
+            data={sensor.data}
+            name={sensor.name}
+            stroke={colors[index % colors.length]}
+            // dot={{ cursor: "pointer" }}
+          />
+        ))}
+        {zoomArea.x1 !== null && zoomArea.x2 !== null && (
+          <ReferenceArea
+            x1={zoomArea.x1}
+            x2={zoomArea.x2}
+            strokeOpacity={0.3}
+          />
+        )}
+      </LineChart>
+    </ResponsiveContainer>
+  );
+}
+
+export default function PlotMessage({
+  data,
+  title,
+  xLabel,
+  yLabel,
+}: PiPlotResponse) {
+  // Sort each series data based on x values
+  const sortedData = data.map((series) => ({
+    ...series,
+    data: series.data.slice().sort((a, b) => a.x - b.x),
+  }));
+
+
+  const analyticsData = sortedData
     .map((series) =>
       getAnalytics(
         series.name,
@@ -258,111 +378,21 @@ export default function PlotMessage({ data, title, xLabel, yLabel }: PiPlotRespo
       <Tabs defaultValue="plot">
         <TabsList className="grid grid-cols-2 ml-1 mr-1">
           <TabsTrigger value="plot">Plot</TabsTrigger>
-          <TabsTrigger value="summary">Summary</TabsTrigger>
+          <TabsTrigger value="data-summary">Data Summary</TabsTrigger>
         </TabsList>
         <TabsContent value="plot" className="h-96">
-          <ResponsiveContainer width={"100%"}>
-            <LineChart
-              data={sortedData}
-              margin={{ top: 10, right: 35, left: -5, bottom: 10 }}
-              onMouseDown={mouseDown}
-              onMouseMove={mouseMove}
-              onMouseUp={mouseUp}
-            >
-              <CartesianGrid
-                style={{ userSelect: "none" }}
-                stroke={theme === "light" ? "#d1d1d1" : "#383838"}
-                strokeDasharray="5 5"
-              />
-              <XAxis
-                style={{ userSelect: "none" }}
-                dataKey="x"
-                domain={["dataMin", "dataMax"]}
-                tickCount={maxTickCount}
-                type="number"
-                label={{
-                  style: { userSelect: "none" },
-                  value: xLabel,
-                  position: "insideBottomMiddle",
-                  dy: 14,
-                }}
-                strokeWidth={isNegative ? 0 : 1}
-              />
-              <YAxis
-                style={{ userSelect: "none" }}
-                tickFormatter={(value) => value.toFixed(2)}
-                allowDecimals={true}
-                allowDataOverflow={true}
-                domain={range}
-                tickCount={maxTickCount}
-                type="number"
-                label={{
-                  style: { userSelect: "none" },
-                  value: yLabel,
-                  dx: 15,
-                  dy: -30,
-                  angle: 0,
-                  position: "insideTopLeft",
-                }}
-              />
-
-              {isNegative && (
-                <ReferenceLine y={0} strokeWidth={1} stroke="#666666" />
-              )}
-              <Tooltip
-                labelFormatter={() => ""}
-                content={({ payload }) => {
-                  if (payload && payload.length > 0) {
-                    const sensor = payload[0].payload;
-                    return (
-                      <Card className="p-2">
-                        <p className="text-sm font-medium leading-none">
-                          {sensor.name}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          {`x: ${sensor.x}, y: ${sensor.y}`}
-                        </p>
-                      </Card>
-                    );
-                  }
-                  return null;
-                }}
-              />
-              <Legend
-                wrapperStyle={{ marginRight: "-10px" }}
-                align="center"
-                verticalAlign="top"
-                layout="horizontal"
-              />
-              {filteredData.map((sensor, index) => (
-                <Line
-                  cursor={"pointer"}
-                  animationDuration={1200}
-                  strokeWidth={2}
-                  key={index}
-                  type="monotone"
-                  dataKey="y"
-                  data={sensor.data}
-                  name={sensor.name}
-                  stroke={colors[index % colors.length]}
-                  // dot={{ cursor: "pointer" }}
-                />
-              ))}
-              {zoomArea.x1 !== null && zoomArea.x2 !== null && (
-                <ReferenceArea
-                  x1={zoomArea.x1}
-                  x2={zoomArea.x2}
-                  strokeOpacity={0.3}
-                />
-              )}
-            </LineChart>
-          </ResponsiveContainer>
+          <PlotInterface
+            sortedData={sortedData}
+            xLabel={xLabel}
+            yLabel={yLabel}
+          />
         </TabsContent>
-        <TabsContent value="summary">
+        <TabsContent value="data-summary">
           {analyticsData.length > 0 && (
             <TableAnalytics analytics={analyticsData} />
           )}
         </TabsContent>
+     
       </Tabs>
     </CollapsableMessage>
   );

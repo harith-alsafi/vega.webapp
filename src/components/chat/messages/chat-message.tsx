@@ -25,7 +25,7 @@ import MessageContainer from "@/components/chat/messages/message-container";
 
 export interface ChatMessageProps {
   message: Message;
-  showIcon?: boolean; 
+  showIcon?: boolean;
 }
 
 export function ChatMessage({ message, showIcon, ...props }: ChatMessageProps) {

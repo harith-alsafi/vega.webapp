@@ -43,7 +43,7 @@ export interface PiDeviceInfo extends PiBaseInfo{
   isInput: boolean;
   isConnected: boolean;
   value: string;
-  hasData: boolean;
+  hasRecordedData: boolean;
   frequency?: number;
 }
 
@@ -157,7 +157,7 @@ export const DevicesExample: PiDeviceInfo[] = [
     isInput: false,
     isConnected: true,
     value: "30",
-    hasData: true,
+    hasRecordedData: true,
   },
   {
     type: "digital",
@@ -167,7 +167,7 @@ export const DevicesExample: PiDeviceInfo[] = [
     isInput: true,
     isConnected: false,
     value: "0",
-    hasData: false,
+    hasRecordedData: false,
   },
   {
     type: "pwm",
@@ -177,7 +177,7 @@ export const DevicesExample: PiDeviceInfo[] = [
     isInput: false,
     isConnected: true,
     value: "0",
-    hasData: true,
+    hasRecordedData: true,
     frequency: 100,
   },
   {
@@ -188,7 +188,7 @@ export const DevicesExample: PiDeviceInfo[] = [
     isInput: false,
     isConnected: true,
     value: "Hello World",
-    hasData: true,
+    hasRecordedData: true,
   },
 ];
 

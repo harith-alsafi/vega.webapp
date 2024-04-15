@@ -120,14 +120,7 @@ async function getToolCall(
 
 export function Chat({ id, initialMessages, className }: ChatProps) {
   const { connectionState } = useConnectionContext();
-  const hasSystemPrompt = initialMessages && initialMessages.length > 0 && initialMessages.find((m) => m.role === "system") !== undefined;
-  if (!hasSystemPrompt) {
-    const systemPrompt = CreateSystemPrompt(connectionState);
-    initialMessages = [
-      systemPrompt,
-      ...(initialMessages || []) 
-    ];
-  }
+  const systemPrompt = CreateSystemPrompt(connectionState);
   const tools = connectionState.tools.map((tool) => ({
     type: "function",
     function: {
@@ -149,6 +142,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
     setMessages,
     completionStatus,
   } = useChat({
+    systemPrompt: systemPrompt,
     api: "/api/chat/openai",
     initialMessages,
     id: id,
@@ -187,7 +181,7 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
   return (
     <>
       <div className={cn("mb-8 pb-[200px] pt-4 md:pt-10", className)}>
-        {messages.length ? (
+        {messages.length > 0? (
           <>
             <ChatList
               completionStatus={completionStatus}

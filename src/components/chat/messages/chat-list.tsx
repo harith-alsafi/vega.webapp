@@ -38,9 +38,9 @@ export function LoadingMessage({
   const { theme } = useTheme();
   return (
     <>
-      {completionStatus === "GptResponse" ? (
+      {/* {completionStatus === "GptResponse" ? (
         <Separator className="my-4 md:my-8" />
-      ) : null}
+      ) : null} */}
       <div className="group relative mb-4 flex items-start md:-ml-12">
         <div className="flex mt-[0.23rem] size-8 shrink-0 select-none items-center justify-center rounded-md border shadow bg-primary text-primary-foreground">
           <IconOpenAI />
@@ -65,14 +65,10 @@ export function LoadingMessage({
 export function SingleChat({
   message,
   index,
-  previousMessage,
 }: {
   message: Message;
   index: number;
-  previousMessage?: Message ;
 }) {
-  const isResponseToLast = message.role === "assistant" && previousMessage && previousMessage.role === "user";
-
   if (message.role === "tool" && message.ui === "image" && message.data) {
     const src = message.data as string;
     return (
@@ -120,11 +116,10 @@ export function SingleChat({
         {message.role === "user" && index > 1 && (
           <Separator className="h-[2px] my-4 md:my-8" />
         )}
-        <ChatMessage
-          message={message}
-          
-        />
-        {message.role === "user" && <Separator className="h-[2px] my-4 md:my-8" />}
+        <ChatMessage message={message} />
+        {message.role === "user" && (
+          <Separator className="h-[2px] my-4 md:my-8" />
+        )}
       </div>
     );
   }
@@ -134,40 +129,11 @@ export function ChatList({ messages, isLoading, completionStatus }: ChatList) {
   if (!messages.length) {
     return null;
   }
-  // const combinedMessages: Message[] = [];
-  // let currentMessage: Message | null = null;
-  // for (const message of messages) {
-  //   if (message.role === "user" || message.role === "assistant") {
-  //     if (!currentMessage || message.role !== currentMessage.role) {
-  //       // If the current message is null or has a different role, push the message as is
-  //       combinedMessages.push({ ...message });
-  //       currentMessage = { ...message };
-  //     } else {
-  //       // If the current message has the same role, combine the content with a newline
-  //       currentMessage.content += `\n${message.content}`;
-  //     }
-  //   } else {
-  //     // If the role is "tool", push it directly without combining
-  //     combinedMessages.push({ ...message });
-  //     currentMessage = null;
-  //   }
-  // }
-  // console.log("messages", messages);
-  // console.log("combinedMessages", combinedMessages);
-  const lastUserMessageIndex = messages.findLastIndex(
-    (message) => message.role === "user"
-  );
+
   return (
     <div className="relative mx-auto max-w-2xl px-4">
       {messages.map((message, index) => {
-        return (
-          <SingleChat
-            key={index}
-            message={message}
-            index={index}
-            previousMessage={index > 0 ? messages[index - 1]: undefined}
-          />
-        );
+        return <SingleChat key={index} message={message} index={index} />;
       })}
       {isLoading ? (
         <LoadingMessage completionStatus={completionStatus} />

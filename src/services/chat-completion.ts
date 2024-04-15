@@ -13,12 +13,19 @@ import {
 } from "openai/resources/chat/completions";
 import { useRef, useState } from "react";
 import { UpdateChat, UpdateChatWithNameSpace } from "./database";
+import { GptFlowChartResult } from "@/components/chat/flows/flow-chart";
 import {
-  GptFlowChartResult,
-} from "@/components/chat/flows/flow-chart";
-import { PiConnection, PiPlotResponse, PiDeviceInfo, RunToolCallUrl, RunToolCalls, DataSeries } from "./rasberry-pi";
-import regression from 'regression';
-import {markdownTable} from 'markdown-table'
+  PiConnection,
+  PiPlotResponse,
+  PiDeviceInfo,
+  RunToolCallUrl,
+  RunToolCalls,
+  DataSeries,
+} from "./rasberry-pi";
+import regression, { power } from "regression";
+import { markdownTable } from "markdown-table";
+import * as math from "mathjs";
+import nerdamer from "nerdamer";
 
 export const chatNameSpace = "chat:";
 export const piNameSpace = "pi:1";
@@ -33,7 +40,14 @@ export interface MessageUser extends ChatCompletionUserMessageParam {
   isIgnored?: boolean;
 }
 
-export type UiType = "flow-chart" | "plot" | "cards" | "image"  | "table" | "map" | null;
+export type UiType =
+  | "flow-chart"
+  | "plot"
+  | "cards"
+  | "image"
+  | "table"
+  | "map"
+  | null;
 
 // Response to a tool call
 export interface MessageToolCallResponse
@@ -108,6 +122,7 @@ export interface ChatCompletion {
 
 export interface UseChatParams
   extends Omit<Chat, "messages" | "model" | "id" | "title" | "path"> {
+  systemPrompt: MessageSystem;
   chatDbName?: string;
   id?: string;
   title?: string;
@@ -170,31 +185,121 @@ export async function RunCode(
   return null;
 }
 
-export function RegressionModel(data: DataSeries[]): string | null {
+function calculateFourierCoefficients(
+  xValues: number[],
+  yValues: number[],
+  N: number
+): {
+  a0: number;
+  an: number[];
+  bn: number[];
+} {
+  const n = xValues.length;
+  const a0 = math.sum(yValues) / n;
+  const an = Array(N).fill(0);
+  const bn = Array(N).fill(0);
+
+  for (let k = 1; k <= N; k++) {
+    let sumCos = 0;
+    let sumSin = 0;
+    for (let i = 0; i < n; i++) {
+      sumCos += yValues[i] * math.cos((2 * math.pi * k * xValues[i]) / n);
+      sumSin += yValues[i] * math.sin((2 * math.pi * k * xValues[i]) / n);
+    }
+    an[k - 1] = (2 / n) * sumCos;
+    bn[k - 1] = (2 / n) * sumSin;
+  }
+
+  return { a0, an, bn };
+}
+
+function generateLatexEquation(
+  a0: number,
+  an: number[],
+  bn: number[],
+  N: number,
+  xValues: number[]
+) {
+  const L = xValues[xValues.length - 1] - xValues[0]; // Assuming xValues are sorted
+
+  let equation = `f(x) = \\frac{${a0.toFixed(
+    2
+  )}}{2} + \\sum_{n=1}^{${N}} \\left[ ${an[0].toFixed(
+    2
+  )} \\cos\\left(\\frac{2\\pi nx}{${L}}\\right) + ${bn[0].toFixed(
+    2
+  )} \\sin\\left(\\frac{2\\pi nx}{${L}}\\right) \\right]`;
+
+  for (let i = 1; i < N; i++) {
+    equation += ` + \\left[ ${an[i].toFixed(2)} \\cos\\left(\\frac{2\\pi ${
+      i + 1
+    }x}{${L}}\\right) + ${bn[i].toFixed(2)} \\sin\\left(\\frac{2\\pi ${
+      i + 1
+    }x}{${L}}\\right) \\right]`;
+  }
+
+  return equation;
+}
+
+export function RegressionModel(
+  data: DataSeries[],
+  order?: number
+): string | null {
+  const actualOrder = order ?? 6;
   let resultData: Array<{
     name: string;
-    result: regression.Result
+    result: regression.Result;
   }> = [];
   for (let i = 0; i < data.length; i++) {
-    const dataSeries: regression.DataPoint[] = data[i].data.map(d => [d.x, d.y]);
-    const result = regression.polynomial(dataSeries, { precision: 2 });
+    const dataSeries: regression.DataPoint[] = data[i].data.map((d) => [
+      d.x,
+      d.y,
+    ]);
+    const result = regression.polynomial(dataSeries, {
+      precision: 2,
+      order: actualOrder,
+    });
     resultData.push({
       name: data[i].name,
-      result: result
+      result: result,
     });
   }
-  // convert into markdown table with following collums 
-  // colum 1: name of the data series, colum 2: equation of polynomial regression in latex such that equation: [ai, .... , a0] in the form aixj ... + a0x0
-
   const markdown = markdownTable([
-    ['Name', 'Equation'],
-    ...resultData.map((data) => [data.name, `$${data.result.string}$`])
-  ])
+    ["Name", "Equation"],
+    ...resultData.map((data) => {
+      let expression = "";
+      for (let i = 0; i < data.result.equation.length; i++) {
+        const power = actualOrder - i;
+        const coefficient = data.result.equation[i];
+        if (coefficient !== 0 && coefficient !== -0) {
+          const showPositiveSign = coefficient > 0 && expression.length > 0;
+          if (power === 0) {
+            expression += ` ${
+              showPositiveSign ? "+" : ""
+            } ${coefficient.toFixed(2)}`;
+          } else if (power === 1) {
+            expression += ` ${
+              showPositiveSign ? "+" : ""
+            } ${coefficient.toFixed(2)} \\cdot x`;
+          } else {
+            expression += ` ${
+              showPositiveSign ? "+" : ""
+            } ${coefficient.toFixed(2)} \\cdot x^{${power}}`;
+          }
+        }
+      }
+      return [data.name, `$f(x) = ${expression}$`];
+    }),
+  ]);
   return markdown;
 }
 
-export async function ImageDescriptionAgent(text: string, imageUrl: string,  abortController?: () => AbortController | null): Promise<MessageAssistant | null>{
-  try{
+export async function ImageDescriptionAgent(
+  text: string,
+  imageUrl: string,
+  abortController?: () => AbortController | null
+): Promise<MessageAssistant | null> {
+  try {
     const response = await fetch("/api/caption", {
       method: "POST",
       body: JSON.stringify({
@@ -207,12 +312,11 @@ export async function ImageDescriptionAgent(text: string, imageUrl: string,  abo
       signal: abortController?.()?.signal,
     });
     const message = (await response.json()) as MessageAssistant;
-    if(message.content){
+    if (message.content) {
       message.content = preprocessLaTeX(message.content as string);
     }
     return message;
-  }
-  catch(err){
+  } catch (err) {
     console.log(err);
   }
 
@@ -236,7 +340,7 @@ export async function SendGpt(
   });
 
   const message = (await response.json()) as Message;
-  if(message.content){
+  if (message.content) {
     message.content = preprocessLaTeX(message.content as string);
   }
 
@@ -270,8 +374,13 @@ export async function FlowChartAgent(
     if (json) {
       const message = json as Message;
       if (message.role === "tool" && message.data) {
-        const data = message.data as GptFlowChartResult; 
-        if (data.nodes && data.nodes.length && data.nodes.length > 1 && data.edges) {
+        const data = message.data as GptFlowChartResult;
+        if (
+          data.nodes &&
+          data.nodes.length &&
+          data.nodes.length > 1 &&
+          data.edges
+        ) {
           return message;
         }
       }
@@ -319,26 +428,29 @@ export async function GetToolCallRaspi(
   return undefined;
 }
 
-export async function DefaultOnToolCall(connectionState: PiConnection, 
+export async function DefaultOnToolCall(
+  connectionState: PiConnection,
   tools: Array<ChatCompletionTool>,
   oldMessages: Message[],
-  toolCalls: ChatCompletionMessageToolCall[]): Promise<Message[]> {
-    for (const toolCall of toolCalls) {
-      const toolResponse = await GetToolCallRaspi(
-        connectionState,
-        tools,
-        toolCall
-      );
-      if (toolResponse) {
-        oldMessages.push(toolResponse);
-      }
+  toolCalls: ChatCompletionMessageToolCall[]
+): Promise<Message[]> {
+  for (const toolCall of toolCalls) {
+    const toolResponse = await GetToolCallRaspi(
+      connectionState,
+      tools,
+      toolCall
+    );
+    if (toolResponse) {
+      oldMessages.push(toolResponse);
     }
-    return oldMessages;
+  }
+  return oldMessages;
 }
 
 export function useChat(params: UseChatParams): ChatCompletion {
   let {
     api,
+    systemPrompt,
     id,
     path,
     raspi_id,
@@ -352,7 +464,7 @@ export function useChat(params: UseChatParams): ChatCompletion {
     onToolCall,
     initialMessages,
     onDbUpdate,
-    chatDbName
+    chatDbName,
   } = params;
 
   let actualChatDbName = chatDbName ?? chatNameSpace;
@@ -370,7 +482,7 @@ export function useChat(params: UseChatParams): ChatCompletion {
   const [isMultipleToolCall, setIsMultipleToolCall] = useState(false);
   const [currentToolCall, setCurrentToolCall] = useState<string | null>(null);
   const [completionStatus, setCompletionStatus] =
-    useState<CompletionStatus>("None"); 
+    useState<CompletionStatus>("None");
 
   const getChat = (messages: Message[]): Chat => {
     return {
@@ -378,7 +490,10 @@ export function useChat(params: UseChatParams): ChatCompletion {
       id: actualId,
       path: actualPath,
       raspi_id,
-      messages,
+      messages: [
+        systemPrompt,
+        ...messages,      
+      ],
       model: finalModel,
       temperature,
       tools,
@@ -565,19 +680,21 @@ export function useChat(params: UseChatParams): ChatCompletion {
   } as ChatCompletion;
 }
 
-
 export function CreateSystemPrompt(piConnection: PiConnection): MessageSystem {
   const devices = piConnection.devices.map((device) => {
     return JSON.stringify({
       name: device.name,
       description: device.description,
       isInput: device.isInput,
-      hasData: device.hasData,
+      hasRecordedData: device.hasRecordedData,
     });
   });
   const devicesString = devices.join(", ");
   return {
     role: "system",
-    content: "You are connected to a raspberry pi which has the following connected circuit components as a JSON object in which isInput field indicates if its an input or output device and hasData field indicates if the device has stored data which can be fetched: " + devicesString + " \n When you are tasked with any tool call make sure you ONLY reply with the given information and don't add anything else unless instructed to",
+    content:
+      "You are connected to a raspberry pi which has the following connected circuit components as a JSON object in which isInput field indicates if its an input or output device and hasRecordedData field indicates if the device has recorded data which can be extracted: " +
+      devicesString +
+      " \n When you are tasked with any tool call make sure you ONLY reply with the given information and don't add anything else unless instructed to",
   };
 }
