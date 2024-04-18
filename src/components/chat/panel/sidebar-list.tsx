@@ -4,7 +4,6 @@ import { SidebarItems } from '@/components/chat/panel/sidebar-items'
 import { sideBarEventEmitter, subscribeToUpdateSidebarEvent, updateSidebarEvent } from '@/lib/event-emmiter'
 import { Chat } from '@/services/chat-completion'
 import { ClearChats, GetChats } from '@/services/database'
-import EventEmitter from 'events';
 import { cache, useEffect, useState } from 'react'
 
 interface SidebarListProps {
@@ -24,7 +23,7 @@ export function SidebarList(props : SidebarListProps) {
   useEffect(() => {
     const handleUpdateSidebar = async () => {
       // Reload or fetch new data when the event occurs
-      const updatedChats = await loadChats();
+      const updatedChats = await GetChats();
       setChats(updatedChats);
       // Update state or do anything else with the updated data
     };

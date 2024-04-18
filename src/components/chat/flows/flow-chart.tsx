@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useCallback } from "react";
 import ReactFlow, {
@@ -23,7 +23,6 @@ import "reactflow/dist/base.css";
 import "./index.css";
 import FunctionIcon from "@/icons/FunctionIcon";
 import { Label } from "@/components/ui/label";
-import CollapsableMessage from "@/components/chat/messages/collapsable-message";
 
 export interface GptFlowChartResult {
   nodes: GptNode[];
@@ -203,65 +202,62 @@ export default function FlowChart(result: GptFlowChartResult) {
   );
 
   return (
-    <CollapsableMessage title="Gpt Flow Chart"> 
-         <div style={{ height: "42vh" }}>
-        <ReactFlow
-          proOptions={{ hideAttribution: true }}
-          nodes={nodes}
-          edges={edges}
-          onConnect={onConnect}
-          edgesUpdatable={false}
-          edgesFocusable={false}
-          nodesDraggable={false}
-          nodesConnectable={false}
-          nodesFocusable={false}
-          fitView
-          nodeTypes={nodeTypes}
-          edgeTypes={edgeTypes}
-          defaultEdgeOptions={defaultEdgeOptions}
-        >
-          <Controls showInteractive={false} />
-          <Panel position="top-right">
-            <Label
-              className="bg-slate-800 rounded p-1"
-              onClick={() => {
-                onLayout(layoutDirection === "TB" ? "LR" : "TB");
-                setLayoutDirection(layoutDirection === "TB" ? "LR" : "TB");
-              }}
+    <div style={{ height: "42vh" }}>
+      <ReactFlow
+        proOptions={{ hideAttribution: true }}
+        nodes={nodes}
+        edges={edges}
+        onConnect={onConnect}
+        edgesUpdatable={false}
+        edgesFocusable={false}
+        nodesDraggable={false}
+        nodesConnectable={false}
+        nodesFocusable={false}
+        fitView
+        nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
+        defaultEdgeOptions={defaultEdgeOptions}
+      >
+        <Controls showInteractive={false} />
+        <Panel position="top-right">
+          <Label
+            className="bg-slate-800 rounded p-1"
+            onClick={() => {
+              onLayout(layoutDirection === "TB" ? "LR" : "TB");
+              setLayoutDirection(layoutDirection === "TB" ? "LR" : "TB");
+            }}
+          >
+            {layoutDirection}
+          </Label>
+        </Panel>
+        <svg>
+          <defs>
+            <linearGradient id="edge-gradient">
+              <stop offset="0%" stopColor="#ae53ba" />
+              <stop offset="100%" stopColor="#2a8af6" />
+            </linearGradient>
+
+            <marker
+              id="edge-circle"
+              viewBox="-5 -5 10 10"
+              refX="0"
+              refY="0"
+              markerUnits="strokeWidth"
+              markerWidth="10"
+              markerHeight="10"
+              orient="auto"
             >
-              {layoutDirection}
-            </Label>
-          </Panel>
-          <svg>
-            <defs>
-              <linearGradient id="edge-gradient">
-                <stop offset="0%" stopColor="#ae53ba" />
-                <stop offset="100%" stopColor="#2a8af6" />
-              </linearGradient>
-
-              <marker
-                id="edge-circle"
-                viewBox="-5 -5 10 10"
-                refX="0"
-                refY="0"
-                markerUnits="strokeWidth"
-                markerWidth="10"
-                markerHeight="10"
-                orient="auto"
-              >
-                <circle
-                  stroke="#2a8af6"
-                  strokeOpacity="0.75"
-                  r="2"
-                  cx="0"
-                  cy="0"
-                />
-              </marker>
-            </defs>
-          </svg>
-        </ReactFlow>
-      </div>
-    </CollapsableMessage>
-
+              <circle
+                stroke="#2a8af6"
+                strokeOpacity="0.75"
+                r="2"
+                cx="0"
+                cy="0"
+              />
+            </marker>
+          </defs>
+        </svg>
+      </ReactFlow>
+    </div>
   );
 }

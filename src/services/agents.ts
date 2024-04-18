@@ -21,7 +21,7 @@ export const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-export function ProcessLaTeX(content: string) {
+function ProcessLaTeX(content: string) {
   // Replace block-level LaTeX delimiters \[ \] with $$ $$
 
   const blockProcessedContent = content.replace(
@@ -36,12 +36,10 @@ export function ProcessLaTeX(content: string) {
   return inlineProcessedContent;
 }
 
-
-
-export function RegressionModel(
+export async function RegressionModel(
   data: DataSeries[],
   order?: number
-): string | null {
+): Promise<string | null> {
   const actualOrder = order ?? 3;
   let resultData: Array<{
     name: string;
@@ -131,7 +129,7 @@ export async function ImageCaptionAgent(
 
 export async function ChatAgent(
   chat: Chat,
-  abortController?: () => AbortController | null
+  abortController?:  AbortController 
 ): Promise<Message> {
   const messages: Array<ChatCompletionMessageParam> = chat.messages
     .map((message) => {
@@ -169,13 +167,19 @@ export async function ChatAgent(
   const res = await openai.chat.completions.create(
     {
       model: "gpt-3.5-turbo-0613",
-      messages,
+      messages: [
+        {
+          role: "system",
+          content: chat.systemPrompt.content,
+        } as ChatCompletionMessageParam,
+        ...messages,
+      ],
       temperature: chat.temperature,
       tool_choice: "auto",
       tools: chat.tools,
     },
     {
-      signal: abortController?.()?.signal,
+      signal: abortController?.signal,
     }
   );
 

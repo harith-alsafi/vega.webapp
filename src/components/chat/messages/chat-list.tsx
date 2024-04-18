@@ -21,6 +21,7 @@ import MapMessage from "@/components/chat/map/map-message";
 import TableMessage from "@/components/chat/table-message/table-message";
 import ImageMessage from "@/components/chat/image-message/image-message";
 import PlotMessage from "@/components/chat/plots/plot-message";
+import CollapsableMessage from "@/components/chat/messages/collapsable-message";
 
 ring.register();
 
@@ -62,29 +63,46 @@ export function LoadingMessage({
   );
 }
 
-export function SingleChat({
-  message,
-  index,
-}: {
+export interface SingleChatProps {
   message: Message;
   index: number;
-}) {
+}
+
+export function SingleChat({ message, index }: SingleChatProps) {
   if (message.role === "tool" && message.ui === "image" && message.data) {
     const src = message.data as string;
     return (
       <div key={index}>
-        <ImageMessage src={src} />
-        <ChatMessage message={message} />
+        <CollapsableMessage
+          currentIndex={index}
+          message={message}
+          title="Raspberry Pi Image"
+        >
+          <ImageMessage src={src} />
+        </CollapsableMessage>
+        <ChatMessage currentIndex={index} message={message} />
       </div>
     );
   }
   if (message.role === "tool" && message.ui === "map" && message.data) {
     const data = message.data as PiMapResponse;
-    return <MapMessage {...data} />;
+    return (
+      <CollapsableMessage currentIndex={index} message={message} title="Map">
+        <MapMessage {...data} />;
+      </CollapsableMessage>
+    );
   }
   if (message.role === "tool" && message.ui === "cards" && message.data) {
     const data = message.data as PiDeviceInfo[];
-    return <DeviceCarousel devices={data} />;
+    return (
+      <CollapsableMessage
+        currentIndex={index}
+        message={message}
+        title="Current Devices"
+      >
+        <DeviceCarousel devices={data} />
+      </CollapsableMessage>
+    );
   }
   if (message.role === "tool" && message.ui == "plot" && message.data) {
     const data = message.data as PiPlotResponse;
@@ -94,18 +112,36 @@ export function SingleChat({
     }
     return (
       <div key={index}>
-        <PlotMessage {...data} />
-        <ChatMessage message={message} />
+        <CollapsableMessage
+          currentIndex={index}
+          message={message}
+          title={`Plot of ${data.title} (${data.xLabel} vs ${data.yLabel})`}
+        >
+          <PlotMessage {...data} />
+        </CollapsableMessage>
+        <ChatMessage currentIndex={index} message={message} />
       </div>
     );
   }
   if (message.role === "tool" && message.ui === "flow-chart" && message.data) {
     const result = message.data as GptFlowChartResult;
-    return <FlowChart nodes={result.nodes} edges={result.edges} />;
+    return (
+      <CollapsableMessage
+        currentIndex={index}
+        message={message}
+        title="Gpt Flow Chart"
+      >
+        <FlowChart {...result} />
+      </CollapsableMessage>
+    );
   }
   if (message.role === "tool" && message.ui === "table" && message.data) {
     const data = message.data as string;
-    return <TableMessage data={data} />;
+    return (
+      <CollapsableMessage currentIndex={index} message={message} title="Table">
+        <TableMessage data={data} />
+      </CollapsableMessage>
+    );
   }
   if (
     (message.role === "assistant" && message.content !== null) ||
@@ -116,7 +152,7 @@ export function SingleChat({
         {message.role === "user" && index > 1 && (
           <Separator className="h-[2px] my-4 md:my-8" />
         )}
-        <ChatMessage message={message} />
+        <ChatMessage currentIndex={index} message={message} />
         {message.role === "user" && (
           <Separator className="h-[2px] my-4 md:my-8" />
         )}

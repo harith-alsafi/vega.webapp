@@ -27,7 +27,7 @@ export default function DeviceCard({ device }: { device: PiDeviceInfo }) {
     frequency,
     pins,
     type,
-    hasData,
+    hasRecordedData,
     isInput,
     isConnected,
   } = device;
@@ -87,7 +87,7 @@ export default function DeviceCard({ device }: { device: PiDeviceInfo }) {
           </div>
           <div className="grow"></div>
           <div className="flex items-center">
-            {hasData ? <MdDataThresholding className="mr-1 h-5 w-5" /> : null}
+            {hasRecordedData ? <MdDataThresholding className="mr-1 h-5 w-5" /> : null}
             {isInput ? (
               <MdInput className="mr-1 h-5 w-5" />
             ) : (

@@ -1,8 +1,13 @@
-import { Chat, MessageAssistant } from "@/services/chat-completion";
+import {
+  Chat,
+  GenerateMessageRating,
+  MessageAssistant,
+} from "@/services/chat-completion";
 import OpenAI from "openai";
 import {
   ChatCompletionAssistantMessageParam,
   ChatCompletionMessageParam,
+  ChatCompletionSystemMessageParam,
   ChatCompletionToolMessageParam,
   ChatCompletionUserMessageParam,
 } from "openai/resources";
@@ -47,10 +52,18 @@ export async function POST(req: Request) {
     .filter(
       (message) => message !== undefined && message !== null
     ) as Array<ChatCompletionMessageParam>;
-  console.log(messages);
+
+  const messagesToSend = [
+    {
+      role: "system",
+      content: chatResponse.systemPrompt.content,
+    } as ChatCompletionSystemMessageParam,
+    ...messages,
+  ];
+  console.log(messagesToSend);
   const res = await openai.chat.completions.create({
     model: "gpt-3.5-turbo-0613",
-    messages,
+    messages: messagesToSend,
     temperature: chatResponse.temperature,
     tool_choice: "auto",
     tools: chatResponse.tools,
@@ -61,6 +74,7 @@ export async function POST(req: Request) {
     role: message.role,
     content: message.content,
     tool_calls: message.tool_calls,
+    messageRating: GenerateMessageRating(),
   };
 
   return Response.json(finalMessage);

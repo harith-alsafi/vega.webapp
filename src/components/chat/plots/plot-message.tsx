@@ -12,10 +12,7 @@ import {
   ReferenceLine,
   ReferenceArea,
   ResponsiveContainer,
-  Brush,
 } from "recharts";
-import { ScatterCustomizedShape } from "recharts/types/cartesian/Scatter";
-import CollapsableMessage from "@/components/chat/messages/collapsable-message";
 import { useTheme } from "next-themes";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -27,14 +24,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { DataPoint, DataSeries, PiPlotResponse } from "@/services/rasberry-pi";
+import { DataSeries, PiPlotResponse } from "@/services/rasberry-pi";
 import "./style.css";
-import {
-  CategoricalChartFunc,
-  CategoricalChartState,
-} from "recharts/types/chart/generateCategoricalChart";
-import { markdownTable } from "markdown-table";
-import regression from "regression";
+import { CategoricalChartState } from "recharts/types/chart/generateCategoricalChart";
 
 const colors = ["#82ca9d", "#8884d8", "#ffc658", "pink", "#ff7300"];
 
@@ -188,7 +180,7 @@ interface ZoomData {
   x2: number | null;
 }
 
-export interface PlotInterfaceProps  {
+export interface PlotInterfaceProps {
   sortedData: DataSeries[];
   xLabel: string;
   yLabel: string;
@@ -199,7 +191,6 @@ export function PlotInterface({
   xLabel,
   yLabel,
 }: PlotInterfaceProps) {
-
   // data currently on the plot
   const [filteredData, setFilteredData] = useState(sortedData);
   const [zoomArea, setZoomArea] = useState<ZoomData>({ x1: null, x2: null });
@@ -363,7 +354,6 @@ export default function PlotMessage({
     data: series.data.slice().sort((a, b) => a.x - b.x),
   }));
 
-
   const analyticsData = sortedData
     .map((series) =>
       getAnalytics(
@@ -374,26 +364,23 @@ export default function PlotMessage({
     .filter((info) => info !== undefined) as AnalyticsInfo[];
 
   return (
-    <CollapsableMessage title={`Plot of ${title} (${xLabel} vs ${yLabel})`}>
-      <Tabs defaultValue="plot">
-        <TabsList className="grid grid-cols-2 ml-1 mr-1">
-          <TabsTrigger value="plot">Plot</TabsTrigger>
-          <TabsTrigger value="data-summary">Data Summary</TabsTrigger>
-        </TabsList>
-        <TabsContent value="plot" className="h-96">
-          <PlotInterface
-            sortedData={sortedData}
-            xLabel={xLabel}
-            yLabel={yLabel}
-          />
-        </TabsContent>
-        <TabsContent value="data-summary">
-          {analyticsData.length > 0 && (
-            <TableAnalytics analytics={analyticsData} />
-          )}
-        </TabsContent>
-     
-      </Tabs>
-    </CollapsableMessage>
+    <Tabs defaultValue="plot">
+      <TabsList className="grid grid-cols-2 ml-1 mr-1">
+        <TabsTrigger value="plot">Plot</TabsTrigger>
+        <TabsTrigger value="data-summary">Data Summary</TabsTrigger>
+      </TabsList>
+      <TabsContent value="plot" className="h-96">
+        <PlotInterface
+          sortedData={sortedData}
+          xLabel={xLabel}
+          yLabel={yLabel}
+        />
+      </TabsContent>
+      <TabsContent value="data-summary">
+        {analyticsData.length > 0 && (
+          <TableAnalytics analytics={analyticsData} />
+        )}
+      </TabsContent>
+    </Tabs>
   );
 }

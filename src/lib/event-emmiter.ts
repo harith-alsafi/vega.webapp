@@ -1,8 +1,8 @@
-import { EventEmitter } from 'events';
+import { EventEmitter } from "events";
 
 export const sideBarEventEmitter = new EventEmitter();
 
-export const updateSidebarEvent = 'updateSidebar';
+export const updateSidebarEvent = "updateSidebar";
 
 export function emitUpdateSidebarEvent() {
   sideBarEventEmitter.emit(updateSidebarEvent);
@@ -11,3 +11,5 @@ export function emitUpdateSidebarEvent() {
 export function subscribeToUpdateSidebarEvent(callback: () => void) {
   sideBarEventEmitter.on(updateSidebarEvent, callback);
 }
+
+

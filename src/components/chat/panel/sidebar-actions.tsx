@@ -21,8 +21,19 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Chat } from "@/services/chat-completion";
-import { RemoveChat } from "@/services/database";
+import { RemoveChat, UpdateChat } from "@/services/database";
 import { emitUpdateSidebarEvent } from "@/lib/event-emmiter";
+import { Pencil2Icon } from "@radix-ui/react-icons";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
 interface SidebarActionsProps {
   chat: Chat;
@@ -33,9 +44,15 @@ export function SidebarActions({ chat, removeChat }: SidebarActionsProps) {
   const path = usePathname();
   const router = useRouter();
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
-  const [isRemovePending, startRemoveTransition] = React.useTransition();
+  const [changeTitleDialogOpen, setChangeTitleDialogOpen] =
+    React.useState(false);
 
-  return (
+  const isActive = path === chat.path;
+
+  const [isRemovePending, startRemoveTransition] = React.useTransition();
+  const [chatTitle, setChatTitle] = React.useState(chat.title);
+
+  return isActive && (
     <>
       <div className="space-x-1">
         <Tooltip>
@@ -51,6 +68,20 @@ export function SidebarActions({ chat, removeChat }: SidebarActionsProps) {
             </Button>
           </TooltipTrigger>
           <TooltipContent>Delete chat</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              className="w-6 h-6 p-0 hover:bg-background"
+              disabled={isRemovePending}
+              onClick={() => setChangeTitleDialogOpen(true)}
+            >
+              <Pencil2Icon className="mr-2" />
+              <span className="sr-only">Rename</span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Rename chat</TooltipContent>
         </Tooltip>
       </div>
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
@@ -89,6 +120,40 @@ export function SidebarActions({ chat, removeChat }: SidebarActionsProps) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <Dialog
+        open={changeTitleDialogOpen}
+        onOpenChange={setChangeTitleDialogOpen}
+      >
+        <DialogContent className="sm:max-w-[375px]">
+          <DialogHeader>
+            <DialogTitle>Edit Title</DialogTitle>
+            <DialogDescription>Change the title of the chat</DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col -mt-2 items-center justify-center">
+            <Input
+              id="title"
+              value={chatTitle}
+              onChange={(event) => {
+                setChatTitle(event.target.value);
+              }}
+            />
+            <div className="w-full justify-end mt-2 flex">
+              <Button
+                className="w-fit"
+                onClick={async () => {
+                  setChangeTitleDialogOpen(false);
+                  chat.title = chatTitle;
+                  await UpdateChat(chat);
+                  emitUpdateSidebarEvent();
+                }}
+                type="submit"
+              >
+                Save changes
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

@@ -1,7 +1,7 @@
 // Inspired by Chatbot-UI and modified to fit the needs of this project
 // @see https://github.com/mckaywrigley/chatbot-ui/blob/main/components/Chat/ChatMessage.tsx
 
-import { Message } from "@/services/chat-completion";
+import { GenerateMessageRating, Message } from "@/services/chat-completion";
 
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
@@ -26,12 +26,12 @@ import MessageContainer from "@/components/chat/messages/message-container";
 export interface ChatMessageProps {
   message: Message;
   showIcon?: boolean;
+  currentIndex: number;
 }
 
-export function ChatMessage({ message, showIcon, ...props }: ChatMessageProps) {
-  const isUser = message.role === "user";
+export function ChatMessage({ message, showIcon, currentIndex, ...props }: ChatMessageProps) {
   return (
-    <MessageContainer isUser={isUser} showIcon={showIcon ?? true} {...props}>
+    <MessageContainer currentIndex={currentIndex}  message={message} showIcon={showIcon ?? true} {...props}>
       <MemoizedReactMarkdown
         className="prose break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0"
         remarkPlugins={[remarkGfm, remarkMath]}

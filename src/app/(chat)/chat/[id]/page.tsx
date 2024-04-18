@@ -16,7 +16,7 @@ export async function generateMetadata({
 
   const chat = await GetChat(params.id)
   return {
-    title: chat?.title.toString().slice(0, 50) ?? 'Chat'
+    title: chat?.title?.toString().slice(0, 50) ?? 'Chat'
   }
 }
 
@@ -27,5 +27,5 @@ export default async function ChatPage({ params }: ChatPageProps) {
     notFound()
   }
 
-  return <Chat id={chat.id} initialMessages={chat.messages} />
+  return <Chat id={chat.id} title={chat.title} initialMessages={chat.messages} />
 }

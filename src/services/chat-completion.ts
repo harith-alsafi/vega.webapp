@@ -35,9 +35,19 @@ export interface MessageSystem extends ChatCompletionSystemMessageParam {
   isIgnored?: boolean;
 }
 
+export interface MessageParameter {
+  characterSize: number;
+  totalContext: number;
+  calledTools: number;
+  taskComplexity: number;
+  temperature: number;
+  totalTools: number;
+}
+
 // User message
 export interface MessageUser extends ChatCompletionUserMessageParam {
   isIgnored?: boolean;
+  messageParameter?: MessageParameter;
 }
 
 export type UiType =
@@ -58,6 +68,42 @@ export interface MessageToolCallResponse
   status?: "loading" | "error" | "success";
   isIgnored?: boolean;
   comments?: string;
+  messageRating: MessageRating;
+}
+
+export function GetRndInteger(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
+export interface MessageRating {
+  finalRating: number; // out of 3
+  comments: string;
+  timeTaken: number; // in seconds
+  speed: number; // out of 3
+  accuracy: number; // out of 3
+  relevance: number; // out of 3
+  clarity: number; // out of 3
+  completion: number; // out of 3
+}
+
+export function GenerateMessageRating(): MessageRating {
+  const speed = GetRndInteger(10, 90);
+  const accuracy = GetRndInteger(10, 90);
+  const relevance = GetRndInteger(10, 90);
+  const clarity = GetRndInteger(10, 90);
+  const completion = GetRndInteger(10, 90);
+  const finalRating = (speed + accuracy + relevance + clarity + completion) / 5;
+
+  return {
+    timeTaken: GetRndInteger(10, 90),
+    finalRating: finalRating,
+    comments: "",
+    speed: speed,
+    accuracy: accuracy,
+    relevance: relevance,
+    clarity: clarity,
+    completion: completion,
+  };
 }
 
 // Assistant message
@@ -66,6 +112,7 @@ export interface MessageAssistant
   ui?: UiType;
   data?: object;
   isIgnored?: boolean;
+  messageRating: MessageRating;
 }
 
 export type Message =
@@ -80,7 +127,8 @@ export type CompletionStatus =
   | "ToolCallResponse"
   | "Finish"
   | "None"
-  | "FlowChart";
+  | "FlowChart"
+  | string;
 
 export interface MessageToolCall
   extends ChatCompletionMessageToolCall.Function {
@@ -93,6 +141,7 @@ export interface GptToolCallResponse {
 }
 
 export interface Chat extends Omit<ChatCompletionCreateParamsBase, "messages"> {
+  systemPrompt: MessageSystem;
   id: string;
   path: string;
   title: string;
@@ -111,7 +160,7 @@ export interface ChatCompletion {
   isMultipleToolCall: boolean;
   completionStatus: CompletionStatus;
   currentToolCall: string | null;
-  append: (message: Message) => Promise<void>;
+  append: (message: MessageUser) => Promise<void>;
   reload: () => void;
   stop: () => void;
   setMessages: (messages: Message[]) => void;
@@ -327,7 +376,7 @@ export async function SendGpt(
   api: string,
   chat: Chat,
   abortController?: () => AbortController | null
-): Promise<{ message: Message; response: Response }> {
+): Promise<{ message: MessageAssistant; response: Response }> {
   const response = await fetch(api as string, {
     method: "POST",
     body: JSON.stringify(chat),
@@ -339,9 +388,12 @@ export async function SendGpt(
     throw err;
   });
 
-  const message = (await response.json()) as Message;
+  const message = (await response.json()) as MessageAssistant;
   if (message.content) {
     message.content = preprocessLaTeX(message.content as string);
+  }
+  if (message.messageRating === undefined) {
+    message.messageRating = GenerateMessageRating();
   }
 
   return { message, response };
@@ -410,6 +462,7 @@ export async function GetToolCallRaspi(
       ui: firstData.ui,
       data: firstData.data,
       content: firstData.result,
+      messageRating: GenerateMessageRating(),
     };
     if (firstData.ui === "image" && firstData.data) {
       const src = firstData.data as string;
@@ -434,17 +487,22 @@ export async function DefaultOnToolCall(
   oldMessages: Message[],
   toolCalls: ChatCompletionMessageToolCall[]
 ): Promise<Message[]> {
+  let newMessages = oldMessages;
   for (const toolCall of toolCalls) {
+    const start = Date.now();
     const toolResponse = await GetToolCallRaspi(
       connectionState,
       tools,
       toolCall
     );
+    const end = Date.now();
+
     if (toolResponse) {
-      oldMessages.push(toolResponse);
+      toolResponse.messageRating.timeTaken = (end - start) / 1000;
+      newMessages.push(toolResponse);
     }
   }
-  return oldMessages;
+  return newMessages;
 }
 
 export function useChat(params: UseChatParams): ChatCompletion {
@@ -484,16 +542,43 @@ export function useChat(params: UseChatParams): ChatCompletion {
   const [completionStatus, setCompletionStatus] =
     useState<CompletionStatus>("None");
 
-  const getChat = (messages: Message[]): Chat => {
+  const generateMessageParameter = (
+    newMessages: Message[],
+    message: MessageUser
+  ) => {
+    const contextSum =
+      newMessages
+        .map((m) => m.content?.length ?? 0)
+        .reduce((a, b) => a + b, 0) +
+      systemPrompt.content.length +
+      message.content.length;
+
     return {
+      temperature: temperature ?? 0.7,
+      totalTools: tools?.length ?? 0,
+      characterSize: message.content.length,
+      totalContext: contextSum,
+      calledTools: 0,
+      taskComplexity: 0,
+    } as MessageParameter;
+  };
+
+  const getChat = (messages: Message[]): Chat => {
+    if (messages.length > 0 && title === undefined) {
+      const firstUserMessage = messages.find((s) => s.role === "user");
+      if (firstUserMessage) {
+        const content = firstUserMessage.content as string;
+        title = content.substring(0, 50);
+      }
+    }
+
+    return {
+      systemPrompt,
       title: title as string,
       id: actualId,
       path: actualPath,
       raspi_id,
-      messages: [
-        systemPrompt,
-        ...messages,      
-      ],
+      messages,
       model: finalModel,
       temperature,
       tools,
@@ -516,20 +601,14 @@ export function useChat(params: UseChatParams): ChatCompletion {
     const abortController = new AbortController();
     abortControllerRef.current = abortController;
 
-    if (
-      newMessages.length > 0 &&
-      newMessages[0].role === "user" &&
-      title === undefined
-    ) {
-      const content = newMessages[0].content as string;
-      title = content.substring(0, 50);
-    }
-
+    const start = Date.now();
     const { message: messageResponse, response: response } = await SendGpt(
       api as string,
       getChat(newMessages),
       () => abortControllerRef.current
     );
+    const end = Date.now();
+    messageResponse.messageRating.timeTaken = (end - start) / 1000;
 
     // Check if the AbortController has been aborted
     if (abortControllerRef.current.signal.aborted) {
@@ -569,19 +648,28 @@ export function useChat(params: UseChatParams): ChatCompletion {
         newMessages.length > 1 &&
         lastUserMessageIndex === newMessages.length - 2
       ) {
-        setCompletionStatus("FlowChart");
+        const start = Date.now();
+
+        setCompletionStatus("Generating Flow Chart ...");
         const flowToolCall = await FlowChartAgent(
           newMessages,
           tools,
           () => abortControllerRef.current
         );
+        const end = Date.now();
+
         if (flowToolCall) {
+          if (flowToolCall.role === "tool") {
+            flowToolCall.messageRating.timeTaken = (end - start) / 1000;
+          }
           newMessages = [...newMessages, flowToolCall];
           setMessages(newMessages);
         }
       }
 
-      setCompletionStatus("ToolCall");
+      setCompletionStatus(
+        "Calling " + currentMessage.tool_calls[0].function.name + " ..."
+      );
 
       const toolMessages = await onToolCall(
         newMessages,
@@ -591,12 +679,12 @@ export function useChat(params: UseChatParams): ChatCompletion {
       newMessages = toolMessages;
       setMessages(newMessages);
 
-      setCompletionStatus("ToolCallResponse");
+      setCompletionStatus("Waiting for the LLM feedback ...");
       let response = await sendMessages(newMessages, true);
 
       newMessages = response.newMessages;
       setMessages(newMessages);
-      setCompletionStatus("Finish");
+      setCompletionStatus("Finished");
 
       return response;
     }
@@ -619,7 +707,7 @@ export function useChat(params: UseChatParams): ChatCompletion {
       }
     }
     try {
-      setCompletionStatus("GptResponse");
+      setCompletionStatus("Getting LLM response ...");
       let response: MessageReturn | null = await sendMessages(
         newMessages,
         true
@@ -630,6 +718,18 @@ export function useChat(params: UseChatParams): ChatCompletion {
       response = await runToolCall(response.messageResponse, newMessages);
       while (response != null) {
         newMessages = response.newMessages;
+        const lastUserMessage = newMessages[lastUserMessageIndex];
+        if (lastUserMessage.role === "user") {
+          if (lastUserMessage.messageParameter === undefined) {
+            lastUserMessage.messageParameter = generateMessageParameter(
+              newMessages,
+              lastUserMessage
+            );
+          }
+          lastUserMessage.messageParameter.calledTools += 1;
+          newMessages[lastUserMessageIndex] = lastUserMessage;
+        }
+
         response = await runToolCall(response.messageResponse, newMessages);
       }
     } catch (err) {
@@ -651,8 +751,11 @@ export function useChat(params: UseChatParams): ChatCompletion {
     }
   };
 
-  const append = async (message: Message) => {
+  const append = async (message: MessageUser) => {
     lastUserMessageIndex = messages.length;
+    if (message.messageParameter === undefined) {
+      message.messageParameter = generateMessageParameter(messages, message);
+    }
     sendMessage(message);
   };
 

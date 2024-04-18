@@ -6,20 +6,23 @@ import {
   MessageToolCallResponse,
   DefaultOnToolCall,
   CreateSystemPrompt,
+  GenerateMessageRating,
 } from "@/services/chat-completion";
 import { cn } from "@/lib/utils";
 import { ChatList } from "@/components/chat/messages/chat-list";
 import { ChatPanel } from "@/components/chat/messages/chat-panel";
 import { EmptyScreen } from "@/components/chat/messages/empty-screen";
 import { ChatScrollAnchor } from "@/components/chat/messages/chat-scroll-anchor";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { toast } from "sonner";
 import {
   ChatCompletionMessageToolCall,
   ChatCompletionTool,
 } from "openai/resources";
-import { emitUpdateSidebarEvent } from "@/lib/event-emmiter";
+import {
+  emitUpdateSidebarEvent,
+} from "@/lib/event-emmiter";
 import { useConnectionContext } from "@/lib/context/connection-context";
 import {
   ContextMenu,
@@ -27,6 +30,7 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
+import { ChatCompletionProvider } from "@/lib/context/chat-completion-context";
 
 export interface ChatProps extends React.ComponentProps<"div"> {
   initialMessages?: Message[];
@@ -81,6 +85,7 @@ async function getToolCall(
       ui: "plot",
       content:
         "The plot has been ALREADY shown the user, just inform the user it is shown above",
+      messageRating: GenerateMessageRating(),
     };
 
     return toolResponse;
@@ -98,6 +103,7 @@ async function getToolCall(
         weather,
         info: "This data is randomly generated and came from a fake weather API!",
       }),
+      messageRating: GenerateMessageRating(),
     };
 
     return toolResponse;
@@ -111,6 +117,7 @@ async function getToolCall(
         role: "tool",
         name: toolCall.function.name,
         content: `The current time in John is 2pm`,
+        messageRating: GenerateMessageRating(),
       };
       return toolResponse;
     }
@@ -118,7 +125,13 @@ async function getToolCall(
   return undefined;
 }
 
-export function Chat({ id, initialMessages, className }: ChatProps) {
+const isEvaluation = false;
+
+const Evaluation = [
+  
+]
+
+export function Chat({ id, initialMessages, className, title }: ChatProps) {
   const { connectionState } = useConnectionContext();
   const systemPrompt = CreateSystemPrompt(connectionState);
   const tools = connectionState.tools.map((tool) => ({
@@ -131,17 +144,8 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
   })) as Array<ChatCompletionTool>;
   const path = usePathname();
   const [updatedSideBar, setUpdatedSideBar] = useState(false);
-  const {
-    messages,
-    append,
-    reload,
-    stop,
-    isLoading,
-    input,
-    setInput,
-    setMessages,
-    completionStatus,
-  } = useChat({
+  const chatCompletion = useChat({
+    title: title,
     systemPrompt: systemPrompt,
     api: "/api/chat/openai",
     initialMessages,
@@ -178,10 +182,22 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
     },
   });
 
+  const {
+    messages,
+    append,
+    reload,
+    stop,
+    isLoading,
+    input,
+    setInput,
+    setMessages,
+    completionStatus,
+  } = chatCompletion;
+
   return (
-    <>
+    <ChatCompletionProvider chatCompletion={chatCompletion}>
       <div className={cn("mb-8 pb-[200px] pt-4 md:pt-10", className)}>
-        {messages.length > 0? (
+        {messages.length > 0 ? (
           <>
             <ChatList
               completionStatus={completionStatus}
@@ -214,6 +230,6 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
           <ContextMenuItem>Rerun All</ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>
-    </>
+    </ChatCompletionProvider>
   );
 }
