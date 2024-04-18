@@ -4,6 +4,7 @@ import { TailwindIndicator } from "@/components/tailwind-indicator";
 import { Providers } from "@/components/core/providers";
 import { Header } from "@/components/core/top-bar/header";
 import { Toaster } from "@/components/ui/sonner";
+import { HotkeysProvider } from "react-hotkeys-hook";
 
 export const metadata = {
   metadataBase: new URL(`https://${process.env.VERCEL_URL}`),
@@ -44,6 +45,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
             {/* @ts-ignore */}
             <Header />
             <main className="flex flex-col flex-1 bg-muted/50">{children}</main>
+
             <Toaster />
           </div>
           {/* <TailwindIndicator /> */}

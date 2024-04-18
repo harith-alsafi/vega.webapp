@@ -94,10 +94,19 @@ const getLayoutedElements = (
   edges: Edge[],
   direction: "TB" | "LR" = "LR"
 ) => {
-  const nodeWidth = 300;
-  const nodeHeight = direction === "LR" ? 85 : 125;
-
+  let edgeNumber = 0;
+  if (edges.length > 0) {
+    const value = edges.map((e) => {
+      const label = e.label as string;
+      return label?.length ?? 0;
+    }); // get max value
+    edgeNumber = Math.max(...value);
+  }
   const isHorizontal = direction === "LR";
+
+  const nodeWidth = isHorizontal ? 250 : 300 + edgeNumber * 10;
+  const nodeHeight = isHorizontal ? 325 + edgeNumber * 10 : 125;
+
   dagreGraph.setGraph({ rankdir: direction });
 
   nodes.forEach((node) => {
@@ -105,7 +114,9 @@ const getLayoutedElements = (
   });
 
   edges.forEach((edge) => {
-    dagreGraph.setEdge(edge.source, edge.target);
+    dagreGraph.setEdge(edge.source, edge.target, {
+      label: edge.label as string,
+    });
   });
 
   dagre.layout(dagreGraph);

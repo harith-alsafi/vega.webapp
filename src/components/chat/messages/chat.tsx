@@ -7,6 +7,9 @@ import {
   DefaultOnToolCall,
   CreateSystemPrompt,
   GenerateMessageRating,
+  EvaluationInput,
+  MessageUser,
+  EvaluationContent,
 } from "@/services/chat-completion";
 import { cn } from "@/lib/utils";
 import { ChatList } from "@/components/chat/messages/chat-list";
@@ -20,9 +23,7 @@ import {
   ChatCompletionMessageToolCall,
   ChatCompletionTool,
 } from "openai/resources";
-import {
-  emitUpdateSidebarEvent,
-} from "@/lib/event-emmiter";
+import { emitUpdateSidebarEvent } from "@/lib/event-emmiter";
 import { useConnectionContext } from "@/lib/context/connection-context";
 import {
   ContextMenu,
@@ -31,6 +32,7 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { ChatCompletionProvider } from "@/lib/context/chat-completion-context";
+import { HotkeysProvider, useHotkeys } from "react-hotkeys-hook";
 
 export interface ChatProps extends React.ComponentProps<"div"> {
   initialMessages?: Message[];
@@ -127,9 +129,28 @@ async function getToolCall(
 
 const isEvaluation = false;
 
-const Evaluation = [
-  
-]
+export interface EvaluationInfo {
+  title: string;
+  content: EvaluationContent;
+}
+
+const EvaluationArray: Array<EvaluationInfo> = [
+  {
+    title: "Single component test",
+    content: {
+      inputs: [
+        {
+          content: "",
+          taskComplexity: 8,
+        },
+      ],
+      outputs: [],
+    },
+  },
+];
+
+const Evaluation: EvaluationInfo | undefined =
+  EvaluationArray.length > 0 ? EvaluationArray[0] : undefined;
 
 export function Chat({ id, initialMessages, className, title }: ChatProps) {
   const { connectionState } = useConnectionContext();
@@ -145,7 +166,9 @@ export function Chat({ id, initialMessages, className, title }: ChatProps) {
   const path = usePathname();
   const [updatedSideBar, setUpdatedSideBar] = useState(false);
   const chatCompletion = useChat({
-    title: title,
+    title: isEvaluation && Evaluation !== undefined ? Evaluation.title : title,
+    evaluation:
+      isEvaluation && Evaluation !== undefined ? Evaluation.content : undefined,
     systemPrompt: systemPrompt,
     api: "/api/chat/openai",
     initialMessages,
@@ -192,44 +215,66 @@ export function Chat({ id, initialMessages, className, title }: ChatProps) {
     setInput,
     setMessages,
     completionStatus,
+    saveChat,
+    nextEvaluation,
   } = chatCompletion;
 
+  useHotkeys(
+    "ctrl+n",
+    async () => {
+      if (isEvaluation && Evaluation !== undefined) {
+        await nextEvaluation();
+      }
+    },
+    { scopes: ["chat"] }
+  );
+
+  useHotkeys(
+    "ctrl+shift+s",
+    async () => {
+      await saveChat();
+    },
+    { scopes: ["chat"] }
+  );
+
   return (
-    <ChatCompletionProvider chatCompletion={chatCompletion}>
-      <div className={cn("mb-8 pb-[200px] pt-4 md:pt-10", className)}>
-        {messages.length > 0 ? (
-          <>
-            <ChatList
-              completionStatus={completionStatus}
+    <HotkeysProvider initiallyActiveScopes={["chat"]}>
+      <ChatCompletionProvider chatCompletion={chatCompletion}>
+        <div className={cn("mb-8 pb-[200px] pt-4 md:pt-10", className)}>
+          {messages.length > 0 ? (
+            <>
+              <ChatList
+                completionStatus={completionStatus}
+                isLoading={isLoading}
+                messages={messages}
+              />
+              <ChatScrollAnchor trackVisibility={isLoading} />
+            </>
+          ) : (
+            <EmptyScreen setInput={setInput} />
+          )}
+        </div>
+        <ContextMenu>
+          <ContextMenuTrigger>
+            <ChatPanel
+              setMessages={setMessages}
+              id={id}
               isLoading={isLoading}
+              stop={stop}
+              append={append}
+              reload={reload}
               messages={messages}
+              input={input}
+              setInput={setInput}
             />
-            <ChatScrollAnchor trackVisibility={isLoading} />
-          </>
-        ) : (
-          <EmptyScreen setInput={setInput} />
-        )}
-      </div>
-      <ContextMenu>
-        <ContextMenuTrigger>
-          <ChatPanel
-            setMessages={setMessages}
-            id={id}
-            isLoading={isLoading}
-            stop={stop}
-            append={append}
-            reload={reload}
-            messages={messages}
-            input={input}
-            setInput={setInput}
-          />
-        </ContextMenuTrigger>
-        <ContextMenuContent>
-          <ContextMenuItem>Expand All</ContextMenuItem>
-          <ContextMenuItem>Collapse All</ContextMenuItem>
-          <ContextMenuItem>Rerun All</ContextMenuItem>
-        </ContextMenuContent>
-      </ContextMenu>
-    </ChatCompletionProvider>
+          </ContextMenuTrigger>
+          <ContextMenuContent>
+            <ContextMenuItem>Expand All</ContextMenuItem>
+            <ContextMenuItem>Collapse All</ContextMenuItem>
+            <ContextMenuItem>Rerun All</ContextMenuItem>
+          </ContextMenuContent>
+        </ContextMenu>
+      </ChatCompletionProvider>
+    </HotkeysProvider>
   );
 }

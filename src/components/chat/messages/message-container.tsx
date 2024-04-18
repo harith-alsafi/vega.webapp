@@ -21,7 +21,9 @@ import {
   GetRndInteger,
   Message,
   MessageAssistant,
+  MessageParameter,
   MessageToolCallResponse,
+  MessageUser,
 } from "@/services/chat-completion";
 import { LapTimerIcon, StarFilledIcon, StarIcon } from "@radix-ui/react-icons";
 import React, { HTMLProps, useState } from "react";
@@ -33,12 +35,23 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useChatCompletionContext } from "@/lib/context/chat-completion-context";
+import { FcInfo } from "react-icons/fc";
+import { CiTempHigh } from "react-icons/ci";
+import { MdFunctions } from "react-icons/md";
+import { RiCharacterRecognitionFill } from "react-icons/ri";
+import { BsWechat } from "react-icons/bs";
+import { TbSubtask } from "react-icons/tb";
+import { TbFunctionFilled } from "react-icons/tb";
+import { BsGraphUpArrow } from "react-icons/bs";
+import { Separator } from "@/components/ui/separator";
 
 export interface MessageContainerProps {
   children: React.ReactNode;
   showIcon: boolean;
   message: Message;
   currentIndex: number;
+  hideRating?: boolean;
+  hideParameter?: boolean;
 }
 
 export interface StarGradientIconProps {
@@ -93,7 +106,7 @@ export function GetFillValue(value: number, starIndex: number) {
 export function VerticalRatingStars({ finalRating }: { finalRating: number }) {
   return (
     <div className="flex flex-row items-center">
-      {finalRating.toFixed(2)}
+      {finalRating.toFixed(2) + " •"}
 
       <div className="ml-1 flex flex-row">
         {Array.from({ length: 3 }, (_, i) => i).map((_, index) => (
@@ -199,13 +212,22 @@ export function MessageRatingUi({
                 <>
                   <VerticalRatingStars finalRating={starRating} />
                 </>
-                <>
-                  <LapTimerIcon className="mr-1 h-5 w-5" />
-                  {rating.timeTaken.toFixed(1) + "s"}
-                </>
               </div>
             </CardTitle>
-            <CardDescription>LLM message rating</CardDescription>
+            <CardDescription className="flex items-center space-x-2 text-sm text-muted-foreground">
+              <>
+                <LapTimerIcon className="mr-1 h-5 w-5" />
+                {rating.timeTaken.toFixed(1) + "s"}
+              </>
+              <>
+                <TbFunctionFilled className="mr-1 h-5 w-5" />
+                {rating.toolsCalled ?? 0 + " tools"}
+              </>
+              <>
+                <RiCharacterRecognitionFill className="mr-1 h-5 w-5" />
+                {rating.contextUsed ?? 0 + " characters"}
+              </>
+            </CardDescription>
           </div>
         </CardHeader>
         <CardContent className="p-0 mt-1 text-sm">
@@ -222,7 +244,7 @@ export function MessageRatingUi({
                     (val +
                       rating.accuracy +
                       rating.relevance +
-                      rating.clarity +
+                      rating.efficiency +
                       rating.completion) /
                     5,
                 });
@@ -241,7 +263,7 @@ export function MessageRatingUi({
                     (val +
                       rating.speed +
                       rating.relevance +
-                      rating.clarity +
+                      rating.efficiency +
                       rating.completion) /
                     5,
                 });
@@ -260,7 +282,7 @@ export function MessageRatingUi({
                     (val +
                       rating.accuracy +
                       rating.relevance +
-                      rating.clarity +
+                      rating.efficiency +
                       rating.speed) /
                     5,
                 });
@@ -279,7 +301,7 @@ export function MessageRatingUi({
                     (val +
                       rating.accuracy +
                       rating.speed +
-                      rating.clarity +
+                      rating.efficiency +
                       rating.completion) /
                     5,
                 });
@@ -288,12 +310,12 @@ export function MessageRatingUi({
             />
 
             <LabeledSlider
-              label="Clarity"
-              value={rating.clarity}
+              label="Effieciency"
+              value={rating.efficiency}
               setValue={(val) => {
                 setRating({
                   ...rating,
-                  clarity: val,
+                  efficiency: val,
 
                   finalRating:
                     (val +
@@ -323,11 +345,110 @@ export function MessageRatingUi({
   );
 }
 
+export interface MessageParameterUiProps {
+  message: MessageUser;
+  currentIndex: number;
+}
+
+export interface MessageParamLabelProps {
+  icon: React.ReactNode;
+  label: string;
+  value: number;
+}
+
+export function MessageParamLabel({
+  icon,
+  label,
+  value,
+}: MessageParamLabelProps) {
+  return (
+    <div className="flex h-[35px] flex-row space-x-1 w-full items-center">
+      <div className="w-fit ">{icon}</div>
+      <div className="ml-1 flex-none w-fit ">{label}</div>
+      <div className="flex-grow w-full" />
+      <p className="flex-none h-6 w-[60px] text-center text-sm font-bold bg-primary text-primary-foreground shadow rounded-md whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 overflow-clip">
+        {value}
+      </p>
+    </div>
+  );
+}
+
+export function MessageParameterUi({
+  message,
+  currentIndex,
+}: MessageParameterUiProps) {
+  const msgParam: MessageParameter | undefined = message.messageParameter;
+  return msgParam !== undefined ? (
+    <Popover>
+      <PopoverTrigger asChild>
+        <button className="items-center ">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div>
+                  <IconUser className="shadow border bg-background rounded-md hover:border-slate-500 dark:hover:border-gray-300" />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>Click to view the full details</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[230px] ">
+        <CardHeader className="p-0">
+          <CardTitle>Message Details</CardTitle>
+        </CardHeader>
+        <Separator className="mt-2 mb-2" />
+        <CardContent className="flex flex-col p-0 text-sm">
+          <MessageParamLabel
+            label="Total Tools"
+            icon={<MdFunctions className="w-6 h-6" />}
+            value={msgParam.totalTools}
+          />
+          <MessageParamLabel
+            label="Temperature"
+            icon={<CiTempHigh className="w-6 h-6" />}
+            value={msgParam.temperature}
+          />
+          <MessageParamLabel
+            label="Character Size"
+            icon={<RiCharacterRecognitionFill className="w-6 h-6" />}
+            value={msgParam.characterSize}
+          />
+          <MessageParamLabel
+            label="Complexity"
+            icon={<BsGraphUpArrow className="w-6 h-6" />}
+            value={msgParam.taskComplexity}
+          />
+          <Separator className="mt-1 mb-1" />
+          <MessageParamLabel
+            label="Total Context"
+            icon={<BsWechat className="w-6 h-6" />}
+            value={msgParam.totalContext}
+          />
+          <MessageParamLabel
+            label="Called Tools"
+            icon={<TbFunctionFilled className="w-6 h-6" />}
+            value={msgParam.calledTools}
+          />
+          <MessageParamLabel
+            label="Total Time"
+            icon={<LapTimerIcon className="w-6 h-6" />}
+            value={msgParam.totalTime}
+          />
+        </CardContent>
+      </PopoverContent>
+    </Popover>
+  ) : null;
+}
+
 export default function MessageContainer({
   children,
   showIcon,
   message,
   currentIndex,
+  hideParameter,
+  hideRating,
   ...props
 }: MessageContainerProps) {
   const isUser = message.role === "user";
@@ -338,6 +459,18 @@ export default function MessageContainer({
     message.messageRating = GenerateMessageRating();
   }
 
+  if (message.role === "user" && message.messageParameter === undefined) {
+    message.messageParameter = {
+      totalTime: GetRndInteger(0, 100),
+      totalTools: GetRndInteger(0, 10),
+      temperature: GetRndInteger(0, 100),
+      calledTools: GetRndInteger(0, 10),
+      characterSize: GetRndInteger(0, 10),
+      taskComplexity: GetRndInteger(0, 10),
+      totalContext: GetRndInteger(0, 10),
+    };
+  }
+
   return (
     <div
       className={cn("group relative mb-4 flex items-start md:-ml-12")}
@@ -346,18 +479,27 @@ export default function MessageContainer({
       <div
         className={cn(
           "flex size-8 mt-[0.23rem] shrink-0 select-none items-center justify-center",
-          showIcon && isUser ? "shadow border bg-background rounded-md" : ""
+          showIcon && isUser ? "" : ""
         )}
       >
         {showIcon && !isUser ? (
           <div className="flex flex-col items-center">
             <IconOpenAI className="rounded-md shadow border bg-primary text-primary-foreground " />
-            {message.role === "assistant" || message.role === "tool" ? (
+            {(message.role === "assistant" || message.role === "tool") &&
+            (hideRating === undefined || hideRating === false) ? (
               <MessageRatingUi currentIndex={currentIndex} message={message} />
             ) : null}
           </div>
         ) : null}
-        {showIcon && isUser ? <IconUser /> : null}
+        {showIcon && isUser ? (
+          message.role === "user" &&
+          message.messageParameter !== undefined &&
+          (hideParameter === undefined || hideParameter === false) ? (
+            <MessageParameterUi currentIndex={currentIndex} message={message} />
+          ) : (
+            <IconUser className="shadow border bg-background rounded-md" />
+          )
+        ) : null}
         {!showIcon && <div className="h-4 w-4" />}
       </div>
       <div className="flex-1 px-1 ml-4 space-y-2 overflow-hidden">

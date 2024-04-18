@@ -27,11 +27,13 @@ export interface ChatMessageProps {
   message: Message;
   showIcon?: boolean;
   currentIndex: number;
+  hideRating?: boolean;
+  hideParameters?: boolean;
 }
 
-export function ChatMessage({ message, showIcon, currentIndex, ...props }: ChatMessageProps) {
+export function ChatMessage({ message, showIcon, currentIndex, hideRating, hideParameters, ...props }: ChatMessageProps) {
   return (
-    <MessageContainer currentIndex={currentIndex}  message={message} showIcon={showIcon ?? true} {...props}>
+    <MessageContainer hideRating={hideRating} hideParameter={hideParameters} currentIndex={currentIndex}  message={message} showIcon={showIcon ?? true} {...props}>
       <MemoizedReactMarkdown
         className="prose break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0"
         remarkPlugins={[remarkGfm, remarkMath]}

@@ -22,10 +22,10 @@ import {
   RunToolCalls,
   DataSeries,
 } from "./rasberry-pi";
-import regression, { power } from "regression";
+import regression from "regression";
 import { markdownTable } from "markdown-table";
 import * as math from "mathjs";
-import nerdamer from "nerdamer";
+import { saveAs } from "file-saver";
 
 export const chatNameSpace = "chat:";
 export const piNameSpace = "pi:1";
@@ -35,6 +35,21 @@ export interface MessageSystem extends ChatCompletionSystemMessageParam {
   isIgnored?: boolean;
 }
 
+export interface EvaluationInput {
+  content: string;
+  taskComplexity: number;
+}
+
+export interface EvaluationOutput {
+  messageParameter: MessageParameter;
+  messageRating: MessageRating[];
+}
+
+export interface EvaluationContent {
+  inputs: EvaluationInput[];
+  outputs: EvaluationOutput[];
+}
+
 export interface MessageParameter {
   characterSize: number;
   totalContext: number;
@@ -42,6 +57,7 @@ export interface MessageParameter {
   taskComplexity: number;
   temperature: number;
   totalTools: number;
+  totalTime: number;
 }
 
 // User message
@@ -76,13 +92,15 @@ export function GetRndInteger(min: number, max: number) {
 }
 
 export interface MessageRating {
+  timeTaken: number; // in seconds
+  contextUsed: number; // in characters
+  toolsCalled: number;
   finalRating: number; // out of 3
   comments: string;
-  timeTaken: number; // in seconds
   speed: number; // out of 3
   accuracy: number; // out of 3
   relevance: number; // out of 3
-  clarity: number; // out of 3
+  efficiency: number; // out of 3
   completion: number; // out of 3
 }
 
@@ -90,18 +108,23 @@ export function GenerateMessageRating(): MessageRating {
   const speed = GetRndInteger(10, 90);
   const accuracy = GetRndInteger(10, 90);
   const relevance = GetRndInteger(10, 90);
-  const clarity = GetRndInteger(10, 90);
+  const efficiency = GetRndInteger(10, 90);
   const completion = GetRndInteger(10, 90);
-  const finalRating = (speed + accuracy + relevance + clarity + completion) / 5;
+  const toolsCalled = GetRndInteger(0, 5);
+  const contextUsed = GetRndInteger(0, 1000);
+  const finalRating =
+    (speed + accuracy + relevance + efficiency + completion) / 5;
 
   return {
+    toolsCalled: toolsCalled,
+    contextUsed: contextUsed,
     timeTaken: GetRndInteger(10, 90),
     finalRating: finalRating,
     comments: "",
     speed: speed,
     accuracy: accuracy,
     relevance: relevance,
-    clarity: clarity,
+    efficiency: efficiency,
     completion: completion,
   };
 }
@@ -151,6 +174,7 @@ export interface Chat extends Omit<ChatCompletionCreateParamsBase, "messages"> {
   temperature?: ChatCompletionCreateParamsNonStreaming["temperature"];
   tools?: ChatCompletionCreateParamsNonStreaming["tools"];
   sharePath?: string;
+  evaluation?: EvaluationContent;
 }
 
 export interface ChatCompletion {
@@ -165,6 +189,8 @@ export interface ChatCompletion {
   stop: () => void;
   setMessages: (messages: Message[]) => void;
   updateDataBase: (messages: Message[]) => Promise<void>;
+  nextEvaluation: () => Promise<void>;
+  saveChat: () => Promise<void>;
   setInput: React.Dispatch<React.SetStateAction<string>>;
   setCurrentToolCall: React.Dispatch<React.SetStateAction<string | null>>;
 }
@@ -377,6 +403,7 @@ export async function SendGpt(
   chat: Chat,
   abortController?: () => AbortController | null
 ): Promise<{ message: MessageAssistant; response: Response }> {
+  const start = Date.now();
   const response = await fetch(api as string, {
     method: "POST",
     body: JSON.stringify(chat),
@@ -395,6 +422,13 @@ export async function SendGpt(
   if (message.messageRating === undefined) {
     message.messageRating = GenerateMessageRating();
   }
+  const end = Date.now();
+  message.messageRating.timeTaken = (end - start) / 1000;
+  message.messageRating.contextUsed =
+    message.content?.length ??
+    message.tool_calls?.reduce((a, b) => a + b.function.name.length, 0) ??
+    0;
+  message.messageRating.toolsCalled = message.tool_calls?.length ?? 0;
 
   return { message, response };
 }
@@ -499,6 +533,8 @@ export async function DefaultOnToolCall(
 
     if (toolResponse) {
       toolResponse.messageRating.timeTaken = (end - start) / 1000;
+      toolResponse.messageRating.contextUsed = toolResponse.content.length;
+      toolResponse.messageRating.toolsCalled = 1;
       newMessages.push(toolResponse);
     }
   }
@@ -523,6 +559,7 @@ export function useChat(params: UseChatParams): ChatCompletion {
     initialMessages,
     onDbUpdate,
     chatDbName,
+    evaluation,
   } = params;
 
   let actualChatDbName = chatDbName ?? chatNameSpace;
@@ -530,7 +567,7 @@ export function useChat(params: UseChatParams): ChatCompletion {
   let actualPath = path ?? `/chat/${id}`;
   api = api ?? "/api/chat";
   initialMessages = initialMessages ?? [];
-  temperature = temperature ?? 0.7;
+  let actualTemperature = temperature ?? 0.7;
   let finalModel = model ?? "gpt-3.5-turbo";
   let lastUserMessageIndex = 0;
   const [messages, setMessages] = useState<Message[]>(initialMessages);
@@ -541,6 +578,7 @@ export function useChat(params: UseChatParams): ChatCompletion {
   const [currentToolCall, setCurrentToolCall] = useState<string | null>(null);
   const [completionStatus, setCompletionStatus] =
     useState<CompletionStatus>("None");
+  let evaluationIndex = 0;
 
   const generateMessageParameter = (
     newMessages: Message[],
@@ -554,12 +592,13 @@ export function useChat(params: UseChatParams): ChatCompletion {
       message.content.length;
 
     return {
-      temperature: temperature ?? 0.7,
+      temperature: actualTemperature,
       totalTools: tools?.length ?? 0,
       characterSize: message.content.length,
       totalContext: contextSum,
       calledTools: 0,
       taskComplexity: 0,
+      totalTime: 0,
     } as MessageParameter;
   };
 
@@ -580,9 +619,50 @@ export function useChat(params: UseChatParams): ChatCompletion {
       raspi_id,
       messages,
       model: finalModel,
-      temperature,
+      temperature: actualTemperature,
       tools,
+      evaluation,
     };
+  };
+
+  const nextEvaluation = async () => {
+    if (evaluation && evaluation.inputs.length > 0) {
+      if (evaluationIndex < evaluation.inputs.length - 1) {
+        const input = evaluation.inputs[evaluationIndex];
+        const message = {
+          content: input.content,
+          role: "user",
+        } as MessageUser;
+        const messageParameter = generateMessageParameter(messages, message);
+        message.messageParameter = messageParameter;
+        message.messageParameter.taskComplexity = input.taskComplexity;
+        const start = Date.now();
+        await append(message);
+        const end = Date.now();
+        message.messageParameter.totalTime = (end - start) / 1000;
+        const llmResponseRating = messages
+          .slice(lastUserMessageIndex + 1)
+          .filter((m) => m.role === "system" || m.role === "tool")
+          .map((m) => {
+            const msg = m as MessageAssistant | MessageToolCallResponse;
+            return msg.messageRating;
+          });
+        const evaluationOutput: EvaluationOutput = {
+          messageParameter,
+          messageRating: llmResponseRating,
+        };
+        evaluation.outputs.push(evaluationOutput);
+        evaluationIndex = evaluationIndex + 1;
+      }
+    }
+  };
+
+  const saveChat = async () => {
+    const chat = getChat(messages);
+    // save the chat to json file using file-saver
+    const json = JSON.stringify(chat);
+    const file = new Blob([json], { type: "application/json" });
+    saveAs(file, "chat.json");
   };
 
   const updateDataBase = async (messages: Message[]): Promise<void> => {
@@ -601,14 +681,11 @@ export function useChat(params: UseChatParams): ChatCompletion {
     const abortController = new AbortController();
     abortControllerRef.current = abortController;
 
-    const start = Date.now();
     const { message: messageResponse, response: response } = await SendGpt(
       api as string,
       getChat(newMessages),
       () => abortControllerRef.current
     );
-    const end = Date.now();
-    messageResponse.messageRating.timeTaken = (end - start) / 1000;
 
     // Check if the AbortController has been aborted
     if (abortControllerRef.current.signal.aborted) {
@@ -780,6 +857,8 @@ export function useChat(params: UseChatParams): ChatCompletion {
     isMultipleToolCall,
     currentToolCall,
     setCurrentToolCall,
+    nextEvaluation,
+    saveChat,
   } as ChatCompletion;
 }
 

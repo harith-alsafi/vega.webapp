@@ -80,7 +80,7 @@ export function SingleChat({ message, index }: SingleChatProps) {
         >
           <ImageMessage src={src} />
         </CollapsableMessage>
-        <ChatMessage currentIndex={index} message={message} />
+        <ChatMessage showIcon={false} hideRating={true} currentIndex={index} message={message} />
       </div>
     );
   }
@@ -119,7 +119,7 @@ export function SingleChat({ message, index }: SingleChatProps) {
         >
           <PlotMessage {...data} />
         </CollapsableMessage>
-        <ChatMessage currentIndex={index} message={message} />
+        <ChatMessage showIcon={false} hideRating={true} currentIndex={index} message={message} />
       </div>
     );
   }

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import Image from "next/image";
 // import {
 //   Menubar,
@@ -19,7 +19,9 @@ import Image from "next/image";
 // import { TabsPanel } from "@/components/core/top-bar/tabs-panel";
 
 // import Visualizer from "next-route-visualizer";
-import CollapsableMessage from "@/components/chat/messages/collapsable-message";
+import CollapsableMessage, {
+  CollapsableContainer,
+} from "@/components/chat/messages/collapsable-message";
 import DeviceCarousel from "@/components/chat/device-carousel/device-carousel";
 import { useConnectionContext } from "@/lib/context/connection-context";
 import { DevicesExample } from "@/services/rasberry-pi";
@@ -143,13 +145,12 @@ export function MenuTest() {
 
 export function FlowTest() {
   return (
-    <div style={{ width: "100vw", height: "92vh" }}>
-      {" "}
+    <CollapsableContainer title="Gpt Flow Chart">
       <FlowChart
         nodes={GptResultExample.nodes}
         edges={GptResultExample.edges}
       />{" "}
-    </div>
+    </CollapsableContainer>
   );
 }
 
@@ -275,7 +276,15 @@ export function PlotTest2() {
   );
 }
 
-import { ScatterChart, Scatter, ReferenceArea, XAxis, YAxis, Line, LineChart } from "recharts";
+import {
+  ScatterChart,
+  Scatter,
+  ReferenceArea,
+  XAxis,
+  YAxis,
+  Line,
+  LineChart,
+} from "recharts";
 import React, { useState } from "react";
 
 const data = [
@@ -288,135 +297,149 @@ const data = [
 const MIN_ZOOM = 5; // adjust based on your data
 const DEFAULT_ZOOM = { x1: null, y1: null, x2: null, y2: null };
 import "./index.css";
-import PlotMessage, { PlotMessagesExample } from "@/components/chat/plots/plot-message";
+import PlotMessage, {
+  PlotMessagesExample,
+} from "@/components/chat/plots/plot-message";
 import MapMessage from "@/components/chat/map/map-message";
 import Visualizer from "next-route-visualizer";
+import FlowChart, {
+  GptResultExample,
+} from "@/components/chat/flows/flow-chart";
+import { Message, MessageToolCallResponse } from "@/services/chat-completion";
 
-export function PlotZoom(){
- // data currently on the plot
- const [filteredData, setFilteredData] = useState(data);
+export function PlotZoom() {
+  // data currently on the plot
+  const [filteredData, setFilteredData] = useState(data);
 
- // zoom coordinates
- const [zoomArea, setZoomArea] = useState(DEFAULT_ZOOM);
- // flag if currently zooming (press and drag)
- const [isZooming, setIsZooming] = useState(false);
- // flag if zoomed in
- const isZoomed = filteredData?.length !== data?.length;
+  // zoom coordinates
+  const [zoomArea, setZoomArea] = useState(DEFAULT_ZOOM);
+  // flag if currently zooming (press and drag)
+  const [isZooming, setIsZooming] = useState(false);
+  // flag if zoomed in
+  const isZoomed = filteredData?.length !== data?.length;
 
- // flag to show the zooming area (ReferenceArea)
- const showZoomBox =
-   isZooming &&
-   !(Math.abs(zoomArea.x1 - zoomArea.x2) < MIN_ZOOM) &&
-   !(Math.abs(zoomArea.y1 - zoomArea.y2) < MIN_ZOOM);
+  // flag to show the zooming area (ReferenceArea)
+  const showZoomBox =
+    isZooming &&
+    !(Math.abs(zoomArea.x1 - zoomArea.x2) < MIN_ZOOM) &&
+    !(Math.abs(zoomArea.y1 - zoomArea.y2) < MIN_ZOOM);
 
- // reset the states on zoom out
- function handleZoomOut() {
-   setFilteredData(data);
-   setZoomArea(DEFAULT_ZOOM);
- }
+  // reset the states on zoom out
+  function handleZoomOut() {
+    setFilteredData(data);
+    setZoomArea(DEFAULT_ZOOM);
+  }
 
- /**
-  * Two possible events:
-  * 1. Clicking on a dot(data point) to select
-  * 2. Clicking on the plot to start zooming
-  */
- function handleMouseDown(e, offset) {
-   setIsZooming(true);
-   console.log(e)
-   
-   const { chartX, chartY, activePayload, activeCoordinates } = e || {};
-   const {SyntheticEvent, nativeEvent} = offset || {};
-    console.log(nativeEvent)
-   console.log("chartX", chartX, "chartY", chartY, "activePayload", activePayload);
+  /**
+   * Two possible events:
+   * 1. Clicking on a dot(data point) to select
+   * 2. Clicking on the plot to start zooming
+   */
+  function handleMouseDown(e, offset) {
+    setIsZooming(true);
+    console.log(e);
 
-  const {offsetX, offsetY} = nativeEvent || {};
-  console.log("offsetX", offsetX, "offsetY", offsetY);
-  const xValue = activePayload[0] && activePayload[0].payload.x;
+    const { chartX, chartY, activePayload, activeCoordinates } = e || {};
+    const { SyntheticEvent, nativeEvent } = offset || {};
+    console.log(nativeEvent);
+    console.log(
+      "chartX",
+      chartX,
+      "chartY",
+      chartY,
+      "activePayload",
+      activePayload
+    );
+
+    const { offsetX, offsetY } = nativeEvent || {};
+    console.log("offsetX", offsetX, "offsetY", offsetY);
+    const xValue = activePayload[0] && activePayload[0].payload.x;
     const yValue = activePayload[0] && activePayload[0].payload.y;
-    setZoomArea({ x1: chartX-offsetX, y1: chartY-offsetY, x2: chartX-offsetX, y2: chartY -offsetY});
-   
- }
+    setZoomArea({
+      x1: chartX - offsetX,
+      y1: chartY - offsetY,
+      x2: chartX - offsetX,
+      y2: chartY - offsetY,
+    });
+  }
 
- // Update zoom end coordinates
- function handleMouseMove(e, offset) {
-   if (isZooming) {
-     // console.log("zoom selecting");
-     const { chartX, chartY, activePayload } = e || {};
-   const {offsetX, offsetY} = offset || {};
+  // Update zoom end coordinates
+  function handleMouseMove(e, offset) {
+    if (isZooming) {
+      // console.log("zoom selecting");
+      const { chartX, chartY, activePayload } = e || {};
+      const { offsetX, offsetY } = offset || {};
 
-     const xValue = activePayload[0] && activePayload[0].payload.x;
-     const yValue = activePayload[0] && activePayload[0].payload.y;
+      const xValue = activePayload[0] && activePayload[0].payload.x;
+      const yValue = activePayload[0] && activePayload[0].payload.y;
 
-     
-     setZoomArea((prev) => ({ ...prev, x2: chartX-offsetX, y2: chartY-offsetY }));
-   }
- }
+      setZoomArea((prev) => ({
+        ...prev,
+        x2: chartX - offsetX,
+        y2: chartY - offsetY,
+      }));
+    }
+  }
 
- // When zooming stops, update with filtered data points
- // Ignore if not enough zoom
- function handleMouseUp(e) {
-   if (isZooming) {
-     setIsZooming(false);
-     let { x1, y1, x2, y2 } = zoomArea;
+  // When zooming stops, update with filtered data points
+  // Ignore if not enough zoom
+  function handleMouseUp(e) {
+    if (isZooming) {
+      setIsZooming(false);
+      let { x1, y1, x2, y2 } = zoomArea;
 
-     // ensure x1 <= x2 and y1 <= y2
-     if (x1 > x2) [x1, x2] = [x2, x1];
-     if (y1 > y2) [y1, y2] = [y2, y1];
+      // ensure x1 <= x2 and y1 <= y2
+      if (x1 > x2) [x1, x2] = [x2, x1];
+      if (y1 > y2) [y1, y2] = [y2, y1];
 
-     if (x2 - x1 < MIN_ZOOM || y2 - y1 < MIN_ZOOM) {
-       // console.log("zoom cancel");
-     } else {
-       // console.log("zoom stop");
-       const dataPointsInRange = filteredData.filter(
-         (d) => d.x >= x1 && d.x <= x2 && d.y >= y1 && d.y <= y2
-       );
-       setFilteredData(dataPointsInRange);
-       setZoomArea(DEFAULT_ZOOM);
-     }
-   }
- }
- console.log(zoomArea)
- return (
-   <div className="plot-container">
-     {isZoomed && <button onClick={handleZoomOut}>Zoom Out</button>}
-     <LineChart
-       width={400}
-       height={400}
-       margin={{ top: 50 }}
-       onMouseDown={handleMouseDown}
-       onMouseMove={handleMouseMove}
-       onMouseUp={handleMouseUp}
-     >
-       <XAxis
-        // allowDataOverflow
-         type="number"
-         dataKey="x"
-         domain={["dataMin - 20", "dataMax + 20"]}
-       />
-       <YAxis
-        // allowDataOverflow
-         type="number"
-         dataKey="y"
-         domain={["dataMin - 50", "dataMax + 50"]}
-       />
-           <Line
-        dataKey="y"
-         data={data}
-         animationDuration={300}
-       />
-       {showZoomBox && (
-         <ReferenceArea
-
-           x1={zoomArea?.x1}
-           x2={zoomArea?.x2}
-           y1={zoomArea?.y1}
-           y2={zoomArea?.y2}
-         />
-       )}
-   
-     </LineChart>
-   </div>
- );
+      if (x2 - x1 < MIN_ZOOM || y2 - y1 < MIN_ZOOM) {
+        // console.log("zoom cancel");
+      } else {
+        // console.log("zoom stop");
+        const dataPointsInRange = filteredData.filter(
+          (d) => d.x >= x1 && d.x <= x2 && d.y >= y1 && d.y <= y2
+        );
+        setFilteredData(dataPointsInRange);
+        setZoomArea(DEFAULT_ZOOM);
+      }
+    }
+  }
+  console.log(zoomArea);
+  return (
+    <div className="plot-container">
+      {isZoomed && <button onClick={handleZoomOut}>Zoom Out</button>}
+      <LineChart
+        width={400}
+        height={400}
+        margin={{ top: 50 }}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+      >
+        <XAxis
+          // allowDataOverflow
+          type="number"
+          dataKey="x"
+          domain={["dataMin - 20", "dataMax + 20"]}
+        />
+        <YAxis
+          // allowDataOverflow
+          type="number"
+          dataKey="y"
+          domain={["dataMin - 50", "dataMax + 50"]}
+        />
+        <Line dataKey="y" data={data} animationDuration={300} />
+        {showZoomBox && (
+          <ReferenceArea
+            x1={zoomArea?.x1}
+            x2={zoomArea?.x2}
+            y1={zoomArea?.y1}
+            y2={zoomArea?.y2}
+          />
+        )}
+      </LineChart>
+    </div>
+  );
 }
 
 export function DialogDemo() {
@@ -462,7 +485,7 @@ export function DialogDemo() {
                   stroke="2"
                   bg-opacity="0"
                   speed="2"
-                  color="black" 
+                  color="black"
                 ></l-ring>
               </div>
             )}
@@ -473,15 +496,14 @@ export function DialogDemo() {
   );
 }
 
-
 export default function Home() {
   // return <DataPlotUi/>
-  return <MapMessage latitude="53.80978957968428" longitude="-1.5547106082858528"/>
+  // return <MapMessage latitude="53.80978957968428" longitude="-1.5547106082858528"/>
   // return <PlotZoom  />
   // return <PlotMessage {...PlotMessagesExample} />;
 
   // return <DeviceCarousel devices={DevicesExample}/>
-  // return <FlowTest/>
+  return <FlowTest />;
   // return <PlotTest />
   // return <MenuTest />
   // return <PlotTest2 />;
