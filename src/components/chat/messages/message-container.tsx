@@ -44,6 +44,7 @@ import { TbSubtask } from "react-icons/tb";
 import { TbFunctionFilled } from "react-icons/tb";
 import { BsGraphUpArrow } from "react-icons/bs";
 import { Separator } from "@/components/ui/separator";
+import { GiCardRandom } from "react-icons/gi";
 
 export interface MessageContainerProps {
   children: React.ReactNode;
@@ -175,7 +176,7 @@ export interface MessageRatingUiProps {
   message: MessageAssistant | MessageToolCallResponse;
   currentIndex: number;
 }
-
+import { FaCheckCircle } from "react-icons/fa";
 export function MessageRatingUi({
   message,
   currentIndex,
@@ -209,9 +210,11 @@ export function MessageRatingUi({
               <p className="">Rating</p>
               <div className="grow" />
               <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                <>
-                  <VerticalRatingStars finalRating={starRating} />
-                </>
+                <FaCheckCircle className="h-4 w-4 mr-1" />
+                {(rating.successRate === undefined
+                  ? "0"
+                  : rating.successRate.toFixed(1)) + " %"}
+                <VerticalRatingStars finalRating={starRating} />
               </div>
             </CardTitle>
             <CardDescription className="flex items-center space-x-2 text-sm text-muted-foreground">
@@ -236,76 +239,86 @@ export function MessageRatingUi({
               label="Speed"
               value={rating.speed}
               setValue={(val) => {
-                setRating({
-                  ...rating,
-                  speed: val,
-
-                  finalRating:
-                    (val +
-                      rating.accuracy +
-                      rating.relevance +
-                      rating.efficiency +
-                      rating.completion) /
-                    5,
-                });
-                message.messageRating = rating;
+                if (val > 0) {
+                  setRating({
+                    ...rating,
+                    speed: val,
+                    finalRating:
+                      (val +
+                        rating.accuracy +
+                        rating.relevance +
+                        rating.efficiency +
+                        rating.completion) /
+                      5,
+                  });
+                  message.messageRating = rating;
+                }
               }}
             />
             <LabeledSlider
               label="Accuracy"
               value={rating.accuracy}
               setValue={(val) => {
-                setRating({
-                  ...rating,
-                  accuracy: val,
+                if (val > 0) {
+                  setRating({
+                    ...rating,
+                    accuracy: val,
+                    successRate:
+                      (val + rating.relevance + rating.completion) / 3,
 
-                  finalRating:
-                    (val +
-                      rating.speed +
-                      rating.relevance +
-                      rating.efficiency +
-                      rating.completion) /
-                    5,
-                });
-                message.messageRating = rating;
+                    finalRating:
+                      (val +
+                        rating.speed +
+                        rating.relevance +
+                        rating.efficiency +
+                        rating.completion) /
+                      5,
+                  });
+                  message.messageRating = rating;
+                }
               }}
             />
             <LabeledSlider
               label="Completion"
               value={rating.completion}
               setValue={(val) => {
-                setRating({
-                  ...rating,
-                  completion: val,
-
-                  finalRating:
-                    (val +
-                      rating.accuracy +
-                      rating.relevance +
-                      rating.efficiency +
-                      rating.speed) /
-                    5,
-                });
-                message.messageRating = rating;
+                if (val > 0) {
+                  setRating({
+                    ...rating,
+                    completion: val,
+                    successRate: (rating.accuracy + rating.relevance + val) / 3,
+                    finalRating:
+                      (val +
+                        rating.accuracy +
+                        rating.relevance +
+                        rating.efficiency +
+                        rating.speed) /
+                      5,
+                  });
+                  message.messageRating = rating;
+                }
               }}
             />
             <LabeledSlider
               label="Relevance"
               value={rating.relevance}
               setValue={(val) => {
-                setRating({
-                  ...rating,
-                  relevance: val,
-
-                  finalRating:
-                    (val +
-                      rating.accuracy +
-                      rating.speed +
-                      rating.efficiency +
-                      rating.completion) /
-                    5,
-                });
-                message.messageRating = rating;
+                if (val > 0) {
+                  setRating({
+                    ...rating,
+                    relevance: val,
+                    successRate:
+                      (rating.accuracy + val + rating.completion) / 3,
+                    finalRating:
+                      (val +
+                        rating.accuracy +
+                        rating.speed +
+                        rating.efficiency +
+                        rating.completion) /
+                      5,
+                  });
+                  message.messageRating = rating;
+                }
               }}
             />
 
@@ -313,26 +326,28 @@ export function MessageRatingUi({
               label="Effieciency"
               value={rating.efficiency}
               setValue={(val) => {
-                setRating({
-                  ...rating,
-                  efficiency: val,
+                if (val > 0) {
+                  setRating({
+                    ...rating,
+                    efficiency: val,
 
-                  finalRating:
-                    (val +
-                      rating.accuracy +
-                      rating.relevance +
-                      rating.speed +
-                      rating.completion) /
-                    5,
-                });
-                message.messageRating = rating;
+                    finalRating:
+                      (val +
+                        rating.accuracy +
+                        rating.relevance +
+                        rating.speed +
+                        rating.completion) /
+                      5,
+                  });
+                  message.messageRating = rating;
+                }
               }}
             />
             <Button
-              onClick={() => {
+              onClick={async () => {
                 message.messageRating = rating;
                 messages[currentIndex] = message;
-                updateDataBase(messages);
+                await updateDataBase(messages);
               }}
               className="mt-2"
             >
@@ -353,20 +368,27 @@ export interface MessageParameterUiProps {
 export interface MessageParamLabelProps {
   icon: React.ReactNode;
   label: string;
-  value: number;
+  value: number | string;
+  valueClassName?: React.HtmlHTMLAttributes<HTMLDivElement>["className"];
 }
 
 export function MessageParamLabel({
   icon,
   label,
   value,
+  valueClassName,
 }: MessageParamLabelProps) {
   return (
     <div className="flex h-[35px] flex-row space-x-1 w-full items-center">
       <div className="w-fit ">{icon}</div>
       <div className="ml-1 flex-none w-fit ">{label}</div>
       <div className="flex-grow w-full" />
-      <p className="flex-none h-6 w-[60px] text-center text-sm font-bold bg-primary text-primary-foreground shadow rounded-md whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 overflow-clip">
+      <p
+        className={cn(
+          "flex-none h-6 w-[60px] text-center text-sm font-bold bg-primary text-primary-foreground shadow rounded-md whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 overflow-clip",
+          valueClassName
+        )}
+      >
         {value}
       </p>
     </div>
@@ -401,16 +423,6 @@ export function MessageParameterUi({
         <Separator className="mt-2 mb-2" />
         <CardContent className="flex flex-col p-0 text-sm">
           <MessageParamLabel
-            label="Total Tools"
-            icon={<MdFunctions className="w-6 h-6" />}
-            value={msgParam.totalTools}
-          />
-          <MessageParamLabel
-            label="Temperature"
-            icon={<CiTempHigh className="w-6 h-6" />}
-            value={msgParam.temperature}
-          />
-          <MessageParamLabel
             label="Character Size"
             icon={<RiCharacterRecognitionFill className="w-6 h-6" />}
             value={msgParam.characterSize}
@@ -422,9 +434,9 @@ export function MessageParameterUi({
           />
           <Separator className="mt-1 mb-1" />
           <MessageParamLabel
-            label="Total Context"
+            label="Generated Context"
             icon={<BsWechat className="w-6 h-6" />}
-            value={msgParam.totalContext}
+            value={msgParam.generatedContext}
           />
           <MessageParamLabel
             label="Called Tools"
@@ -452,6 +464,8 @@ export default function MessageContainer({
   ...props
 }: MessageContainerProps) {
   const isUser = message.role === "user";
+  const { chatCompletion } = useChatCompletionContext();
+  const { updateDataBase } = chatCompletion;
   if (
     (message.role === "assistant" || message.role === "tool") &&
     message.messageRating === undefined
@@ -462,12 +476,10 @@ export default function MessageContainer({
   if (message.role === "user" && message.messageParameter === undefined) {
     message.messageParameter = {
       totalTime: GetRndInteger(0, 100),
-      totalTools: GetRndInteger(0, 10),
-      temperature: GetRndInteger(0, 100),
       calledTools: GetRndInteger(0, 10),
       characterSize: GetRndInteger(0, 10),
       taskComplexity: GetRndInteger(0, 10),
-      totalContext: GetRndInteger(0, 10),
+      generatedContext: GetRndInteger(0, 10),
     };
   }
 

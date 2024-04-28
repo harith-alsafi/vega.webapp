@@ -4,7 +4,7 @@ import { ThemeToggle } from "@/components/core/top-bar/theme-toggle";
 import { SidebarMobile } from "@/components/chat/panel/sidebar-mobile";
 import { SidebarToggle } from "@/components/chat/panel/sidebar-toggle";
 import { ChatHistory } from "@/components/chat/messages/chat-history";
-
+import ConnectionDialog from "@/components/core/top-bar/connection-dialog";
 import {
   Dialog,
   DialogContent,
@@ -14,114 +14,82 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { IoMdHelpCircleOutline } from "react-icons/io";
+import {
+  QuestionMarkCircledIcon,
+  QuestionMarkIcon,
+} from "@radix-ui/react-icons";
+import { PiMarkerCircle, PiMarkerCircleThin } from "react-icons/pi";
+import Link from "next/link";
 
-export function RaspberryPiConnect() {
+export interface KeyboardKeyProps {
+  shortcuts: Array<string>;
+  description: string;
+}
+
+export function KeyboardKey({ shortcuts, description }: KeyboardKeyProps) {
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline">Edit Connection</Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Edit Connection</DialogTitle>
-          <DialogDescription>
-            Make changes to the current connection of the raspberry pi
-          </DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Name
-            </Label>
-            <Input
-              id="name"
-              defaultValue="Pedro Duarte"
-              className="col-span-3"
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="username" className="text-right">
-              Username
-            </Label>
-            <Input
-              id="username"
-              defaultValue="@peduarte"
-              className="col-span-3"
-            />
-          </div>
+    <div className="flex flex-row align-middle">
+      {shortcuts.map((shortcut, index) => (
+        <div key={index}>
+          <kbd
+            key={index}
+            className="inline-block p-1 text-xs bg-gray-200 dark:bg-slate-700 rounded"
+          >
+            {shortcut}
+          </kbd>
+          {index < shortcuts.length - 1 && <span className="mx-1">+</span>}
         </div>
-        <DialogFooter>
-          <Button type="submit">Save changes</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      ))}
+      <p className="ml-2">{description}</p>
+    </div>
   );
 }
 
-import {
-  CalendarIcon,
-  EnvelopeClosedIcon,
-  FaceIcon,
-  GearIcon,
-  PersonIcon,
-  RocketIcon,
-} from "@radix-ui/react-icons";
-
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
-  CommandShortcut,
-} from "@/components/ui/command";
-import { CommandBox } from "./command-box";
-import ConnectionDialog from "./connection-dialog";
-
-export function CommandDemo() {
+export function HelpPopup() {
   return (
-    <Command className="rounded-lg border shadow-md">
-      <CommandInput placeholder="Type a command or search..." />
-      <CommandList>
-        <CommandEmpty>No results found.</CommandEmpty>
-        <CommandGroup heading="Suggestions">
-          <CommandItem>
-            <CalendarIcon className="mr-2 h-4 w-4" />
-            <span>Calendar</span>
-          </CommandItem>
-          <CommandItem>
-            <FaceIcon className="mr-2 h-4 w-4" />
-            <span>Search Emoji</span>
-          </CommandItem>
-          <CommandItem>
-            <RocketIcon className="mr-2 h-4 w-4" />
-            <span>Launch</span>
-          </CommandItem>
-        </CommandGroup>
-        <CommandSeparator />
-        <CommandGroup heading="Settings">
-          <CommandItem>
-            <PersonIcon className="mr-2 h-4 w-4" />
-            <span>Profile</span>
-            <CommandShortcut>⌘P</CommandShortcut>
-          </CommandItem>
-          <CommandItem>
-            <EnvelopeClosedIcon className="mr-2 h-4 w-4" />
-            <span>Mail</span>
-            <CommandShortcut>⌘B</CommandShortcut>
-          </CommandItem>
-          <CommandItem>
-            <GearIcon className="mr-2 h-4 w-4" />
-            <span>Settings</span>
-            <CommandShortcut>⌘S</CommandShortcut>
-          </CommandItem>
-        </CommandGroup>
-      </CommandList>
-    </Command>
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline">
+          <QuestionMarkCircledIcon className="h-4 w-4 lg:mr-1" />
+          <p className="hidden lg:block">Help</p>
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="">
+        <DialogHeader>
+          <DialogTitle>Help</DialogTitle>
+        </DialogHeader>
+        <DialogDescription>
+          <p>This is some documentation</p>
+        </DialogDescription>
+        <div className="text-sm flex-col flex space-y-1 align-middle">
+          <KeyboardKey
+            shortcuts={["Ctrl", "U"]}
+            description="Stops the current message"
+          />
+          <KeyboardKey
+            shortcuts={["Ctrl", "Q"]}
+            description="Regenerates the current message"
+          />
+          <KeyboardKey
+            shortcuts={["Ctrl", "K"]}
+            description="Shows the evaluation result"
+          />
+          <KeyboardKey
+            shortcuts={["Ctrl", "N"]}
+            description="Shifts to the next message in evaluation"
+          />
+          <KeyboardKey
+            shortcuts={["Ctrl", "I"]}
+            description="Lunches information of current chat"
+          />
+          <KeyboardKey
+            shortcuts={["Ctrl", "Shift", "S"]}
+            description="Saves current chat as JSON file"
+          />
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -133,26 +101,16 @@ export function Header() {
           <ChatHistory />
         </SidebarMobile>
         <SidebarToggle />
-        {/* <ConnectionSelector />   */}
         <ConnectionDialog />
-        {/* <Button variant="outline">Schematic</Button>  */}
-        {/* <Button variant="outline">Functions</Button> */}
       </div>
-      {/* <TabsPanel /> */}
-      {/* <CommandDemo /> */}
       <div className="flex items-center justify-end space-x-2">
-        {/* <a
-          target="_blank"
-          href="https://github.com/vercel/nextjs-ai-chatbot/"
-          rel="noopener noreferrer"
-          className={cn(buttonVariants({ variant: 'outline' }))}
-        >
-          <IconGitHub />
-          <span className="hidden ml-2 md:flex">GitHub</span>
-        </a> */}
-        <CommandBox />
-
-        {/* <RaspberryPiConnect /> */}
+        <Button asChild variant="outline">
+          <Link href="/evaluation">
+          <PiMarkerCircle className="h-4 w-4 lg:mr-1" />
+          <p className="hidden lg:block">Evaluation</p>
+          </Link>
+        </Button>
+        <HelpPopup />
         <ThemeToggle />
       </div>
     </header>

@@ -28,11 +28,51 @@ import * as math from "mathjs";
 import { saveAs } from "file-saver";
 
 export const chatNameSpace = "chat:";
+export const evalNameSpace = "eval:";
 export const piNameSpace = "pi:1";
 
-// System prompt
-export interface MessageSystem extends ChatCompletionSystemMessageParam {
-  isIgnored?: boolean;
+export interface RatingBase {
+  finalRating: number; // out of 3 -> based on speed, accuracy, relevance, efficiency, completion
+  speed: number; // out of 100
+  accuracy: number; // out of 100
+  relevance: number; // out of 100
+  efficiency: number; // out of 100
+  completion: number; // out of 100
+  successRate: number; // out of 100 -> based on completion, accuracy, relevance
+}
+
+export interface RatingResult extends RatingBase {
+  taskComplexity: number;
+}
+
+export interface ChatBase {
+  top_p: number;
+  temperature: number;
+  title: string;
+}
+
+export interface EvaluationResult extends ChatBase {
+  results: RatingResult[];
+  average: RatingResult;
+}
+
+export interface EvaluationInfo extends ChatBase {
+  content: EvaluationContent;
+}
+
+export interface MessageParameter {
+  characterSize: number;
+  generatedContext: number;
+  calledTools: number;
+  taskComplexity: number;
+  totalTime: number;
+}
+
+export interface MessageRating extends RatingBase {
+  timeTaken: number; // in seconds
+  contextUsed: number; // in characters
+  toolsCalled: number;
+  comments: string;
 }
 
 export interface EvaluationInput {
@@ -50,14 +90,9 @@ export interface EvaluationContent {
   outputs: EvaluationOutput[];
 }
 
-export interface MessageParameter {
-  characterSize: number;
-  totalContext: number;
-  calledTools: number;
-  taskComplexity: number;
-  temperature: number;
-  totalTools: number;
-  totalTime: number;
+// System prompt
+export interface MessageSystem extends ChatCompletionSystemMessageParam {
+  isIgnored?: boolean;
 }
 
 // User message
@@ -85,48 +120,6 @@ export interface MessageToolCallResponse
   isIgnored?: boolean;
   comments?: string;
   messageRating: MessageRating;
-}
-
-export function GetRndInteger(min: number, max: number) {
-  return Math.floor(Math.random() * (max - min)) + min;
-}
-
-export interface MessageRating {
-  timeTaken: number; // in seconds
-  contextUsed: number; // in characters
-  toolsCalled: number;
-  finalRating: number; // out of 3
-  comments: string;
-  speed: number; // out of 3
-  accuracy: number; // out of 3
-  relevance: number; // out of 3
-  efficiency: number; // out of 3
-  completion: number; // out of 3
-}
-
-export function GenerateMessageRating(): MessageRating {
-  const speed = GetRndInteger(10, 90);
-  const accuracy = GetRndInteger(10, 90);
-  const relevance = GetRndInteger(10, 90);
-  const efficiency = GetRndInteger(10, 90);
-  const completion = GetRndInteger(10, 90);
-  const toolsCalled = GetRndInteger(0, 5);
-  const contextUsed = GetRndInteger(0, 1000);
-  const finalRating =
-    (speed + accuracy + relevance + efficiency + completion) / 5;
-
-  return {
-    toolsCalled: toolsCalled,
-    contextUsed: contextUsed,
-    timeTaken: GetRndInteger(10, 90),
-    finalRating: finalRating,
-    comments: "",
-    speed: speed,
-    accuracy: accuracy,
-    relevance: relevance,
-    efficiency: efficiency,
-    completion: completion,
-  };
 }
 
 // Assistant message
@@ -184,6 +177,7 @@ export interface ChatCompletion {
   isMultipleToolCall: boolean;
   completionStatus: CompletionStatus;
   currentToolCall: string | null;
+  evaluation?: EvaluationContent;
   append: (message: MessageUser) => Promise<void>;
   reload: () => void;
   stop: () => void;
@@ -196,7 +190,12 @@ export interface ChatCompletion {
 }
 
 export interface UseChatParams
-  extends Omit<Chat, "messages" | "model" | "id" | "title" | "path"> {
+  extends Omit<
+    Chat,
+    "messages" | "model" | "id" | "title" | "path" | "evaluation"
+  > {
+  initialEvaluation?: EvaluationContent;
+
   systemPrompt: MessageSystem;
   chatDbName?: string;
   id?: string;
@@ -213,6 +212,36 @@ export interface UseChatParams
     toolCalls: ChatCompletionMessageToolCall[]
   ) => Promise<Message[]>;
   onDbUpdate?: (chat: Chat) => void;
+}
+
+export function GetRndInteger(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
+export function GenerateMessageRating(): MessageRating {
+  const speed = GetRndInteger(10, 90);
+  const accuracy = GetRndInteger(10, 90);
+  const relevance = GetRndInteger(10, 90);
+  const efficiency = GetRndInteger(10, 90);
+  const completion = GetRndInteger(10, 90);
+  const toolsCalled = GetRndInteger(0, 5);
+  const contextUsed = GetRndInteger(0, 1000);
+  const finalRating =
+    (speed + accuracy + relevance + efficiency + completion) / 5;
+
+  return {
+    successRate: 0,
+    toolsCalled: toolsCalled,
+    contextUsed: contextUsed,
+    timeTaken: GetRndInteger(10, 90),
+    finalRating: finalRating,
+    comments: "",
+    speed: speed,
+    accuracy: accuracy,
+    relevance: relevance,
+    efficiency: efficiency,
+    completion: completion,
+  };
 }
 
 export const preprocessLaTeX = (content: string) => {
@@ -550,6 +579,7 @@ export function useChat(params: UseChatParams): ChatCompletion {
     raspi_id,
     title,
     model,
+    top_p,
     temperature,
     tools,
     onResponse,
@@ -559,7 +589,7 @@ export function useChat(params: UseChatParams): ChatCompletion {
     initialMessages,
     onDbUpdate,
     chatDbName,
-    evaluation,
+    initialEvaluation,
   } = params;
 
   let actualChatDbName = chatDbName ?? chatNameSpace;
@@ -568,12 +598,16 @@ export function useChat(params: UseChatParams): ChatCompletion {
   api = api ?? "/api/chat";
   initialMessages = initialMessages ?? [];
   let actualTemperature = temperature ?? 0.7;
+  let actualtTopP = top_p ?? 0.7;
   let finalModel = model ?? "gpt-3.5-turbo";
   let lastUserMessageIndex = 0;
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
+  const [evaluation, setEvaluation] = useState<EvaluationContent | undefined>(
+    initialEvaluation
+  );
   const [isMultipleToolCall, setIsMultipleToolCall] = useState(false);
   const [currentToolCall, setCurrentToolCall] = useState<string | null>(null);
   const [completionStatus, setCompletionStatus] =
@@ -584,18 +618,9 @@ export function useChat(params: UseChatParams): ChatCompletion {
     newMessages: Message[],
     message: MessageUser
   ) => {
-    const contextSum =
-      newMessages
-        .map((m) => m.content?.length ?? 0)
-        .reduce((a, b) => a + b, 0) +
-      systemPrompt.content.length +
-      message.content.length;
-
     return {
-      temperature: actualTemperature,
-      totalTools: tools?.length ?? 0,
       characterSize: message.content.length,
-      totalContext: contextSum,
+      generatedContext: 0,
       calledTools: 0,
       taskComplexity: 0,
       totalTime: 0,
@@ -612,6 +637,7 @@ export function useChat(params: UseChatParams): ChatCompletion {
     }
 
     return {
+      top_p: actualtTopP,
       systemPrompt,
       title: title as string,
       id: actualId,
@@ -633,13 +659,17 @@ export function useChat(params: UseChatParams): ChatCompletion {
           content: input.content,
           role: "user",
         } as MessageUser;
-        const messageParameter = generateMessageParameter(messages, message);
+        let messageParameter = generateMessageParameter(messages, message);
+        messageParameter.taskComplexity = input.taskComplexity;
         message.messageParameter = messageParameter;
-        message.messageParameter.taskComplexity = input.taskComplexity;
-        const start = Date.now();
         await append(message);
-        const end = Date.now();
-        message.messageParameter.totalTime = (end - start) / 1000;
+        const lastUserMessage = messages[lastUserMessageIndex];
+        if (
+          lastUserMessage.role === "user" &&
+          lastUserMessage.messageParameter !== undefined
+        ) {
+          messageParameter = lastUserMessage.messageParameter;
+        }
         const llmResponseRating = messages
           .slice(lastUserMessageIndex + 1)
           .filter((m) => m.role === "system" || m.role === "tool")
@@ -784,6 +814,7 @@ export function useChat(params: UseChatParams): ChatCompletion {
       }
     }
     try {
+      const start = Date.now();
       setCompletionStatus("Getting LLM response ...");
       let response: MessageReturn | null = await sendMessages(
         newMessages,
@@ -791,23 +822,37 @@ export function useChat(params: UseChatParams): ChatCompletion {
       );
 
       newMessages = response.newMessages;
-
+      let lastUserMessage = newMessages[lastUserMessageIndex];
+      if (
+        lastUserMessage.role === "user" &&
+        lastUserMessage.messageParameter !== undefined
+      ) {
+        lastUserMessage.messageParameter.generatedContext +=
+          response.messageResponse.content?.length ?? 0;
+        newMessages[lastUserMessageIndex] = lastUserMessage;
+      }
       response = await runToolCall(response.messageResponse, newMessages);
       while (response != null) {
         newMessages = response.newMessages;
-        const lastUserMessage = newMessages[lastUserMessageIndex];
-        if (lastUserMessage.role === "user") {
-          if (lastUserMessage.messageParameter === undefined) {
-            lastUserMessage.messageParameter = generateMessageParameter(
-              newMessages,
-              lastUserMessage
-            );
-          }
+        if (
+          lastUserMessage.role === "user" &&
+          lastUserMessage.messageParameter !== undefined
+        ) {
+          lastUserMessage.messageParameter.generatedContext +=
+            response.messageResponse.content?.length ?? 0;
           lastUserMessage.messageParameter.calledTools += 1;
           newMessages[lastUserMessageIndex] = lastUserMessage;
         }
 
         response = await runToolCall(response.messageResponse, newMessages);
+      }
+      const end = Date.now();
+      if (
+        lastUserMessage.role === "user" &&
+        lastUserMessage.messageParameter !== undefined
+      ) {
+        lastUserMessage.messageParameter.totalTime = (end - start) / 1000;
+        newMessages[lastUserMessageIndex] = lastUserMessage;
       }
     } catch (err) {
       if (onError && err instanceof Error) {
@@ -859,6 +904,7 @@ export function useChat(params: UseChatParams): ChatCompletion {
     setCurrentToolCall,
     nextEvaluation,
     saveChat,
+    evaluation,
   } as ChatCompletion;
 }
 

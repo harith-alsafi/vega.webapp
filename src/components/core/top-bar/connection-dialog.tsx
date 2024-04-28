@@ -123,7 +123,7 @@ export default function ConnectionDialog() {
       <DialogTrigger asChild>
         <Button
           variant="outline"
-          className="relative h-8 justify-start  bg-background text-sm font-normal shadow-none w-48"
+          className="relative h-9 justify-start  bg-background text-sm font-normal shadow-none w-40 lg:w-44"
         >
           <span className="relative flex h-3 w-3 mr-2">
             <span
@@ -138,7 +138,7 @@ export default function ConnectionDialog() {
             ></span>
           </span>
           {connectionState.ip}
-          <div className="absolute right-[0.3rem] top-[0.3rem] hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
+          <div className="absolute right-[0.3rem] top-[0.42rem] hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
             <Pencil1Icon className="h-4 w-4" />
           </div>
         </Button>

@@ -349,7 +349,7 @@ export default function PlotMessage({
   yLabel,
 }: PiPlotResponse) {
   // Sort each series data based on x values
-  const sortedData = data.map((series) => ({
+  const sortedData: DataSeries[] = data.map((series) => ({
     ...series,
     data: series.data.slice().sort((a, b) => a.x - b.x),
   }));

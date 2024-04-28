@@ -7,16 +7,17 @@ import {
   DefaultOnToolCall,
   CreateSystemPrompt,
   GenerateMessageRating,
-  EvaluationInput,
-  MessageUser,
   EvaluationContent,
+  EvaluationInfo,
+  chatNameSpace,
+  evalNameSpace,
 } from "@/services/chat-completion";
 import { cn } from "@/lib/utils";
 import { ChatList } from "@/components/chat/messages/chat-list";
 import { ChatPanel } from "@/components/chat/messages/chat-panel";
 import { EmptyScreen } from "@/components/chat/messages/empty-screen";
 import { ChatScrollAnchor } from "@/components/chat/messages/chat-scroll-anchor";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { toast } from "sonner";
 import {
@@ -33,6 +34,20 @@ import {
 } from "@/components/ui/context-menu";
 import { ChatCompletionProvider } from "@/lib/context/chat-completion-context";
 import { HotkeysProvider, useHotkeys } from "react-hotkeys-hook";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { MessageParamLabel } from "@/components/chat/messages/message-container";
+import { MdFunctions } from "react-icons/md";
+import { PiCircuitry } from "react-icons/pi";
+import { CiTempHigh } from "react-icons/ci";
+import { GiCardRandom } from "react-icons/gi";
+import { TiMessages } from "react-icons/ti";
+import { BsRobot } from "react-icons/bs";
 
 export interface ChatProps extends React.ComponentProps<"div"> {
   initialMessages?: Message[];
@@ -129,13 +144,10 @@ async function getToolCall(
 
 const isEvaluation = false;
 
-export interface EvaluationInfo {
-  title: string;
-  content: EvaluationContent;
-}
-
 const EvaluationArray: Array<EvaluationInfo> = [
   {
+    top_p: 0.9,
+    temperature: 0.7,
     title: "Single component test",
     content: {
       inputs: [
@@ -153,6 +165,8 @@ const Evaluation: EvaluationInfo | undefined =
   EvaluationArray.length > 0 ? EvaluationArray[0] : undefined;
 
 export function Chat({ id, initialMessages, className, title }: ChatProps) {
+  const [statsIsOpen, setStatsIsOpen] = useState(false);
+  const [evaluationResultIsOpen, setEvaluationResultIsOpen] = useState(false);
   const { connectionState } = useConnectionContext();
   const systemPrompt = CreateSystemPrompt(connectionState);
   const tools = connectionState.tools.map((tool) => ({
@@ -165,9 +179,19 @@ export function Chat({ id, initialMessages, className, title }: ChatProps) {
   })) as Array<ChatCompletionTool>;
   const path = usePathname();
   const [updatedSideBar, setUpdatedSideBar] = useState(false);
+  const top_p =
+    isEvaluation && Evaluation !== undefined ? Evaluation.top_p : 0.9;
+  const temperature =
+    isEvaluation && Evaluation !== undefined ? Evaluation.temperature : 0.7;
+  const model = "gpt-3.5-turbo";
   const chatCompletion = useChat({
+    chatDbName:
+      isEvaluation && Evaluation !== undefined ? evalNameSpace : chatNameSpace,
+    model,
+    temperature,
+    top_p,
     title: isEvaluation && Evaluation !== undefined ? Evaluation.title : title,
-    evaluation:
+    initialEvaluation:
       isEvaluation && Evaluation !== undefined ? Evaluation.content : undefined,
     systemPrompt: systemPrompt,
     api: "/api/chat/openai",
@@ -183,7 +207,6 @@ export function Chat({ id, initialMessages, className, title }: ChatProps) {
       if (!path.includes("chat")) {
         window.history.pushState({}, "", `/chat/${id}`);
       }
-      // console.log("OnFinish: ", message);
     },
     onError(error) {
       console.log("messages error", messages);
@@ -217,9 +240,11 @@ export function Chat({ id, initialMessages, className, title }: ChatProps) {
     completionStatus,
     saveChat,
     nextEvaluation,
+    evaluation,
   } = chatCompletion;
 
   useHotkeys(
+    // next evaluation
     "ctrl+n",
     async () => {
       if (isEvaluation && Evaluation !== undefined) {
@@ -230,6 +255,41 @@ export function Chat({ id, initialMessages, className, title }: ChatProps) {
   );
 
   useHotkeys(
+    "ctrl+q", // regenate
+    async () => {
+      await reload();
+    },
+    { scopes: ["chat"] }
+  );
+
+  useHotkeys(
+    "ctrl+u", // regenate
+    async () => {
+      await stop();
+    },
+    { scopes: ["chat"] }
+  );
+
+  useHotkeys(
+    // show chat stats
+    "ctrl+i",
+    async () => {
+      setStatsIsOpen(true);
+    },
+    { scopes: ["chat"] }
+  );
+
+  useHotkeys(
+    // show evaluation result
+    "ctrl+k",
+    async () => {
+      setEvaluationResultIsOpen(true);
+    },
+    { scopes: ["chat"] }
+  );
+
+  useHotkeys(
+    // save chat
     "ctrl+shift+s",
     async () => {
       await saveChat();
@@ -274,6 +334,72 @@ export function Chat({ id, initialMessages, className, title }: ChatProps) {
             <ContextMenuItem>Rerun All</ContextMenuItem>
           </ContextMenuContent>
         </ContextMenu>
+        <Dialog
+          open={statsIsOpen}
+          onOpenChange={(val) => {
+            setStatsIsOpen(val);
+          }}
+        >
+          <DialogContent className="">
+            <DialogHeader>
+              <DialogTitle>Chat Stats</DialogTitle>
+            </DialogHeader>
+            <div className="flex-col flex">
+              <MessageParamLabel
+                label="LLM Model"
+                icon={<BsRobot className="w-6 h-6" />}
+                valueClassName="w-[100px]"
+                value={model}
+              />
+              <MessageParamLabel
+                label="Total Messages"
+                icon={<TiMessages className="w-6 h-6" />}
+                valueClassName="w-[100px]"
+                value={messages.length}
+              />
+              <MessageParamLabel
+                label="Total Tools"
+                icon={<MdFunctions className="w-6 h-6" />}
+                valueClassName="w-[100px]"
+                value={connectionState.tools.length}
+              />
+              <MessageParamLabel
+                label="Total Devices"
+                icon={<PiCircuitry className="w-6 h-6" />}
+                valueClassName="w-[100px]"
+                value={connectionState.devices.length}
+              />
+              <MessageParamLabel
+                label="Temperature"
+                icon={<CiTempHigh className="w-6 h-6" />}
+                valueClassName="w-[100px]"
+                value={temperature}
+              />
+              <MessageParamLabel
+                label="Top P"
+                icon={<GiCardRandom className="w-6 h-6" />}
+                valueClassName="w-[100px]"
+                value={top_p}
+              />
+            </div>
+          </DialogContent>
+        </Dialog>
+        {isEvaluation && Evaluation !== undefined ? (
+          <Dialog
+            open={evaluationResultIsOpen}
+            onOpenChange={(val) => {
+              setEvaluationResultIsOpen(val);
+            }}
+          >
+            <DialogContent className="">
+              <DialogHeader>
+                <DialogTitle>Evluation Result</DialogTitle>
+              </DialogHeader>
+
+              <div className="flex-col flex"></div>
+            </DialogContent>
+          </Dialog>
+        ) : null}
       </ChatCompletionProvider>
     </HotkeysProvider>
   );
