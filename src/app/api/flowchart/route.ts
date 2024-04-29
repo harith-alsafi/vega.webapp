@@ -148,6 +148,18 @@ export async function POST(req: Request) {
         data: parsedMessage,
         ui: "flow-chart",
         isIgnored: true,
+        messageRating: {
+          accuracy: 0,
+          completion: 0,
+          contextUsed: message.content.length,
+          efficiency: 0,
+          finalRating: 0,
+          relevance: 0,
+          speed: 0,
+          successRate: 0,
+          timeTaken: 0,
+          toolsCalled: 1,
+        },
       };
     }
   } catch (e) {

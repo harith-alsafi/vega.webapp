@@ -31,13 +31,17 @@ export const chatNameSpace = "chat:";
 export const evalNameSpace = "eval:";
 export const piNameSpace = "pi:1";
 
-export interface RatingBase {
-  finalRating: number; // out of 3 -> based on speed, accuracy, relevance, efficiency, completion
+export interface InputRating {
   speed: number; // out of 100
   accuracy: number; // out of 100
   relevance: number; // out of 100
   efficiency: number; // out of 100
   completion: number; // out of 100
+}
+
+export interface RatingBase extends InputRating {
+  finalRating: number; // out of 3 -> based on speed, accuracy, relevance, efficiency, completion
+
   successRate: number; // out of 100 -> based on completion, accuracy, relevance
 }
 
@@ -72,12 +76,13 @@ export interface MessageRating extends RatingBase {
   timeTaken: number; // in seconds
   contextUsed: number; // in characters
   toolsCalled: number;
-  comments: string;
+  comments?: string;
 }
 
 export interface EvaluationInput {
   content: string;
   taskComplexity: number;
+  porbable_tools: string[];
 }
 
 export interface EvaluationOutput {
@@ -98,7 +103,7 @@ export interface MessageSystem extends ChatCompletionSystemMessageParam {
 // User message
 export interface MessageUser extends ChatCompletionUserMessageParam {
   isIgnored?: boolean;
-  messageParameter?: MessageParameter;
+  messageParameter: MessageParameter;
 }
 
 export type UiType =
@@ -118,7 +123,7 @@ export interface MessageToolCallResponse
   data?: string | object | PiPlotResponse | GptFlowChartResult | PiDeviceInfo;
   status?: "loading" | "error" | "success";
   isIgnored?: boolean;
-  comments?: string;
+  error?: string;
   messageRating: MessageRating;
 }
 
@@ -146,6 +151,12 @@ export type CompletionStatus =
   | "FlowChart"
   | string;
 
+export type EvaluationStatus =
+  | "GeneratingTest"
+  | "None"
+  | "RunningTests"
+  | string;
+
 export interface MessageToolCall
   extends ChatCompletionMessageToolCall.Function {
   runCondition?: string;
@@ -171,13 +182,15 @@ export interface Chat extends Omit<ChatCompletionCreateParamsBase, "messages"> {
 }
 
 export interface ChatCompletion {
+  temperature: number;
+  top_p: number;
+  model: string;
   isLoading: boolean;
   messages: Message[];
   input: string;
   isMultipleToolCall: boolean;
   completionStatus: CompletionStatus;
   currentToolCall: string | null;
-  evaluation?: EvaluationContent;
   append: (message: MessageUser) => Promise<void>;
   reload: () => void;
   stop: () => void;
@@ -185,8 +198,11 @@ export interface ChatCompletion {
   updateDataBase: (messages: Message[]) => Promise<void>;
   nextEvaluation: () => Promise<void>;
   saveChat: () => Promise<void>;
+  saveEvaluation: () => Promise<void>;
   setInput: React.Dispatch<React.SetStateAction<string>>;
   setCurrentToolCall: React.Dispatch<React.SetStateAction<string | null>>;
+  isEvaluation: boolean;
+  setIsEvaluation: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export interface UseChatParams
@@ -195,7 +211,7 @@ export interface UseChatParams
     "messages" | "model" | "id" | "title" | "path" | "evaluation"
   > {
   initialEvaluation?: EvaluationContent;
-
+  initialEvaluations?: EvaluationInfo[];
   systemPrompt: MessageSystem;
   chatDbName?: string;
   id?: string;
@@ -228,9 +244,9 @@ export function GenerateMessageRating(): MessageRating {
   const contextUsed = GetRndInteger(0, 1000);
   const finalRating =
     (speed + accuracy + relevance + efficiency + completion) / 5;
-
+  const successRate = (speed + accuracy + relevance) / 3;
   return {
-    successRate: 0,
+    successRate: successRate,
     toolsCalled: toolsCalled,
     contextUsed: contextUsed,
     timeTaken: GetRndInteger(10, 90),
@@ -258,11 +274,6 @@ export const preprocessLaTeX = (content: string) => {
   );
   return inlineProcessedContent;
 };
-
-export interface ChatImageCapttion {
-  text: string;
-  url: string;
-}
 
 export async function RunCode(
   code: string,
@@ -398,7 +409,17 @@ export function RegressionModel(
   return markdown;
 }
 
-export async function ImageDescriptionAgent(
+interface MessageReturn {
+  newMessages: Message[];
+  messageResponse: Message;
+}
+
+export interface ImageCaptionData {
+  text: string;
+  url: string;
+}
+
+export async function ImageCaptionAgent(
   text: string,
   imageUrl: string,
   abortController?: () => AbortController | null
@@ -409,7 +430,7 @@ export async function ImageDescriptionAgent(
       body: JSON.stringify({
         text: text,
         url: imageUrl,
-      } as ChatImageCapttion),
+      } as ImageCaptionData),
       headers: {
         "Content-Type": "application/json",
       },
@@ -427,7 +448,7 @@ export async function ImageDescriptionAgent(
   return null;
 }
 
-export async function SendGpt(
+export async function ChatAgent(
   api: string,
   chat: Chat,
   abortController?: () => AbortController | null
@@ -462,9 +483,71 @@ export async function SendGpt(
   return { message, response };
 }
 
-interface MessageReturn {
-  newMessages: Message[];
-  messageResponse: Message;
+export interface TestGeneratorAgentData {
+  tools: ChatCompletionTool[];
+  devices: PiDeviceInfo[];
+  complexity?: number;
+  dataSize: number;
+  isSingleToolCall?: boolean;
+}
+
+export async function TestGeneratorAgent(
+  data: TestGeneratorAgentData,
+  abortController?: () => AbortController | null
+): Promise<EvaluationInput[] | undefined> {
+  try {
+    const response = await fetch("/api/tester", {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      signal: abortController?.()?.signal,
+    });
+    const json = await response.json();
+    if (json) {
+      const inputs = json as EvaluationInput[];
+      if (inputs.length > 0) {
+        return inputs;
+      }
+    }
+  } catch (err) {
+    console.log(err);
+  }
+
+  return undefined;
+}
+
+export interface EvaluationAgentData {
+  userMessage: MessageUser;
+  generatedMessaages: (MessageAssistant | MessageToolCallResponse)[];
+  tools: ChatCompletionTool[];
+  devices: PiDeviceInfo[];
+}
+
+export async function EvaluationAgent(
+  data: EvaluationAgentData,
+  abortController?: () => AbortController | null
+): Promise<EvaluationOutput | undefined> {
+  try {
+    const response = await fetch("/api/evaluator", {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      signal: abortController?.()?.signal,
+    });
+    const json = await response.json();
+    if (json) {
+      const inputs = json as EvaluationOutput;
+      return inputs;
+    }
+  } catch (err) {
+    console.log(err);
+  }
+
+  return undefined;
 }
 
 export async function FlowChartAgent(
@@ -525,11 +608,12 @@ export async function GetToolCallRaspi(
       ui: firstData.ui,
       data: firstData.data,
       content: firstData.result,
+      error: firstData.error,
       messageRating: GenerateMessageRating(),
     };
     if (firstData.ui === "image" && firstData.data) {
       const src = firstData.data as string;
-      const message = await ImageDescriptionAgent(
+      const message = await ImageCaptionAgent(
         "Get the description of the image",
         src
       );
@@ -589,10 +673,14 @@ export function useChat(params: UseChatParams): ChatCompletion {
     initialMessages,
     onDbUpdate,
     chatDbName,
-    initialEvaluation,
+    initialEvaluations,
   } = params;
-
-  let actualChatDbName = chatDbName ?? chatNameSpace;
+  const [isEvaluation, setIsEvaluation] = useState(false);
+  const [evaluations, setEvaluations] = useState<EvaluationInfo[] | undefined>(
+    initialEvaluations
+  );
+  let actualChatDbName =
+    chatDbName ?? (isEvaluation ? evalNameSpace : chatNameSpace);
   let actualId = id ?? nanoid();
   let actualPath = path ?? `/chat/${id}`;
   api = api ?? "/api/chat";
@@ -605,14 +693,13 @@ export function useChat(params: UseChatParams): ChatCompletion {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
-  const [evaluation, setEvaluation] = useState<EvaluationContent | undefined>(
-    initialEvaluation
-  );
   const [isMultipleToolCall, setIsMultipleToolCall] = useState(false);
   const [currentToolCall, setCurrentToolCall] = useState<string | null>(null);
   const [completionStatus, setCompletionStatus] =
     useState<CompletionStatus>("None");
   let evaluationIndex = 0;
+  let evaluationInfoIndex = 0;
+  let currentEvaluation: EvaluationContent | undefined = undefined;
 
   const generateMessageParameter = (
     newMessages: Message[],
@@ -647,43 +734,84 @@ export function useChat(params: UseChatParams): ChatCompletion {
       model: finalModel,
       temperature: actualTemperature,
       tools,
-      evaluation,
+      evaluation: currentEvaluation,
     };
   };
 
+  const generateTests = async () => {};
+
+  const getEvaluationOutput = async (
+    evaluationInfo: EvaluationInfo
+  ): Promise<EvaluationOutput> => {
+    currentEvaluation = evaluationInfo.content;
+    title = evaluationInfo.title;
+    actualTemperature = evaluationInfo.temperature;
+    actualtTopP = evaluationInfo.top_p;
+    const input = currentEvaluation.inputs[evaluationIndex];
+    const message = {
+      content: input.content,
+      role: "user",
+    } as MessageUser;
+    let messageParameter = generateMessageParameter(messages, message);
+    messageParameter.taskComplexity = input.taskComplexity;
+    message.messageParameter = messageParameter;
+    await append(message);
+    const lastUserMessage = messages[lastUserMessageIndex];
+    if (
+      lastUserMessage.role === "user" &&
+      lastUserMessage.messageParameter !== undefined
+    ) {
+      messageParameter = lastUserMessage.messageParameter;
+    }
+    const llmResponseRating = messages
+      .slice(lastUserMessageIndex + 1)
+      .filter((m) => m.role === "system" || m.role === "tool")
+      .map((m) => {
+        const msg = m as MessageAssistant | MessageToolCallResponse;
+        return msg.messageRating;
+      });
+    const evaluationOutput: EvaluationOutput = {
+      messageParameter,
+      messageRating: llmResponseRating,
+    };
+    return evaluationOutput;
+  };
+
   const nextEvaluation = async () => {
-    if (evaluation && evaluation.inputs.length > 0) {
-      if (evaluationIndex < evaluation.inputs.length - 1) {
-        const input = evaluation.inputs[evaluationIndex];
-        const message = {
-          content: input.content,
-          role: "user",
-        } as MessageUser;
-        let messageParameter = generateMessageParameter(messages, message);
-        messageParameter.taskComplexity = input.taskComplexity;
-        message.messageParameter = messageParameter;
-        await append(message);
-        const lastUserMessage = messages[lastUserMessageIndex];
-        if (
-          lastUserMessage.role === "user" &&
-          lastUserMessage.messageParameter !== undefined
-        ) {
-          messageParameter = lastUserMessage.messageParameter;
-        }
-        const llmResponseRating = messages
-          .slice(lastUserMessageIndex + 1)
-          .filter((m) => m.role === "system" || m.role === "tool")
-          .map((m) => {
-            const msg = m as MessageAssistant | MessageToolCallResponse;
-            return msg.messageRating;
-          });
-        const evaluationOutput: EvaluationOutput = {
-          messageParameter,
-          messageRating: llmResponseRating,
-        };
-        evaluation.outputs.push(evaluationOutput);
+    if (
+      initialEvaluations &&
+      initialEvaluations.length > 0 &&
+      evaluationInfoIndex < initialEvaluations.length
+    ) {
+      let evaluationInfo = initialEvaluations[evaluationIndex];
+      let evaluationContent = evaluationInfo.content;
+
+      if (evaluationIndex < evaluationContent.inputs.length - 1) {
+        // still on current evaluation
+        const output = await getEvaluationOutput(evaluationInfo);
+        initialEvaluations[evaluationInfoIndex].content.outputs.push(output);
+        evaluationIndex = evaluationIndex + 1;
+      } else {
+        // next chat evaluation
+        evaluationIndex = 0;
+        evaluationInfoIndex = evaluationInfoIndex + 1;
+        id = nanoid();
+        setMessages([]);
+
+        evaluationInfo = initialEvaluations[evaluationInfoIndex];
+        evaluationContent = evaluationInfo.content;
+        const output = await getEvaluationOutput(evaluationInfo);
+        initialEvaluations[evaluationInfoIndex].content.outputs.push(output);
         evaluationIndex = evaluationIndex + 1;
       }
+    }
+  };
+
+  const saveEvaluation = async () => {
+    if (initialEvaluations !== undefined) {
+      const json = JSON.stringify(initialEvaluations);
+      const file = new Blob([json], { type: "application/json" });
+      saveAs(file, "evaluation.json");
     }
   };
 
@@ -711,7 +839,7 @@ export function useChat(params: UseChatParams): ChatCompletion {
     const abortController = new AbortController();
     abortControllerRef.current = abortController;
 
-    const { message: messageResponse, response: response } = await SendGpt(
+    const { message: messageResponse, response: response } = await ChatAgent(
       api as string,
       getChat(newMessages),
       () => abortControllerRef.current
@@ -768,6 +896,9 @@ export function useChat(params: UseChatParams): ChatCompletion {
         if (flowToolCall) {
           if (flowToolCall.role === "tool") {
             flowToolCall.messageRating.timeTaken = (end - start) / 1000;
+            flowToolCall.messageRating.contextUsed =
+              flowToolCall.content.length;
+            flowToolCall.messageRating.toolsCalled = 1;
           }
           newMessages = [...newMessages, flowToolCall];
           setMessages(newMessages);
@@ -904,7 +1035,12 @@ export function useChat(params: UseChatParams): ChatCompletion {
     setCurrentToolCall,
     nextEvaluation,
     saveChat,
-    evaluation,
+    temperature: actualTemperature,
+    top_p: actualtTopP,
+    model: finalModel,
+    saveEvaluation,
+    isEvaluation,
+    setIsEvaluation,
   } as ChatCompletion;
 }
 

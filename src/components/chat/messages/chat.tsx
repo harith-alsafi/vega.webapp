@@ -7,15 +7,14 @@ import {
   DefaultOnToolCall,
   CreateSystemPrompt,
   GenerateMessageRating,
-  EvaluationContent,
   EvaluationInfo,
-  chatNameSpace,
-  evalNameSpace,
 } from "@/services/chat-completion";
 import { cn } from "@/lib/utils";
 import { ChatList } from "@/components/chat/messages/chat-list";
 import { ChatPanel } from "@/components/chat/messages/chat-panel";
-import { EmptyScreen } from "@/components/chat/messages/empty-screen";
+import {
+  EmptyScreen,
+} from "@/components/chat/messages/empty-screen";
 import { ChatScrollAnchor } from "@/components/chat/messages/chat-scroll-anchor";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
@@ -37,7 +36,6 @@ import { HotkeysProvider, useHotkeys } from "react-hotkeys-hook";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -142,8 +140,6 @@ async function getToolCall(
   return undefined;
 }
 
-const isEvaluation = false;
-
 const EvaluationArray: Array<EvaluationInfo> = [
   {
     top_p: 0.9,
@@ -154,15 +150,13 @@ const EvaluationArray: Array<EvaluationInfo> = [
         {
           content: "",
           taskComplexity: 8,
+          porbable_tools: [],
         },
       ],
       outputs: [],
     },
   },
 ];
-
-const Evaluation: EvaluationInfo | undefined =
-  EvaluationArray.length > 0 ? EvaluationArray[0] : undefined;
 
 export function Chat({ id, initialMessages, className, title }: ChatProps) {
   const [statsIsOpen, setStatsIsOpen] = useState(false);
@@ -179,20 +173,10 @@ export function Chat({ id, initialMessages, className, title }: ChatProps) {
   })) as Array<ChatCompletionTool>;
   const path = usePathname();
   const [updatedSideBar, setUpdatedSideBar] = useState(false);
-  const top_p =
-    isEvaluation && Evaluation !== undefined ? Evaluation.top_p : 0.9;
-  const temperature =
-    isEvaluation && Evaluation !== undefined ? Evaluation.temperature : 0.7;
-  const model = "gpt-3.5-turbo";
+
   const chatCompletion = useChat({
-    chatDbName:
-      isEvaluation && Evaluation !== undefined ? evalNameSpace : chatNameSpace,
-    model,
-    temperature,
-    top_p,
-    title: isEvaluation && Evaluation !== undefined ? Evaluation.title : title,
-    initialEvaluation:
-      isEvaluation && Evaluation !== undefined ? Evaluation.content : undefined,
+    initialEvaluations: EvaluationArray,
+    title: title,
     systemPrompt: systemPrompt,
     api: "/api/chat/openai",
     initialMessages,
@@ -240,14 +224,19 @@ export function Chat({ id, initialMessages, className, title }: ChatProps) {
     completionStatus,
     saveChat,
     nextEvaluation,
-    evaluation,
+    temperature,
+    top_p,
+    model,
+    saveEvaluation,
+    isEvaluation,
+    setIsEvaluation,
   } = chatCompletion;
 
   useHotkeys(
     // next evaluation
     "ctrl+n",
     async () => {
-      if (isEvaluation && Evaluation !== undefined) {
+      if (isEvaluation) {
         await nextEvaluation();
       }
     },
@@ -263,7 +252,7 @@ export function Chat({ id, initialMessages, className, title }: ChatProps) {
   );
 
   useHotkeys(
-    "ctrl+u", // regenate
+    "ctrl+u", // stop
     async () => {
       await stop();
     },
@@ -297,6 +286,15 @@ export function Chat({ id, initialMessages, className, title }: ChatProps) {
     { scopes: ["chat"] }
   );
 
+  useHotkeys(
+    // save evaluation
+    "ctrl+alt+s",
+    async () => {
+      await saveEvaluation();
+    },
+    { scopes: ["chat"] }
+  );
+
   return (
     <HotkeysProvider initiallyActiveScopes={["chat"]}>
       <ChatCompletionProvider chatCompletion={chatCompletion}>
@@ -311,7 +309,11 @@ export function Chat({ id, initialMessages, className, title }: ChatProps) {
               <ChatScrollAnchor trackVisibility={isLoading} />
             </>
           ) : (
-            <EmptyScreen setInput={setInput} />
+            <EmptyScreen
+              isEvaluation={isEvaluation}
+              setIsEvaluation={setIsEvaluation}
+              setInput={setInput}
+            />
           )}
         </div>
         <ContextMenu>
@@ -384,7 +386,7 @@ export function Chat({ id, initialMessages, className, title }: ChatProps) {
             </div>
           </DialogContent>
         </Dialog>
-        {isEvaluation && Evaluation !== undefined ? (
+        {isEvaluation ? (
           <Dialog
             open={evaluationResultIsOpen}
             onOpenChange={(val) => {

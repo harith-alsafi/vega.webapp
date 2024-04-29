@@ -1,4 +1,4 @@
-import { ChatImageCapttion, MessageAssistant } from "@/services/chat-completion";
+import { ImageCaptionData, MessageAssistant } from "@/services/chat-completion";
 import OpenAI from "openai";
 
 export const openai = new OpenAI({
@@ -7,7 +7,7 @@ export const openai = new OpenAI({
 
 export async function POST(req: Request) {
   const json = await req.json();
-  const caption = json as ChatImageCapttion;
+  const caption = json as ImageCaptionData;
   const response = await openai.chat.completions.create({
     model: "gpt-4-vision-preview",
     temperature: 0.7,

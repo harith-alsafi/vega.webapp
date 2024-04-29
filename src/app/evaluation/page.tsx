@@ -40,7 +40,7 @@ export function CarouselContainer({ children, title }: CarouselContainerProps) {
     <CarouselItem>
       <Card className="p-1 w-full h-full">
         <CardHeader className="p-1 mb-1 underline">{title}</CardHeader>
-        <div className="p-1 w-[600px] h-[600px]">{children}</div>
+        <div className="p-1 h-[800px] w-[900px]">{children}</div>
       </Card>
     </CarouselItem>
   );
@@ -258,9 +258,12 @@ export function ComplexityVsRating({ array }: { array: RatingResult[] }) {
       data={dataSeries}
       xLabel="Task Complexity"
       yLabel="Rating"
+      plotClassName="h-[750px] w-[880px]"
     />
   );
 }
+
+
 
 /**
  * @description
@@ -341,7 +344,7 @@ export default function Page() {
     <div className="relative flex h-[calc(100vh_-_theme(spacing.16))] overflow-hidden">
       <div className="group w-full overflow-auto pl-0 animate-in duration-300 ease-in-out peer-[[data-state=open]]:lg:pl-[250px] peer-[[data-state=open]]:xl:pl-[300px]">
         <div className="flex justify-center items-center h-full  w-full ">
-          <Carousel>
+          <Carousel orientation="vertical">
             <CarouselContent className="w-fit h-fit">
               <CarouselItem>hiii </CarouselItem>
               <CarouselItem>hiii </CarouselItem>

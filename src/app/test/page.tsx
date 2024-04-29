@@ -644,27 +644,41 @@ const csvData = [
 
 export function PlotlyDemo() {
   // Plotting the mesh
-  var data = [
+  var data: Plotly.Data[] = [
     {
       type: "surface",
       z: csvData,
       x: Array.from({ length: csvData[0].length }, (x, i) => i),
       y: Array.from({ length: csvData.length }, (x, i) => i),
-      contours: {
-        z: {
-          show: true,
-          usecolormap: true,
-          highlightcolor: "#42f462",
-          project: { z: true },
-        },
-      },
+
+      // contours: {
+      //   z: {
+      //     show: true,
+      //     usecolormap: true,
+      //     highlightcolor: "#42f462",
+      //     project: { z: true },
+      //   },
+      // },
     },
   ];
   return (
-    <div
-      className="w-full h-[900px]"
-    >
-      <Plot className="h-full" data={data} />
+    <div className="w-full h-[900px]">
+      <Plot
+        layout={{
+          xaxis: {
+            title: "x-axis",
+            
+          },
+          yaxis: {
+            title: "y-axis",
+          },
+          zaaxis: {
+            title: "z-axis",
+          }
+        }}
+        className="h-full"
+        data={data}
+      />
     </div>
   );
 }

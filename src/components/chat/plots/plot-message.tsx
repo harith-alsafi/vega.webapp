@@ -1,6 +1,6 @@
 "use client";
 import { Card } from "@/components/ui/card";
-import React, { useState } from "react";
+import React, { HTMLProps, useState } from "react";
 import {
   LineChart,
   Line,
@@ -27,6 +27,7 @@ import {
 import { DataSeries, PiPlotResponse } from "@/services/rasberry-pi";
 import "./style.css";
 import { CategoricalChartState } from "recharts/types/chart/generateCategoricalChart";
+import { cn } from "@/lib/utils";
 
 const colors = ["#82ca9d", "#8884d8", "#ffc658", "pink", "#ff7300"];
 
@@ -342,12 +343,17 @@ export function PlotInterface({
   );
 }
 
+export interface PlotMessageProps extends PiPlotResponse {
+  plotClassName?: string;
+}
+
 export default function PlotMessage({
   data,
   title,
   xLabel,
   yLabel,
-}: PiPlotResponse) {
+  plotClassName,
+}: PlotMessageProps) {
   // Sort each series data based on x values
   const sortedData: DataSeries[] = data.map((series) => ({
     ...series,
@@ -369,7 +375,7 @@ export default function PlotMessage({
         <TabsTrigger value="plot">Plot</TabsTrigger>
         <TabsTrigger value="data-summary">Data Summary</TabsTrigger>
       </TabsList>
-      <TabsContent value="plot" className="h-96">
+      <TabsContent value="plot" className={cn("h-96", plotClassName)}>
         <PlotInterface
           sortedData={sortedData}
           xLabel={xLabel}
