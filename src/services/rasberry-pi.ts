@@ -120,6 +120,7 @@ export type PiFunctionCallResponse =  PiFunctionCallResponseData | PiFunctionCal
 export const GetToolCalslUrl = "/get-tools";
 export const RunToolCallUrl = "/run-tools";
 export const GetDevicesUrl = "/get-devices";
+export const ResetDevicesUrl = "/reset-devices";  
 
 export const ToolsExample: Array<ChatCompletionTool["function"]> = [
   {
@@ -216,6 +217,15 @@ export async function RunToolCalls(
   const json = await response.json()
   const data = json as PiFunctionCallResponse[];
   return data;
+}
+
+export async function ResetDevices(pi: PiConnection): Promise<void>{
+  await fetch(pi.url+ResetDevicesUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 }
 
 export async function GetDevices(

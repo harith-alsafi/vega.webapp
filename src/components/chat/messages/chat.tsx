@@ -12,9 +12,7 @@ import {
 import { cn } from "@/lib/utils";
 import { ChatList } from "@/components/chat/messages/chat-list";
 import { ChatPanel } from "@/components/chat/messages/chat-panel";
-import {
-  EmptyScreen,
-} from "@/components/chat/messages/empty-screen";
+import { EmptyScreen } from "@/components/chat/messages/empty-screen";
 import { ChatScrollAnchor } from "@/components/chat/messages/chat-scroll-anchor";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
@@ -142,6 +140,7 @@ async function getToolCall(
 
 const EvaluationArray: Array<EvaluationInfo> = [
   {
+    evaluationType: "ComplexityOnly",
     top_p: 0.9,
     temperature: 0.7,
     title: "Single component test",
@@ -175,7 +174,9 @@ export function Chat({ id, initialMessages, className, title }: ChatProps) {
   const [updatedSideBar, setUpdatedSideBar] = useState(false);
 
   const chatCompletion = useChat({
-    initialEvaluations: EvaluationArray,
+    connectionState,
+    devices: connectionState.devices,
+    // initialEvaluations: EvaluationArray,
     title: title,
     systemPrompt: systemPrompt,
     api: "/api/chat/openai",
@@ -188,7 +189,7 @@ export function Chat({ id, initialMessages, className, title }: ChatProps) {
       }
     },
     async onFinish(message, isAfterOnToolCall) {
-      if (!path.includes("chat")) {
+      if (!path.includes("chat") && !isEvaluation) {
         window.history.pushState({}, "", `/chat/${id}`);
       }
     },
@@ -224,12 +225,16 @@ export function Chat({ id, initialMessages, className, title }: ChatProps) {
     completionStatus,
     saveChat,
     nextEvaluation,
+    runAllEvaluations,
+    generateTests,
     temperature,
     top_p,
     model,
     saveEvaluation,
     isEvaluation,
     setIsEvaluation,
+    evaluationStatus,
+    evaluations,
   } = chatCompletion;
 
   useHotkeys(
@@ -247,6 +252,14 @@ export function Chat({ id, initialMessages, className, title }: ChatProps) {
     "ctrl+q", // regenate
     async () => {
       await reload();
+    },
+    { scopes: ["chat"] }
+  );
+
+  useHotkeys(
+    "ctrl+alt+q", // toggle evaluation
+    async () => {
+      setIsEvaluation(!isEvaluation);
     },
     { scopes: ["chat"] }
   );
@@ -310,6 +323,10 @@ export function Chat({ id, initialMessages, className, title }: ChatProps) {
             </>
           ) : (
             <EmptyScreen
+              evaluations={evaluations}
+              evaluationStatus={evaluationStatus}
+              generateTests={generateTests}
+              runAllEvaluations={runAllEvaluations}
               isEvaluation={isEvaluation}
               setIsEvaluation={setIsEvaluation}
               setInput={setInput}

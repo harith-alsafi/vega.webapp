@@ -1,7 +1,7 @@
 import {
   Chat,
-  GenerateMessageRating,
   MessageAssistant,
+  MessageRating,
 } from "@/services/chat-completion";
 import OpenAI from "openai";
 import {
@@ -11,6 +11,36 @@ import {
   ChatCompletionToolMessageParam,
   ChatCompletionUserMessageParam,
 } from "openai/resources";
+
+export function GetRndInteger(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
+export function GenerateMessageRating(): MessageRating {
+  const speed = GetRndInteger(10, 90);
+  const accuracy = GetRndInteger(10, 90);
+  const relevance = GetRndInteger(10, 90);
+  const efficiency = GetRndInteger(10, 90);
+  const completion = GetRndInteger(10, 90);
+  const toolsCalled = GetRndInteger(0, 5);
+  const contextUsed = GetRndInteger(0, 1000);
+  const finalRating =
+    (speed + accuracy + relevance + efficiency + completion) / 5;
+  const successRate = (speed + accuracy + relevance) / 3;
+  return {
+    successRate: successRate,
+    toolsCalled: toolsCalled,
+    contextUsed: contextUsed,
+    timeTaken: GetRndInteger(10, 90),
+    finalRating: finalRating,
+    comments: "",
+    speed: speed,
+    accuracy: accuracy,
+    relevance: relevance,
+    efficiency: efficiency,
+    completion: completion,
+  };
+}
 
 export const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,

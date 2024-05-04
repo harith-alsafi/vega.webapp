@@ -142,13 +142,44 @@ const EvaluationInputSample: EvaluationInput[] = [
   },
 ];
 
-const systemPrompt = `Your purpose is generating evaluation messages for a chat system that has a list of connected devices, and a list of available functionality, you are supposed to generate a given number of evaluation messages with the following JSON schema ${JSON.stringify(EvaluationInputSample)}, keep in mind you have to make sure that each functionality is used at least once, for example if user asks for 20 messages you then proceed to generate 20 evaluation messages, I REPEAT make sure you ONLY give the response using the JSON schema`;
+const systemPrompt = `Your purpose is generating evaluation messages for a chat system that has a list of connected devices, and a list of available functionality, you are supposed to generate a given number of evaluation messages with the following JSON schema ${JSON.stringify(
+  EvaluationInputSample
+)} make sure you only use the given JSON schema and nothing else`;
 
+export async function getResponse(
+  msg: string
+): Promise<EvaluationInput | undefined> {
+  try {
+    const res = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      response_format: { type: "json_object" },
+      messages: [
+        {
+          role: "system",
+          content: systemPrompt,
+        },
+        {
+          role: "user",
+          content: msg,
+        },
+      ],
+      temperature: 0.7,
+    });
+
+    const response = res.choices[0].message;
+    if (response.content) {
+      return JSON.parse(response.content) as EvaluationInput;
+    }
+  } catch (e) {
+    return undefined;
+  }
+  return undefined;
+}
 
 export async function POST(req: Request) {
   const json = await req.json();
   const tester = json as TestGeneratorAgentData;
-  let message = `Generate a total of ${tester.dataSize} evaluation messages,`;
+  let message = `Generate an evaluation message using the known JSON schema`;
   if (tester.complexity) {
     message += ` with all messages having a complexity of ${tester.complexity} `;
   } else {
@@ -157,31 +188,16 @@ export async function POST(req: Request) {
   message += `given the list of available functions: ${JSON.stringify(
     tester.tools
   )} and the list of connected devices: ${JSON.stringify(tester.devices)} `;
-  let resultData: EvaluationInput[] | undefined = undefined;
-  console.log(systemPrompt)
+  let resultData: EvaluationInput | undefined = undefined;
+  let responseString = "";
   try {
-    console.log(message);
-    const res = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages: [
-        {
-          role: "system",
-          content: systemPrompt,
-        },
-        {
-          role: "user",
-          content: message,
-        },
-      ],
-      temperature: 0.8,
-    });
-
-    const response = res.choices[0].message;
-    console.log(response);
-    if (response.content) {
-      resultData = JSON.parse(response.content) as EvaluationInput[];
+    resultData = await getResponse(message);
+    while (!resultData) {
+      resultData = await getResponse(message);
     }
-  } catch (e) {}
+  } catch (e) {
+    console.log(responseString);
+  }
 
   return Response.json(resultData);
 }

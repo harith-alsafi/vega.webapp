@@ -26,7 +26,7 @@ const rankingSample: InputRating = {
 
 const systemPrompt = `You are an expert at evaluating a chat system that has a list of connected devices, and a list of available functionality, you will be given a user message and a system response, you will have to rate the system response based on a criteria which you will give in the following JSON schema keeping in mind that each field is from 1 to 99: ${JSON.stringify(
   rankingSample
-)} make sure you ONLY give the response using the JSON schema`;
+)} make sure you ONLY give the response using this exact criteria from the JSON schema`;
 
 export function getMessage(
   user: MessageUser,
@@ -72,20 +72,23 @@ export async function getResponse(
   message: string,
   generatedMessageRating: MessageRating
 ): Promise<MessageRating | undefined> {
-  generatedMessageRating = generatedMessageRating ?? {
-    accuracy: 0,
-    completion: 0,
-    efficiency: 0,
-    relevance: 0,
-    speed: 0,
-    finalRating: 0,
-    successRate: 0,
-    contextUsed: 0,
-    timeTaken: 0,
-    toolsCalled: 0,
-  } as MessageRating;
+  generatedMessageRating =
+    generatedMessageRating ??
+    ({
+      accuracy: 0,
+      completion: 0,
+      efficiency: 0,
+      relevance: 0,
+      speed: 0,
+      finalRating: 0,
+      successRate: 0,
+      contextUsed: 0,
+      timeTaken: 0,
+      toolsCalled: 0,
+    } as MessageRating);
   const res = await openai.chat.completions.create({
     model: "gpt-3.5-turbo",
+    response_format: { type: "json_object" },
     messages: [
       {
         role: "system",
@@ -123,12 +126,23 @@ export async function getResponse(
   return undefined;
 }
 
+export async function brutForceResponse(
+  message: string,
+  generatedMessageRating: MessageRating
+): Promise<MessageRating> {
+  let rating: MessageRating | undefined = undefined;
+  while (!rating) {
+    rating = await getResponse(message, generatedMessageRating);
+  }
+  return rating;
+}
+
 export async function POST(req: Request) {
   const json = await req.json();
   const evaluator = json as EvaluationAgentData;
   if (evaluator.generatedMessaages.length > 0) {
     const data = evaluator.generatedMessaages.map((message) => {
-      return getResponse(
+      return brutForceResponse(
         getMessage(
           evaluator.userMessage,
           message,

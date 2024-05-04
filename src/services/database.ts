@@ -1,6 +1,6 @@
 "use server";
 
-import { Chat } from "@/services/chat-completion";
+import { Chat, EvaluationInfo } from "@/services/chat-completion";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "redis";
@@ -25,10 +25,24 @@ export async function getClient() {
 
 const chatNameSpace = "chat:";
 const piNameSpace = "pi:1";
+const valNameSpace = "val:1";
 
 export async function UpdatePiConnection(pi: PiConnection): Promise<void> {
   const redisClient = await getClient();
   await redisClient.set(`${piNameSpace}`, JSON.stringify(pi));
+}
+
+export interface EvaluationDatabase {
+  evaluations: EvaluationInfo[];
+  lastEvaluationIndex: number;
+  lastEvaluationContentIndex: number;
+}
+
+export async function UpdateEvaluation(
+  evaluation: EvaluationDatabase
+): Promise<void> {
+  const redisClient = await getClient();
+  await redisClient.set(`${valNameSpace}`, JSON.stringify(evaluation));
 }
 
 export async function GetPiConnection(): Promise<PiConnection | null> {
@@ -44,7 +58,23 @@ export async function GetPiConnection(): Promise<PiConnection | null> {
   }
 }
 
-export async function UpdateChatWithNameSpace(namespace: string, chat: Chat): Promise<void> {
+export async function GetEvaluation(): Promise<EvaluationDatabase | null> {
+  const redisClient = await getClient();
+  try {
+    const val = await redisClient.get(`${valNameSpace}`);
+    return val === null || val === undefined
+      ? null
+      : (JSON.parse(val) as EvaluationDatabase);
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+}
+
+export async function UpdateChatWithNameSpace(
+  namespace: string,
+  chat: Chat
+): Promise<void> {
   const redisClient = await getClient();
   await redisClient.set(`${namespace}${chat.id}`, JSON.stringify(chat));
 }
@@ -53,7 +83,11 @@ export async function UpdateChat(chat: Chat): Promise<void> {
   await UpdateChatWithNameSpace(chatNameSpace, chat);
 }
 
-export async function GetChatKeysWithNameSpace(namespace: string): Promise<string[]> {
+export async function UpdateEvaluations(evaluations: Chat[]): Promise<void> {}
+
+export async function GetChatKeysWithNameSpace(
+  namespace: string
+): Promise<string[]> {
   const redisClient = await getClient();
 
   try {
@@ -69,7 +103,9 @@ export async function GetChatKeys(): Promise<string[]> {
   return GetChatKeysWithNameSpace(chatNameSpace);
 }
 
-export async function GetChatsWithNameSpace(namespace: string): Promise<Chat[]> {
+export async function GetChatsWithNameSpace(
+  namespace: string
+): Promise<Chat[]> {
   const redisClient = await getClient();
 
   try {
@@ -93,7 +129,10 @@ export async function GetChats(): Promise<Chat[]> {
   return GetChatsWithNameSpace(chatNameSpace);
 }
 
-export async function GetChatWithNameSpace(namespace: string, id: string): Promise<Chat | null> {
+export async function GetChatWithNameSpace(
+  namespace: string,
+  id: string
+): Promise<Chat | null> {
   const redisClient = await getClient();
 
   try {
@@ -111,7 +150,11 @@ export async function GetChat(id: string): Promise<Chat | null> {
   return GetChatWithNameSpace(chatNameSpace, id);
 }
 
-export async function RemoveChatWithNameSpace(namespace: string, id: string, path: string) {
+export async function RemoveChatWithNameSpace(
+  namespace: string,
+  id: string,
+  path: string
+) {
   const redisClient = await getClient();
 
   await redisClient.del(`${namespace}${id}`);
@@ -123,7 +166,9 @@ export async function RemoveChat(id: string, path: string) {
   // return revalidatePath(path);
 }
 
-export async function ClearChatsWithNameSpace(namespace: string): Promise<void> {
+export async function ClearChatsWithNameSpace(
+  namespace: string
+): Promise<void> {
   const redisClient = await getClient();
 
   const keys = await GetChatKeysWithNameSpace(namespace);

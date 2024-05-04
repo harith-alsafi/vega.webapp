@@ -53,6 +53,7 @@
     "framer-motion": "^10.16.16",
     "google-map-react": "^2.2.1",
     "huggingface": "^1.4.0",
+    "jszip": "^3.10.1",
     "langchain": "^0.1.5",
     "ldrs": "^1.0.1",
     "markdown-table": "^3.0.3",

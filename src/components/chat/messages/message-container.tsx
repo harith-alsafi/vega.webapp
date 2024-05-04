@@ -416,7 +416,7 @@ export function MessageParameterUi({
           </TooltipProvider>
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-[230px] ">
+      <PopoverContent className="w-[270px] ">
         <CardHeader className="p-0">
           <CardTitle>Message Details</CardTitle>
         </CardHeader>
@@ -465,7 +465,7 @@ export default function MessageContainer({
 }: MessageContainerProps) {
   const isUser = message.role === "user";
   const { chatCompletion } = useChatCompletionContext();
-  const { updateDataBase } = chatCompletion;
+  const { updateDataBase, isEvaluation } = chatCompletion;
   if (
     (message.role === "assistant" || message.role === "tool") &&
     message.messageRating === undefined
@@ -498,7 +498,8 @@ export default function MessageContainer({
           <div className="flex flex-col items-center">
             <IconOpenAI className="rounded-md shadow border bg-primary text-primary-foreground " />
             {(message.role === "assistant" || message.role === "tool") &&
-            (hideRating === undefined || hideRating === false) ? (
+            (hideRating === undefined || hideRating === false) &&
+            isEvaluation ? (
               <MessageRatingUi currentIndex={currentIndex} message={message} />
             ) : null}
           </div>
@@ -506,7 +507,7 @@ export default function MessageContainer({
         {showIcon && isUser ? (
           message.role === "user" &&
           message.messageParameter !== undefined &&
-          (hideParameter === undefined || hideParameter === false) ? (
+          (hideParameter === undefined || hideParameter === false)? (
             <MessageParameterUi currentIndex={currentIndex} message={message} />
           ) : (
             <IconUser className="shadow border bg-background rounded-md" />

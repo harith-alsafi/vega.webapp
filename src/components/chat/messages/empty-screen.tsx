@@ -4,6 +4,8 @@ import { IconArrowRight } from "@/components/ui/icons";
 import { ChatCompletion } from "@/services/chat-completion";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { ring } from "ldrs";
+ring.register();
 
 const exampleMessages = [
   {
@@ -20,16 +22,26 @@ const exampleMessages = [
   },
 ];
 
-export interface EmptyScreenProps {
-  setInput: ChatCompletion["setInput"];
-  setIsEvaluation: ChatCompletion["setIsEvaluation"];
-  isEvaluation: ChatCompletion["isEvaluation"];
-}
+export interface EmptyScreenProps
+  extends Pick<
+    ChatCompletion,
+    | "setInput"
+    | "setIsEvaluation"
+    | "isEvaluation"
+    | "generateTests"
+    | "runAllEvaluations"
+    | "evaluationStatus"
+    | "evaluations"
+  > {}
 
 export function EmptyScreen({
   setInput,
   setIsEvaluation,
   isEvaluation,
+  generateTests,
+  runAllEvaluations,
+  evaluationStatus,
+  evaluations,
 }: EmptyScreenProps) {
   return (
     <div className="mx-auto max-w-2xl px-4">
@@ -52,12 +64,53 @@ export function EmptyScreen({
         </div>
 
         <p className="mb-2 leading-normal text-muted-foreground">
-          {!isEvaluation ? `This is an AI chatbot used to talk with IoT devices , you can start a
-          conversation here or try the following examples`: `You are currently in evaluation mode` }
+          {!isEvaluation
+            ? `This is an AI chatbot used to talk with IoT devices , you can start a
+          conversation here or try the following examples`
+            : `You are currently in evaluation mode`}
         </p>
         <div className="mt-4 flex flex-col items-start space-y-2">
           {isEvaluation ? (
-            <h1>Eval</h1>
+            <div className="flex justify-between w-full">
+              <Button
+                onClick={generateTests}
+                disabled={evaluationStatus !== "None"}
+              >
+                Generate Tests
+                {evaluationStatus === "GeneratingTest" && (
+                  <div className="ml-2 mt-1">
+                    <l-ring
+                      size="20"
+                      stroke="2"
+                      bg-opacity="0"
+                      speed="2"
+                      color="black"
+                    ></l-ring>
+                  </div>
+                )}
+              </Button>
+              {evaluations.length > 0 && (
+                <p>{`${evaluations.length} Evaluations Ready`}</p>
+              )}
+              <Button
+                onClick={runAllEvaluations}
+                disabled={evaluationStatus !== "None"}
+              >
+                Run All Evaluations
+                {evaluationStatus !== "None" &&
+                  evaluationStatus !== "GeneratingTest" && (
+                    <div className="ml-2 mt-1">
+                      <l-ring
+                        size="20"
+                        stroke="2"
+                        bg-opacity="0"
+                        speed="2"
+                        color="black"
+                      ></l-ring>
+                    </div>
+                  )}
+              </Button>
+            </div>
           ) : (
             exampleMessages.map((message, index) => (
               <Button
