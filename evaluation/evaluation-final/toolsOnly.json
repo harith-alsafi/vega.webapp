@@ -1,0 +1,185 @@
+{
+    "evaluationType": "ToolsOnly",
+    "data": [
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7,
+                "complexity": 1,
+                "title": "set_led"
+            },
+            "output": {
+                "speed": 99,
+                "accuracy": 80,
+                "relevance": 70,
+                "efficiency": 90,
+                "completion": 20,
+                "finalRating": 71.8,
+                "successRate": 83,
+                "timeTaken": 0.123,
+                "contextUsed": 15,
+                "toolsCalled": 1
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7,
+                "complexity": 1,
+                "title": "set_fan"
+            },
+            "output": {
+                "speed": 90,
+                "accuracy": 10,
+                "relevance": 70,
+                "efficiency": 90,
+                "completion": 20,
+                "finalRating": 56,
+                "successRate": 56.666666666666664,
+                "timeTaken": 0.1,
+                "contextUsed": 14,
+                "toolsCalled": 1
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7,
+                "complexity": 1,
+                "title": "get_recorded__sensor_data"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 70,
+                "completion": 100,
+                "finalRating": 80,
+                "successRate": 76.66666666666667,
+                "timeTaken": 2.855,
+                "contextUsed": 106,
+                "toolsCalled": 1
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7,
+                "complexity": 1,
+                "title": "get_raspberry_stats"
+            },
+            "output": {
+                "speed": 95,
+                "accuracy": 20,
+                "relevance": 70,
+                "efficiency": 90,
+                "completion": 20,
+                "finalRating": 59,
+                "successRate": 61.666666666666664,
+                "timeTaken": 1.228,
+                "contextUsed": 95,
+                "toolsCalled": 1
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7,
+                "complexity": 1,
+                "title": "print_lcd"
+            },
+            "output": {
+                "speed": 99,
+                "accuracy": 80,
+                "relevance": 90,
+                "efficiency": 95,
+                "completion": 90,
+                "finalRating": 90.8,
+                "successRate": 89.66666666666667,
+                "timeTaken": 1.8410000000000002,
+                "contextUsed": 2815,
+                "toolsCalled": 20
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7,
+                "complexity": 1,
+                "title": "capture_image"
+            },
+            "output": {
+                "speed": 99,
+                "accuracy": 70,
+                "relevance": 80,
+                "efficiency": 99,
+                "completion": 80,
+                "finalRating": 85.6,
+                "successRate": 83,
+                "timeTaken": 0.091,
+                "contextUsed": 130,
+                "toolsCalled": 1
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7,
+                "complexity": 1,
+                "title": "get_connected_devices"
+            },
+            "output": {
+                "speed": 90,
+                "accuracy": 80,
+                "relevance": 90,
+                "efficiency": 90,
+                "completion": 90,
+                "finalRating": 88,
+                "successRate": 86.66666666666667,
+                "timeTaken": 0.053,
+                "contextUsed": 659,
+                "toolsCalled": 1
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7,
+                "complexity": 1,
+                "title": "get_location"
+            },
+            "output": {
+                "speed": 90,
+                "accuracy": 70,
+                "relevance": 80,
+                "efficiency": 90,
+                "completion": 80,
+                "finalRating": 82,
+                "successRate": 80,
+                "timeTaken": 0.126,
+                "contextUsed": 112,
+                "toolsCalled": 1
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7,
+                "complexity": 1,
+                "title": "set_servo_angles"
+            },
+            "output": {
+                "speed": 95,
+                "accuracy": 80,
+                "relevance": 90,
+                "efficiency": 99,
+                "completion": 0,
+                "finalRating": 72.8,
+                "successRate": 88.33333333333333,
+                "timeTaken": 0.054,
+                "contextUsed": 38,
+                "toolsCalled": 1
+            }
+        }
+    ]
+}

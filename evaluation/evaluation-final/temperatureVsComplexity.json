@@ -1,0 +1,4027 @@
+{
+    "evaluationType": "TemperatureVsComplexity",
+    "data": [
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.1,
+                "complexity": 1,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 30,
+                "accuracy": 85,
+                "relevance": 70,
+                "efficiency": 90,
+                "completion": 10,
+                "finalRating": 57,
+                "successRate": 61.666666666666664,
+                "timeTaken": 7.248,
+                "contextUsed": 13,
+                "toolsCalled": 2
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.1,
+                "complexity": 2,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 40,
+                "relevance": 70,
+                "efficiency": 90,
+                "completion": 40,
+                "finalRating": 60,
+                "successRate": 56.666666666666664,
+                "timeTaken": 2.688,
+                "contextUsed": 27,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.1,
+                "complexity": 3,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 50,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 70,
+                "completion": 80,
+                "finalRating": 74,
+                "successRate": 73.33333333333333,
+                "timeTaken": 2.851,
+                "contextUsed": 250,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.1,
+                "complexity": 4,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 85,
+                "accuracy": 90,
+                "relevance": 95,
+                "efficiency": 99,
+                "completion": 100,
+                "finalRating": 93.8,
+                "successRate": 90,
+                "timeTaken": 2.4730000000000008,
+                "contextUsed": 267,
+                "toolsCalled": 5
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.1,
+                "complexity": 5,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 40,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 90,
+                "completion": 80,
+                "finalRating": 76,
+                "successRate": 70,
+                "timeTaken": 4.462999999999999,
+                "contextUsed": 250,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.1,
+                "complexity": 6,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "successRate": 64.33333333333333,
+                "toolsCalled": 3,
+                "contextUsed": 586,
+                "timeTaken": 67,
+                "finalRating": 66.8,
+                "comments": "",
+                "speed": 68,
+                "accuracy": 51,
+                "relevance": 74,
+                "efficiency": 59,
+                "completion": 82
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.1,
+                "complexity": 7,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 40,
+                "accuracy": 70,
+                "relevance": 90,
+                "efficiency": 80,
+                "completion": 90,
+                "finalRating": 74,
+                "successRate": 66.66666666666667,
+                "timeTaken": 17.622,
+                "contextUsed": 589,
+                "toolsCalled": 8
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.1,
+                "complexity": 8,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 50,
+                "accuracy": 75,
+                "relevance": 90,
+                "efficiency": 80,
+                "completion": 85,
+                "finalRating": 76,
+                "successRate": 71.66666666666667,
+                "timeTaken": 11.635,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.1,
+                "complexity": 9,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 50,
+                "accuracy": 80,
+                "relevance": 90,
+                "efficiency": 70,
+                "completion": 100,
+                "finalRating": 78,
+                "successRate": 73.33333333333333,
+                "timeTaken": 18.901000000000003,
+                "contextUsed": 892,
+                "toolsCalled": 10
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.1,
+                "complexity": 10,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 40,
+                "accuracy": 60,
+                "relevance": 70,
+                "efficiency": 70,
+                "completion": 70,
+                "finalRating": 62,
+                "successRate": 56.666666666666664,
+                "timeTaken": 18.291999999999998,
+                "contextUsed": 921,
+                "toolsCalled": 12
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.2,
+                "complexity": 1,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 70,
+                "accuracy": 50,
+                "relevance": 90,
+                "efficiency": 90,
+                "completion": 20,
+                "finalRating": 64,
+                "successRate": 70,
+                "timeTaken": 0.121,
+                "contextUsed": 13,
+                "toolsCalled": 1
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.2,
+                "complexity": 2,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 50,
+                "accuracy": 60,
+                "relevance": 80,
+                "efficiency": 90,
+                "completion": 40,
+                "finalRating": 64,
+                "successRate": 63.333333333333336,
+                "timeTaken": 2.867,
+                "contextUsed": 27,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.2,
+                "complexity": 3,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 80,
+                "accuracy": 40,
+                "relevance": 80,
+                "efficiency": 70,
+                "completion": 60,
+                "finalRating": 66,
+                "successRate": 66.66666666666667,
+                "timeTaken": 3.799,
+                "contextUsed": 156,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.2,
+                "complexity": 4,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 80,
+                "relevance": 90,
+                "efficiency": 70,
+                "completion": 90,
+                "finalRating": 78,
+                "successRate": 76.66666666666667,
+                "timeTaken": 4.187,
+                "contextUsed": 264,
+                "toolsCalled": 5
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.2,
+                "complexity": 5,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 70,
+                "accuracy": 95,
+                "relevance": 90,
+                "efficiency": 95,
+                "completion": 100,
+                "finalRating": 90,
+                "successRate": 85,
+                "timeTaken": 4.7010000000000005,
+                "contextUsed": 250,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.2,
+                "complexity": 6,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 70,
+                "relevance": 90,
+                "efficiency": 80,
+                "completion": 90,
+                "finalRating": 78,
+                "successRate": 73.33333333333333,
+                "timeTaken": 7.86,
+                "contextUsed": 552,
+                "toolsCalled": 7
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.2,
+                "complexity": 7,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 85,
+                "completion": 100,
+                "finalRating": 83,
+                "successRate": 76.66666666666667,
+                "timeTaken": 14.896,
+                "contextUsed": 670,
+                "toolsCalled": 8
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.2,
+                "complexity": 8,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 50,
+                "accuracy": 80,
+                "relevance": 90,
+                "efficiency": 80,
+                "completion": 80,
+                "finalRating": 76,
+                "successRate": 73.33333333333333,
+                "timeTaken": 11.547,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.2,
+                "complexity": 9,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 40,
+                "accuracy": 50,
+                "relevance": 70,
+                "efficiency": 99,
+                "completion": 100,
+                "finalRating": 71.8,
+                "successRate": 53.333333333333336,
+                "timeTaken": 18.925000000000004,
+                "contextUsed": 990,
+                "toolsCalled": 11
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.2,
+                "complexity": 10,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 40,
+                "accuracy": 70,
+                "relevance": 90,
+                "efficiency": 70,
+                "completion": 70,
+                "finalRating": 68,
+                "successRate": 66.66666666666667,
+                "timeTaken": 16.618000000000002,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.30000000000000004,
+                "complexity": 1,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 90,
+                "accuracy": 70,
+                "relevance": 80,
+                "efficiency": 90,
+                "completion": 90,
+                "finalRating": 84,
+                "successRate": 80,
+                "timeTaken": 0.121,
+                "contextUsed": 13,
+                "toolsCalled": 1
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.30000000000000004,
+                "complexity": 2,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 40,
+                "relevance": 70,
+                "efficiency": 85,
+                "completion": 40,
+                "finalRating": 59,
+                "successRate": 56.666666666666664,
+                "timeTaken": 2.795,
+                "contextUsed": 27,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.30000000000000004,
+                "complexity": 3,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 95,
+                "completion": 100,
+                "finalRating": 85,
+                "successRate": 76.66666666666667,
+                "timeTaken": 4.396,
+                "contextUsed": 156,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.30000000000000004,
+                "complexity": 4,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 30,
+                "accuracy": 85,
+                "relevance": 90,
+                "efficiency": 90,
+                "completion": 100,
+                "finalRating": 79,
+                "successRate": 68.33333333333333,
+                "timeTaken": 4.572000000000001,
+                "contextUsed": 356,
+                "toolsCalled": 5
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.30000000000000004,
+                "complexity": 5,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 50,
+                "accuracy": 80,
+                "relevance": 90,
+                "efficiency": 50,
+                "completion": 80,
+                "finalRating": 70,
+                "successRate": 73.33333333333333,
+                "timeTaken": 9.847999999999999,
+                "contextUsed": 459,
+                "toolsCalled": 7
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.30000000000000004,
+                "complexity": 6,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 25,
+                "accuracy": 90,
+                "relevance": 90,
+                "efficiency": 95,
+                "completion": 95,
+                "finalRating": 79,
+                "successRate": 68.33333333333333,
+                "timeTaken": 10.312,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.30000000000000004,
+                "complexity": 7,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 90,
+                "relevance": 100,
+                "efficiency": 90,
+                "completion": 100,
+                "finalRating": 88,
+                "successRate": 83.33333333333333,
+                "timeTaken": 12.278,
+                "contextUsed": 342,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.30000000000000004,
+                "complexity": 8,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "successRate": 63.666666666666664,
+                "toolsCalled": 3,
+                "contextUsed": 277,
+                "timeTaken": 74,
+                "finalRating": 63.6,
+                "comments": "",
+                "speed": 86,
+                "accuracy": 32,
+                "relevance": 73,
+                "efficiency": 41,
+                "completion": 86
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.30000000000000004,
+                "complexity": 9,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 20,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 70,
+                "completion": 80,
+                "finalRating": 68,
+                "successRate": 63.333333333333336,
+                "timeTaken": 15.495000000000001,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.30000000000000004,
+                "complexity": 10,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 50,
+                "accuracy": 80,
+                "relevance": 90,
+                "efficiency": 90,
+                "completion": 95,
+                "finalRating": 81,
+                "successRate": 73.33333333333333,
+                "timeTaken": 22.156000000000002,
+                "contextUsed": 130,
+                "toolsCalled": 2
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.4,
+                "complexity": 1,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 90,
+                "accuracy": 99,
+                "relevance": 90,
+                "efficiency": 99,
+                "completion": 99,
+                "finalRating": 95.4,
+                "successRate": 93,
+                "timeTaken": 0.103,
+                "contextUsed": 13,
+                "toolsCalled": 1
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.4,
+                "complexity": 2,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 70,
+                "accuracy": 20,
+                "relevance": 70,
+                "efficiency": 99,
+                "completion": 99,
+                "finalRating": 71.6,
+                "successRate": 53.333333333333336,
+                "timeTaken": 4.154,
+                "contextUsed": 26,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.4,
+                "complexity": 3,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 70,
+                "relevance": 90,
+                "efficiency": 80,
+                "completion": 80,
+                "finalRating": 76,
+                "successRate": 73.33333333333333,
+                "timeTaken": 5.215000000000001,
+                "contextUsed": 250,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.4,
+                "complexity": 4,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 90,
+                "completion": 100,
+                "finalRating": 84,
+                "successRate": 76.66666666666667,
+                "timeTaken": 6.255,
+                "contextUsed": 356,
+                "toolsCalled": 5
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.4,
+                "complexity": 5,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 80,
+                "accuracy": 70,
+                "relevance": 90,
+                "efficiency": 90,
+                "completion": 70,
+                "finalRating": 80,
+                "successRate": 80,
+                "timeTaken": 5.888999999999999,
+                "contextUsed": 250,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.4,
+                "complexity": 6,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 30,
+                "accuracy": 90,
+                "relevance": 90,
+                "efficiency": 60,
+                "completion": 80,
+                "finalRating": 70,
+                "successRate": 70,
+                "timeTaken": 7.582,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.4,
+                "complexity": 7,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "successRate": 55.333333333333336,
+                "toolsCalled": 4,
+                "contextUsed": 374,
+                "timeTaken": 35,
+                "finalRating": 47.6,
+                "comments": "",
+                "speed": 52,
+                "accuracy": 36,
+                "relevance": 78,
+                "efficiency": 31,
+                "completion": 41
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.4,
+                "complexity": 8,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 40,
+                "accuracy": 90,
+                "relevance": 70,
+                "efficiency": 90,
+                "completion": 80,
+                "finalRating": 74,
+                "successRate": 66.66666666666667,
+                "timeTaken": 21.893,
+                "contextUsed": 1346,
+                "toolsCalled": 15
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.4,
+                "complexity": 9,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 46.25,
+                "accuracy": 36.75,
+                "relevance": 21,
+                "efficiency": 48.5,
+                "completion": 49.75,
+                "finalRating": 40.45,
+                "successRate": 34.666666666666664,
+                "timeTaken": 3.22725,
+                "contextUsed": 87,
+                "toolsCalled": 1
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.4,
+                "complexity": 10,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 80,
+                "relevance": 90,
+                "efficiency": 80,
+                "completion": 80,
+                "finalRating": 78,
+                "successRate": 76.66666666666667,
+                "timeTaken": 12.720000000000002,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.5,
+                "complexity": 1,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 80,
+                "accuracy": 90,
+                "relevance": 95,
+                "efficiency": 95,
+                "completion": 95,
+                "finalRating": 91,
+                "successRate": 88.33333333333333,
+                "timeTaken": 0.138,
+                "contextUsed": 13,
+                "toolsCalled": 1
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.5,
+                "complexity": 2,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 90,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 90,
+                "completion": 80,
+                "finalRating": 86,
+                "successRate": 86.66666666666667,
+                "timeTaken": 0.124,
+                "contextUsed": 13,
+                "toolsCalled": 1
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.5,
+                "complexity": 3,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 70,
+                "accuracy": 20,
+                "relevance": 90,
+                "efficiency": 85,
+                "completion": 60,
+                "finalRating": 65,
+                "successRate": 60,
+                "timeTaken": 3.3460000000000005,
+                "contextUsed": 156,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.5,
+                "complexity": 4,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 20,
+                "accuracy": 70,
+                "relevance": 90,
+                "efficiency": 85,
+                "completion": 20,
+                "finalRating": 57,
+                "successRate": 60,
+                "timeTaken": 9.063,
+                "contextUsed": 356,
+                "toolsCalled": 5
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.5,
+                "complexity": 5,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 45,
+                "accuracy": 80,
+                "relevance": 95,
+                "efficiency": 85,
+                "completion": 90,
+                "finalRating": 79,
+                "successRate": 73.33333333333333,
+                "timeTaken": 6.884,
+                "contextUsed": 356,
+                "toolsCalled": 5
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.5,
+                "complexity": 6,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 50,
+                "accuracy": 90,
+                "relevance": 70,
+                "efficiency": 85,
+                "completion": 70,
+                "finalRating": 73,
+                "successRate": 70,
+                "timeTaken": 9.008,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.5,
+                "complexity": 7,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 35,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 85,
+                "completion": 80,
+                "finalRating": 74,
+                "successRate": 68.33333333333333,
+                "timeTaken": 12.571000000000002,
+                "contextUsed": 551,
+                "toolsCalled": 7
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.5,
+                "complexity": 8,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 70,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 90,
+                "completion": 90,
+                "finalRating": 84,
+                "successRate": 80,
+                "timeTaken": 11.21,
+                "contextUsed": 564,
+                "toolsCalled": 8
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.5,
+                "complexity": 9,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 30,
+                "accuracy": 85,
+                "relevance": 90,
+                "efficiency": 90,
+                "completion": 100,
+                "finalRating": 79,
+                "successRate": 68.33333333333333,
+                "timeTaken": 12.417,
+                "contextUsed": 106,
+                "toolsCalled": 2
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.5,
+                "complexity": 10,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 30,
+                "accuracy": 20,
+                "relevance": 70,
+                "efficiency": 90,
+                "completion": 20,
+                "finalRating": 46,
+                "successRate": 40,
+                "timeTaken": 16.329,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.6,
+                "complexity": 1,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 90,
+                "accuracy": 20,
+                "relevance": 80,
+                "efficiency": 90,
+                "completion": 10,
+                "finalRating": 58,
+                "successRate": 63.333333333333336,
+                "timeTaken": 0.111,
+                "contextUsed": 13,
+                "toolsCalled": 1
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.6,
+                "complexity": 2,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 70,
+                "accuracy": 85,
+                "relevance": 90,
+                "efficiency": 90,
+                "completion": 85,
+                "finalRating": 84,
+                "successRate": 81.66666666666667,
+                "timeTaken": 3.107,
+                "contextUsed": 27,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.6,
+                "complexity": 3,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 80,
+                "relevance": 80,
+                "efficiency": 90,
+                "completion": 60,
+                "finalRating": 74,
+                "successRate": 73.33333333333333,
+                "timeTaken": 3.7659999999999996,
+                "contextUsed": 133,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.6,
+                "complexity": 4,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 80,
+                "relevance": 90,
+                "efficiency": 70,
+                "completion": 80,
+                "finalRating": 76,
+                "successRate": 76.66666666666667,
+                "timeTaken": 4.731,
+                "contextUsed": 250,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.6,
+                "complexity": 5,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 40,
+                "accuracy": 20,
+                "relevance": 70,
+                "efficiency": 90,
+                "completion": 20,
+                "finalRating": 48,
+                "successRate": 43.333333333333336,
+                "timeTaken": 6.228,
+                "contextUsed": 326,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.6,
+                "complexity": 6,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 50,
+                "accuracy": 80,
+                "relevance": 90,
+                "efficiency": 70,
+                "completion": 80,
+                "finalRating": 74,
+                "successRate": 73.33333333333333,
+                "timeTaken": 8.908,
+                "contextUsed": 895,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.6,
+                "complexity": 7,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 90,
+                "accuracy": 70,
+                "relevance": 80,
+                "efficiency": 90,
+                "completion": 90,
+                "finalRating": 84,
+                "successRate": 80,
+                "timeTaken": 7.643,
+                "contextUsed": 342,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.6,
+                "complexity": 8,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 85,
+                "relevance": 90,
+                "efficiency": 85,
+                "completion": 80,
+                "finalRating": 80,
+                "successRate": 78.33333333333333,
+                "timeTaken": 22.478,
+                "contextUsed": 916,
+                "toolsCalled": 12
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.6,
+                "complexity": 9,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 30,
+                "accuracy": 70,
+                "relevance": 80,
+                "efficiency": 90,
+                "completion": 100,
+                "finalRating": 74,
+                "successRate": 60,
+                "timeTaken": 11.873000000000001,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.6,
+                "complexity": 10,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 30,
+                "accuracy": 75,
+                "relevance": 90,
+                "efficiency": 75,
+                "completion": 85,
+                "finalRating": 71,
+                "successRate": 65,
+                "timeTaken": 20.369,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7,
+                "complexity": 1,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 90,
+                "accuracy": 70,
+                "relevance": 80,
+                "efficiency": 99,
+                "completion": 20,
+                "finalRating": 71.8,
+                "successRate": 80,
+                "timeTaken": 0.125,
+                "contextUsed": 13,
+                "toolsCalled": 1
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7,
+                "complexity": 2,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 90,
+                "accuracy": 85,
+                "relevance": 70,
+                "efficiency": 95,
+                "completion": 100,
+                "finalRating": 88,
+                "successRate": 81.66666666666667,
+                "timeTaken": 0.119,
+                "contextUsed": 13,
+                "toolsCalled": 1
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7,
+                "complexity": 3,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 10,
+                "relevance": 80,
+                "efficiency": 90,
+                "completion": 10,
+                "finalRating": 50,
+                "successRate": 50,
+                "timeTaken": 4.857,
+                "contextUsed": 156,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7,
+                "complexity": 4,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 25,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 80,
+                "completion": 80,
+                "finalRating": 71,
+                "successRate": 65,
+                "timeTaken": 14.676,
+                "contextUsed": 552,
+                "toolsCalled": 7
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7,
+                "complexity": 5,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 50,
+                "accuracy": 85,
+                "relevance": 90,
+                "efficiency": 80,
+                "completion": 90,
+                "finalRating": 79,
+                "successRate": 75,
+                "timeTaken": 8.83,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7,
+                "complexity": 6,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 30,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 80,
+                "completion": 90,
+                "finalRating": 74,
+                "successRate": 66.66666666666667,
+                "timeTaken": 8.793,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7,
+                "complexity": 7,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 25,
+                "accuracy": 80,
+                "relevance": 70,
+                "efficiency": 90,
+                "completion": 80,
+                "finalRating": 69,
+                "successRate": 58.333333333333336,
+                "timeTaken": 9.552,
+                "contextUsed": 356,
+                "toolsCalled": 5
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7,
+                "complexity": 8,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 30,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 50,
+                "completion": 80,
+                "finalRating": 66,
+                "successRate": 66.66666666666667,
+                "timeTaken": 10.947,
+                "contextUsed": 506,
+                "toolsCalled": 7
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7,
+                "complexity": 9,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 90,
+                "relevance": 95,
+                "efficiency": 90,
+                "completion": 100,
+                "finalRating": 87,
+                "successRate": 81.66666666666667,
+                "timeTaken": 10.218,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7,
+                "complexity": 10,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 70,
+                "completion": 80,
+                "finalRating": 76,
+                "successRate": 76.66666666666667,
+                "timeTaken": 17.858,
+                "contextUsed": 1102,
+                "toolsCalled": 6
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7999999999999999,
+                "complexity": 1,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 30,
+                "accuracy": 15,
+                "relevance": 70,
+                "efficiency": 90,
+                "completion": 20,
+                "finalRating": 45,
+                "successRate": 38.333333333333336,
+                "timeTaken": 4.013,
+                "contextUsed": 13,
+                "toolsCalled": 2
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7999999999999999,
+                "complexity": 2,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 30,
+                "accuracy": 60,
+                "relevance": 70,
+                "efficiency": 90,
+                "completion": 10,
+                "finalRating": 52,
+                "successRate": 53.333333333333336,
+                "timeTaken": 3.4379999999999997,
+                "contextUsed": 27,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7999999999999999,
+                "complexity": 3,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 85,
+                "accuracy": 20,
+                "relevance": 90,
+                "efficiency": 90,
+                "completion": 90,
+                "finalRating": 75,
+                "successRate": 65,
+                "timeTaken": 4.7749999999999995,
+                "contextUsed": 156,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7999999999999999,
+                "complexity": 4,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 80,
+                "relevance": 95,
+                "efficiency": 95,
+                "completion": 90,
+                "finalRating": 84,
+                "successRate": 78.33333333333333,
+                "timeTaken": 6.779,
+                "contextUsed": 342,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7999999999999999,
+                "complexity": 5,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 40,
+                "accuracy": 80,
+                "relevance": 90,
+                "efficiency": 90,
+                "completion": 100,
+                "finalRating": 80,
+                "successRate": 70,
+                "timeTaken": 5.728,
+                "contextUsed": 356,
+                "toolsCalled": 5
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7999999999999999,
+                "complexity": 6,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 70,
+                "completion": 80,
+                "finalRating": 76,
+                "successRate": 76.66666666666667,
+                "timeTaken": 10.064,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7999999999999999,
+                "complexity": 7,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 40,
+                "accuracy": 85,
+                "relevance": 90,
+                "efficiency": 90,
+                "completion": 90,
+                "finalRating": 79,
+                "successRate": 71.66666666666667,
+                "timeTaken": 15.562,
+                "contextUsed": 586,
+                "toolsCalled": 8
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7999999999999999,
+                "complexity": 8,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 95,
+                "relevance": 85,
+                "efficiency": 90,
+                "completion": 100,
+                "finalRating": 86,
+                "successRate": 80,
+                "timeTaken": 16.84,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7999999999999999,
+                "complexity": 9,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 85,
+                "relevance": 90,
+                "efficiency": 90,
+                "completion": 100,
+                "finalRating": 85,
+                "successRate": 78.33333333333333,
+                "timeTaken": 19.269,
+                "contextUsed": 343,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7999999999999999,
+                "complexity": 10,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 50,
+                "accuracy": 80,
+                "relevance": 90,
+                "efficiency": 90,
+                "completion": 80,
+                "finalRating": 78,
+                "successRate": 73.33333333333333,
+                "timeTaken": 22.382,
+                "contextUsed": 343,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.8999999999999999,
+                "complexity": 1,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 90,
+                "accuracy": 99,
+                "relevance": 70,
+                "efficiency": 99,
+                "completion": 20,
+                "finalRating": 75.6,
+                "successRate": 86.33333333333333,
+                "timeTaken": 0.114,
+                "contextUsed": 13,
+                "toolsCalled": 1
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.8999999999999999,
+                "complexity": 2,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 50,
+                "relevance": 70,
+                "efficiency": 90,
+                "completion": 50,
+                "finalRating": 64,
+                "successRate": 60,
+                "timeTaken": 2.649,
+                "contextUsed": 27,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.8999999999999999,
+                "complexity": 3,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 80,
+                "accuracy": 20,
+                "relevance": 90,
+                "efficiency": 85,
+                "completion": 100,
+                "finalRating": 75,
+                "successRate": 63.333333333333336,
+                "timeTaken": 3.5,
+                "contextUsed": 133,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.8999999999999999,
+                "complexity": 4,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 80,
+                "relevance": 90,
+                "efficiency": 80,
+                "completion": 75,
+                "finalRating": 77,
+                "successRate": 76.66666666666667,
+                "timeTaken": 4.867,
+                "contextUsed": 263,
+                "toolsCalled": 5
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.8999999999999999,
+                "complexity": 5,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 80,
+                "completion": 100,
+                "finalRating": 82,
+                "successRate": 76.66666666666667,
+                "timeTaken": 10.838,
+                "contextUsed": 489,
+                "toolsCalled": 8
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.8999999999999999,
+                "complexity": 6,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 50,
+                "accuracy": 80,
+                "relevance": 90,
+                "efficiency": 85,
+                "completion": 70,
+                "finalRating": 75,
+                "successRate": 73.33333333333333,
+                "timeTaken": 11.12,
+                "contextUsed": 540,
+                "toolsCalled": 7
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.8999999999999999,
+                "complexity": 7,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 20,
+                "accuracy": 85,
+                "relevance": 90,
+                "efficiency": 80,
+                "completion": 85,
+                "finalRating": 72,
+                "successRate": 65,
+                "timeTaken": 8.743,
+                "contextUsed": 106,
+                "toolsCalled": 2
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.8999999999999999,
+                "complexity": 8,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 40,
+                "accuracy": 20,
+                "relevance": 70,
+                "efficiency": 90,
+                "completion": 20,
+                "finalRating": 48,
+                "successRate": 43.333333333333336,
+                "timeTaken": 11.59,
+                "contextUsed": 331,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.8999999999999999,
+                "complexity": 9,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 70,
+                "accuracy": 80,
+                "relevance": 90,
+                "efficiency": 85,
+                "completion": 80,
+                "finalRating": 81,
+                "successRate": 80,
+                "timeTaken": 11.418999999999999,
+                "contextUsed": 348,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.8999999999999999,
+                "complexity": 10,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 50,
+                "accuracy": 80,
+                "relevance": 90,
+                "efficiency": 70,
+                "completion": 60,
+                "finalRating": 70,
+                "successRate": 73.33333333333333,
+                "timeTaken": 10.413,
+                "contextUsed": 130,
+                "toolsCalled": 2
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.9999999999999999,
+                "complexity": 1,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 99,
+                "accuracy": 70,
+                "relevance": 90,
+                "efficiency": 99,
+                "completion": 80,
+                "finalRating": 87.6,
+                "successRate": 86.33333333333333,
+                "timeTaken": 0.109,
+                "contextUsed": 13,
+                "toolsCalled": 1
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.9999999999999999,
+                "complexity": 2,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 90,
+                "accuracy": 95,
+                "relevance": 80,
+                "efficiency": 90,
+                "completion": 80,
+                "finalRating": 87,
+                "successRate": 88.33333333333333,
+                "timeTaken": 0.124,
+                "contextUsed": 14,
+                "toolsCalled": 1
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.9999999999999999,
+                "complexity": 3,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 80,
+                "accuracy": 60,
+                "relevance": 90,
+                "efficiency": 95,
+                "completion": 80,
+                "finalRating": 81,
+                "successRate": 76.66666666666667,
+                "timeTaken": 3.6129999999999995,
+                "contextUsed": 156,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.9999999999999999,
+                "complexity": 4,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 90,
+                "accuracy": 70,
+                "relevance": 80,
+                "efficiency": 95,
+                "completion": 90,
+                "finalRating": 85,
+                "successRate": 80,
+                "timeTaken": 3.01,
+                "contextUsed": 250,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.9999999999999999,
+                "complexity": 5,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 90,
+                "relevance": 90,
+                "efficiency": 80,
+                "completion": 100,
+                "finalRating": 84,
+                "successRate": 80,
+                "timeTaken": 10.834000000000001,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.9999999999999999,
+                "complexity": 6,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "successRate": 49.666666666666664,
+                "toolsCalled": 4,
+                "contextUsed": 204,
+                "timeTaken": 62,
+                "finalRating": 54.8,
+                "comments": "",
+                "speed": 55,
+                "accuracy": 61,
+                "relevance": 33,
+                "efficiency": 45,
+                "completion": 80
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.9999999999999999,
+                "complexity": 7,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 25,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 80,
+                "completion": 80,
+                "finalRating": 71,
+                "successRate": 65,
+                "timeTaken": 22.304,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.9999999999999999,
+                "complexity": 8,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 50,
+                "accuracy": 80,
+                "relevance": 90,
+                "efficiency": 70,
+                "completion": 80,
+                "finalRating": 74,
+                "successRate": 73.33333333333333,
+                "timeTaken": 13.918999999999999,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.9999999999999999,
+                "complexity": 9,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 90,
+                "accuracy": 70,
+                "relevance": 80,
+                "efficiency": 85,
+                "completion": 90,
+                "finalRating": 83,
+                "successRate": 80,
+                "timeTaken": 13.837,
+                "contextUsed": 130,
+                "toolsCalled": 2
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.9999999999999999,
+                "complexity": 10,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 20,
+                "accuracy": 70,
+                "relevance": 90,
+                "efficiency": 80,
+                "completion": 60,
+                "finalRating": 64,
+                "successRate": 60,
+                "timeTaken": 18.7,
+                "contextUsed": 1339,
+                "toolsCalled": 16
+            }
+        },
+        {
+            "input": {
+                "temperature": 0.7,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 30,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 90,
+                "completion": 100,
+                "finalRating": 78,
+                "successRate": 66.66666666666667,
+                "timeTaken": 17.818999999999996,
+                "contextUsed": 1492,
+                "toolsCalled": 13
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.1,
+                "temperature": 0.7,
+                "complexity": 1,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 90,
+                "accuracy": 80,
+                "relevance": 70,
+                "efficiency": 99,
+                "completion": 99,
+                "finalRating": 87.6,
+                "successRate": 80,
+                "timeTaken": 0.124,
+                "contextUsed": 13,
+                "toolsCalled": 1
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.1,
+                "temperature": 0.7,
+                "complexity": 2,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 85,
+                "relevance": 90,
+                "efficiency": 80,
+                "completion": 100,
+                "finalRating": 83,
+                "successRate": 78.33333333333333,
+                "timeTaken": 2.2510000000000003,
+                "contextUsed": 27,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.1,
+                "temperature": 0.7,
+                "complexity": 3,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 90,
+                "completion": 80,
+                "finalRating": 80,
+                "successRate": 76.66666666666667,
+                "timeTaken": 3.022,
+                "contextUsed": 156,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.1,
+                "temperature": 0.7,
+                "complexity": 4,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 95,
+                "accuracy": 80,
+                "relevance": 90,
+                "efficiency": 90,
+                "completion": 80,
+                "finalRating": 87,
+                "successRate": 88.33333333333333,
+                "timeTaken": 3.976,
+                "contextUsed": 264,
+                "toolsCalled": 5
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.1,
+                "temperature": 0.7,
+                "complexity": 5,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 20,
+                "accuracy": 70,
+                "relevance": 80,
+                "efficiency": 90,
+                "completion": 60,
+                "finalRating": 64,
+                "successRate": 56.666666666666664,
+                "timeTaken": 7.622,
+                "contextUsed": 658,
+                "toolsCalled": 8
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.1,
+                "temperature": 0.7,
+                "complexity": 6,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 50,
+                "accuracy": 85,
+                "relevance": 90,
+                "efficiency": 95,
+                "completion": 100,
+                "finalRating": 84,
+                "successRate": 75,
+                "timeTaken": 7.194000000000001,
+                "contextUsed": 589,
+                "toolsCalled": 8
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.1,
+                "temperature": 0.7,
+                "complexity": 7,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 99,
+                "relevance": 90,
+                "efficiency": 90,
+                "completion": 90,
+                "finalRating": 85.8,
+                "successRate": 83,
+                "timeTaken": 9.484000000000002,
+                "contextUsed": 846,
+                "toolsCalled": 9
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.1,
+                "temperature": 0.7,
+                "complexity": 8,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 30,
+                "accuracy": 85,
+                "relevance": 80,
+                "efficiency": 90,
+                "completion": 90,
+                "finalRating": 75,
+                "successRate": 65,
+                "timeTaken": 8.476,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.1,
+                "temperature": 0.7,
+                "complexity": 9,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 30,
+                "accuracy": 85,
+                "relevance": 90,
+                "efficiency": 80,
+                "completion": 75,
+                "finalRating": 72,
+                "successRate": 68.33333333333333,
+                "timeTaken": 18.331999999999997,
+                "contextUsed": 514,
+                "toolsCalled": 5
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.1,
+                "temperature": 0.7,
+                "complexity": 10,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 50,
+                "accuracy": 80,
+                "relevance": 90,
+                "efficiency": 70,
+                "completion": 80,
+                "finalRating": 74,
+                "successRate": 73.33333333333333,
+                "timeTaken": 19.385,
+                "contextUsed": 348,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.2,
+                "temperature": 0.7,
+                "complexity": 1,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 90,
+                "accuracy": 70,
+                "relevance": 80,
+                "efficiency": 90,
+                "completion": 60,
+                "finalRating": 78,
+                "successRate": 80,
+                "timeTaken": 0.122,
+                "contextUsed": 13,
+                "toolsCalled": 1
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.2,
+                "temperature": 0.7,
+                "complexity": 2,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 90,
+                "completion": 80,
+                "finalRating": 80,
+                "successRate": 76.66666666666667,
+                "timeTaken": 2.501,
+                "contextUsed": 27,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.2,
+                "temperature": 0.7,
+                "complexity": 3,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 85,
+                "relevance": 90,
+                "efficiency": 90,
+                "completion": 90,
+                "finalRating": 83,
+                "successRate": 78.33333333333333,
+                "timeTaken": 3.292,
+                "contextUsed": 250,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.2,
+                "temperature": 0.7,
+                "complexity": 4,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 80,
+                "accuracy": 70,
+                "relevance": 80,
+                "efficiency": 85,
+                "completion": 90,
+                "finalRating": 81,
+                "successRate": 76.66666666666667,
+                "timeTaken": 6.508000000000001,
+                "contextUsed": 263,
+                "toolsCalled": 5
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.2,
+                "temperature": 0.7,
+                "complexity": 5,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 80,
+                "relevance": 90,
+                "efficiency": 90,
+                "completion": 100,
+                "finalRating": 84,
+                "successRate": 76.66666666666667,
+                "timeTaken": 6.221,
+                "contextUsed": 551,
+                "toolsCalled": 7
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.2,
+                "temperature": 0.7,
+                "complexity": 6,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 30,
+                "accuracy": 90,
+                "relevance": 70,
+                "efficiency": 90,
+                "completion": 90,
+                "finalRating": 74,
+                "successRate": 63.333333333333336,
+                "timeTaken": 7.300999999999999,
+                "contextUsed": 348,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.2,
+                "temperature": 0.7,
+                "complexity": 7,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 50,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 85,
+                "completion": 100,
+                "finalRating": 81,
+                "successRate": 73.33333333333333,
+                "timeTaken": 10.563999999999998,
+                "contextUsed": 808,
+                "toolsCalled": 10
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.2,
+                "temperature": 0.7,
+                "complexity": 8,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 85,
+                "relevance": 90,
+                "efficiency": 85,
+                "completion": 95,
+                "finalRating": 83,
+                "successRate": 78.33333333333333,
+                "timeTaken": 11.681,
+                "contextUsed": 1110,
+                "toolsCalled": 13
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.2,
+                "temperature": 0.7,
+                "complexity": 9,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 20,
+                "accuracy": 70,
+                "relevance": 80,
+                "efficiency": 90,
+                "completion": 20,
+                "finalRating": 56,
+                "successRate": 56.666666666666664,
+                "timeTaken": 12.892,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.2,
+                "temperature": 0.7,
+                "complexity": 10,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 80,
+                "relevance": 90,
+                "efficiency": 90,
+                "completion": 100,
+                "finalRating": 84,
+                "successRate": 76.66666666666667,
+                "timeTaken": 15.966999999999999,
+                "contextUsed": 1948,
+                "toolsCalled": 11
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.30000000000000004,
+                "temperature": 0.7,
+                "complexity": 1,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 80,
+                "accuracy": 90,
+                "relevance": 70,
+                "efficiency": 90,
+                "completion": 20,
+                "finalRating": 70,
+                "successRate": 80,
+                "timeTaken": 0.122,
+                "contextUsed": 13,
+                "toolsCalled": 1
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.30000000000000004,
+                "temperature": 0.7,
+                "complexity": 2,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 70,
+                "accuracy": 40,
+                "relevance": 80,
+                "efficiency": 90,
+                "completion": 60,
+                "finalRating": 68,
+                "successRate": 63.333333333333336,
+                "timeTaken": 1.7690000000000001,
+                "contextUsed": 27,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.30000000000000004,
+                "temperature": 0.7,
+                "complexity": 3,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 70,
+                "accuracy": 50,
+                "relevance": 80,
+                "efficiency": 90,
+                "completion": 70,
+                "finalRating": 72,
+                "successRate": 66.66666666666667,
+                "timeTaken": 3.481,
+                "contextUsed": 133,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.30000000000000004,
+                "temperature": 0.7,
+                "complexity": 4,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 70,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 70,
+                "completion": 60,
+                "finalRating": 74,
+                "successRate": 80,
+                "timeTaken": 2.7929999999999997,
+                "contextUsed": 250,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.30000000000000004,
+                "temperature": 0.7,
+                "complexity": 5,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 80,
+                "relevance": 90,
+                "efficiency": 95,
+                "completion": 100,
+                "finalRating": 85,
+                "successRate": 76.66666666666667,
+                "timeTaken": 5.172999999999999,
+                "contextUsed": 552,
+                "toolsCalled": 7
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.30000000000000004,
+                "temperature": 0.7,
+                "complexity": 6,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 40,
+                "accuracy": 80,
+                "relevance": 90,
+                "efficiency": 90,
+                "completion": 90,
+                "finalRating": 78,
+                "successRate": 70,
+                "timeTaken": 9.219000000000001,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.30000000000000004,
+                "temperature": 0.7,
+                "complexity": 7,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 40,
+                "accuracy": 60,
+                "relevance": 80,
+                "efficiency": 90,
+                "completion": 80,
+                "finalRating": 70,
+                "successRate": 60,
+                "timeTaken": 10.182,
+                "contextUsed": 1283,
+                "toolsCalled": 10
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.30000000000000004,
+                "temperature": 0.7,
+                "complexity": 8,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 80,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 90,
+                "completion": 90,
+                "finalRating": 86,
+                "successRate": 83.33333333333333,
+                "timeTaken": 13.961,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.30000000000000004,
+                "temperature": 0.7,
+                "complexity": 9,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 30,
+                "accuracy": 95,
+                "relevance": 90,
+                "efficiency": 90,
+                "completion": 100,
+                "finalRating": 81,
+                "successRate": 71.66666666666667,
+                "timeTaken": 11.514999999999999,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.30000000000000004,
+                "temperature": 0.7,
+                "complexity": 10,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 80,
+                "completion": 80,
+                "finalRating": 78,
+                "successRate": 76.66666666666667,
+                "timeTaken": 25.907,
+                "contextUsed": 1122,
+                "toolsCalled": 15
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.4,
+                "temperature": 0.7,
+                "complexity": 1,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 90,
+                "accuracy": 85,
+                "relevance": 70,
+                "efficiency": 99,
+                "completion": 20,
+                "finalRating": 72.8,
+                "successRate": 81.66666666666667,
+                "timeTaken": 0.117,
+                "contextUsed": 13,
+                "toolsCalled": 1
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.4,
+                "temperature": 0.7,
+                "complexity": 2,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 50,
+                "accuracy": 15,
+                "relevance": 85,
+                "efficiency": 90,
+                "completion": 20,
+                "finalRating": 52,
+                "successRate": 50,
+                "timeTaken": 2.276,
+                "contextUsed": 27,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.4,
+                "temperature": 0.7,
+                "complexity": 3,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 20,
+                "relevance": 70,
+                "efficiency": 90,
+                "completion": 20,
+                "finalRating": 52,
+                "successRate": 50,
+                "timeTaken": 3.354,
+                "contextUsed": 39,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.4,
+                "temperature": 0.7,
+                "complexity": 4,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 30,
+                "accuracy": 80,
+                "relevance": 90,
+                "efficiency": 90,
+                "completion": 80,
+                "finalRating": 74,
+                "successRate": 66.66666666666667,
+                "timeTaken": 4.664,
+                "contextUsed": 356,
+                "toolsCalled": 5
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.4,
+                "temperature": 0.7,
+                "complexity": 5,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 30,
+                "accuracy": 85,
+                "relevance": 80,
+                "efficiency": 85,
+                "completion": 90,
+                "finalRating": 74,
+                "successRate": 65,
+                "timeTaken": 6.150000000000001,
+                "contextUsed": 459,
+                "toolsCalled": 7
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.4,
+                "temperature": 0.7,
+                "complexity": 6,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 20,
+                "accuracy": 70,
+                "relevance": 90,
+                "efficiency": 90,
+                "completion": 70,
+                "finalRating": 68,
+                "successRate": 60,
+                "timeTaken": 11.323,
+                "contextUsed": 666,
+                "toolsCalled": 9
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.4,
+                "temperature": 0.7,
+                "complexity": 7,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 50,
+                "accuracy": 70,
+                "relevance": 80,
+                "efficiency": 90,
+                "completion": 60,
+                "finalRating": 70,
+                "successRate": 66.66666666666667,
+                "timeTaken": 9.341000000000001,
+                "contextUsed": 483,
+                "toolsCalled": 7
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.4,
+                "temperature": 0.7,
+                "complexity": 8,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 45,
+                "accuracy": 85,
+                "relevance": 95,
+                "efficiency": 90,
+                "completion": 90,
+                "finalRating": 81,
+                "successRate": 75,
+                "timeTaken": 9.109,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.4,
+                "temperature": 0.7,
+                "complexity": 9,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 70,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 80,
+                "completion": 90,
+                "finalRating": 82,
+                "successRate": 80,
+                "timeTaken": 9.051,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.4,
+                "temperature": 0.7,
+                "complexity": 10,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 75,
+                "relevance": 80,
+                "efficiency": 90,
+                "completion": 85,
+                "finalRating": 78,
+                "successRate": 71.66666666666667,
+                "timeTaken": 16.825000000000003,
+                "contextUsed": 1178,
+                "toolsCalled": 9
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.5,
+                "temperature": 0.7,
+                "complexity": 1,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 90,
+                "accuracy": 70,
+                "relevance": 80,
+                "efficiency": 95,
+                "completion": 80,
+                "finalRating": 83,
+                "successRate": 80,
+                "timeTaken": 0.111,
+                "contextUsed": 13,
+                "toolsCalled": 1
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.5,
+                "temperature": 0.7,
+                "complexity": 2,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 80,
+                "relevance": 90,
+                "efficiency": 95,
+                "completion": 80,
+                "finalRating": 81,
+                "successRate": 76.66666666666667,
+                "timeTaken": 2.446,
+                "contextUsed": 13,
+                "toolsCalled": 2
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.5,
+                "temperature": 0.7,
+                "complexity": 3,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 80,
+                "accuracy": 60,
+                "relevance": 80,
+                "efficiency": 90,
+                "completion": 80,
+                "finalRating": 78,
+                "successRate": 73.33333333333333,
+                "timeTaken": 2.9899999999999998,
+                "contextUsed": 250,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.5,
+                "temperature": 0.7,
+                "complexity": 4,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 80,
+                "accuracy": 70,
+                "relevance": 90,
+                "efficiency": 90,
+                "completion": 70,
+                "finalRating": 80,
+                "successRate": 80,
+                "timeTaken": 5.109999999999999,
+                "contextUsed": 264,
+                "toolsCalled": 5
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.5,
+                "temperature": 0.7,
+                "complexity": 5,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 90,
+                "relevance": 95,
+                "efficiency": 80,
+                "completion": 100,
+                "finalRating": 85,
+                "successRate": 81.66666666666667,
+                "timeTaken": 7.229000000000001,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.5,
+                "temperature": 0.7,
+                "complexity": 6,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 70,
+                "completion": 90,
+                "finalRating": 78,
+                "successRate": 76.66666666666667,
+                "timeTaken": 6.628,
+                "contextUsed": 1140,
+                "toolsCalled": 8
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.5,
+                "temperature": 0.7,
+                "complexity": 7,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 30,
+                "accuracy": 90,
+                "relevance": 95,
+                "efficiency": 85,
+                "completion": 100,
+                "finalRating": 80,
+                "successRate": 71.66666666666667,
+                "timeTaken": 10.610999999999999,
+                "contextUsed": 796,
+                "toolsCalled": 11
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.5,
+                "temperature": 0.7,
+                "complexity": 8,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 90,
+                "accuracy": 70,
+                "relevance": 80,
+                "efficiency": 80,
+                "completion": 60,
+                "finalRating": 76,
+                "successRate": 80,
+                "timeTaken": 11.517999999999999,
+                "contextUsed": 237,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.5,
+                "temperature": 0.7,
+                "complexity": 9,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 70,
+                "accuracy": 85,
+                "relevance": 90,
+                "efficiency": 90,
+                "completion": 100,
+                "finalRating": 87,
+                "successRate": 81.66666666666667,
+                "timeTaken": 16.029,
+                "contextUsed": 348,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.5,
+                "temperature": 0.7,
+                "complexity": 10,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 41.22222222222222,
+                "accuracy": 56.666666666666664,
+                "relevance": 44.22222222222222,
+                "efficiency": 34.666666666666664,
+                "completion": 56.666666666666664,
+                "finalRating": 46.68888888888889,
+                "successRate": 47.37037037037037,
+                "timeTaken": 1.8536666666666666,
+                "contextUsed": 131.33333333333334,
+                "toolsCalled": 1
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.6,
+                "temperature": 0.7,
+                "complexity": 1,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 90,
+                "accuracy": 80,
+                "relevance": 70,
+                "efficiency": 90,
+                "completion": 60,
+                "finalRating": 78,
+                "successRate": 80,
+                "timeTaken": 0.103,
+                "contextUsed": 13,
+                "toolsCalled": 1
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.6,
+                "temperature": 0.7,
+                "complexity": 2,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 70,
+                "accuracy": 70,
+                "relevance": 90,
+                "efficiency": 90,
+                "completion": 95,
+                "finalRating": 83,
+                "successRate": 76.66666666666667,
+                "timeTaken": 1.797,
+                "contextUsed": 27,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.6,
+                "temperature": 0.7,
+                "complexity": 3,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 80,
+                "accuracy": 65,
+                "relevance": 90,
+                "efficiency": 85,
+                "completion": 70,
+                "finalRating": 78,
+                "successRate": 78.33333333333333,
+                "timeTaken": 3.288,
+                "contextUsed": 156,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.6,
+                "temperature": 0.7,
+                "complexity": 4,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 70,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 70,
+                "completion": 70,
+                "finalRating": 76,
+                "successRate": 80,
+                "timeTaken": 5.392,
+                "contextUsed": 356,
+                "toolsCalled": 5
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.6,
+                "temperature": 0.7,
+                "complexity": 5,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 80,
+                "relevance": 90,
+                "efficiency": 90,
+                "completion": 100,
+                "finalRating": 84,
+                "successRate": 76.66666666666667,
+                "timeTaken": 7.307,
+                "contextUsed": 343,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.6,
+                "temperature": 0.7,
+                "complexity": 6,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 90,
+                "accuracy": 70,
+                "relevance": 80,
+                "efficiency": 90,
+                "completion": 80,
+                "finalRating": 82,
+                "successRate": 80,
+                "timeTaken": 6.708,
+                "contextUsed": 608,
+                "toolsCalled": 5
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.6,
+                "temperature": 0.7,
+                "complexity": 7,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 30,
+                "accuracy": 85,
+                "relevance": 90,
+                "efficiency": 90,
+                "completion": 90,
+                "finalRating": 77,
+                "successRate": 68.33333333333333,
+                "timeTaken": 7.51,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.6,
+                "temperature": 0.7,
+                "complexity": 8,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 50,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 90,
+                "completion": 100,
+                "finalRating": 82,
+                "successRate": 73.33333333333333,
+                "timeTaken": 12.877000000000002,
+                "contextUsed": 821,
+                "toolsCalled": 11
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.6,
+                "temperature": 0.7,
+                "complexity": 9,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 85,
+                "relevance": 90,
+                "efficiency": 95,
+                "completion": 90,
+                "finalRating": 84,
+                "successRate": 78.33333333333333,
+                "timeTaken": 9.593000000000002,
+                "contextUsed": 1012,
+                "toolsCalled": 11
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.6,
+                "temperature": 0.7,
+                "complexity": 10,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 50,
+                "accuracy": 80,
+                "relevance": 90,
+                "efficiency": 90,
+                "completion": 100,
+                "finalRating": 82,
+                "successRate": 73.33333333333333,
+                "timeTaken": 15.825,
+                "contextUsed": 130,
+                "toolsCalled": 2
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.7,
+                "temperature": 0.7,
+                "complexity": 1,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 90,
+                "accuracy": 70,
+                "relevance": 80,
+                "efficiency": 90,
+                "completion": 80,
+                "finalRating": 82,
+                "successRate": 80,
+                "timeTaken": 0.142,
+                "contextUsed": 13,
+                "toolsCalled": 1
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.7,
+                "temperature": 0.7,
+                "complexity": 2,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 99,
+                "accuracy": 80,
+                "relevance": 90,
+                "efficiency": 99,
+                "completion": 20,
+                "finalRating": 77.6,
+                "successRate": 89.66666666666667,
+                "timeTaken": 0.108,
+                "contextUsed": 13,
+                "toolsCalled": 1
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.7,
+                "temperature": 0.7,
+                "complexity": 3,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 20,
+                "relevance": 70,
+                "efficiency": 80,
+                "completion": 80,
+                "finalRating": 62,
+                "successRate": 50,
+                "timeTaken": 3.174,
+                "contextUsed": 133,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.7,
+                "temperature": 0.7,
+                "complexity": 4,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 80,
+                "accuracy": 70,
+                "relevance": 90,
+                "efficiency": 90,
+                "completion": 80,
+                "finalRating": 82,
+                "successRate": 80,
+                "timeTaken": 2.5460000000000003,
+                "contextUsed": 250,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.7,
+                "temperature": 0.7,
+                "complexity": 5,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 80,
+                "completion": 80,
+                "finalRating": 78,
+                "successRate": 76.66666666666667,
+                "timeTaken": 8.282,
+                "contextUsed": 343,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.7,
+                "temperature": 0.7,
+                "complexity": 6,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 50,
+                "accuracy": 80,
+                "relevance": 90,
+                "efficiency": 90,
+                "completion": 90,
+                "finalRating": 80,
+                "successRate": 73.33333333333333,
+                "timeTaken": 10.377000000000002,
+                "contextUsed": 765,
+                "toolsCalled": 9
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.7,
+                "temperature": 0.7,
+                "complexity": 7,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 80,
+                "completion": 90,
+                "finalRating": 80,
+                "successRate": 76.66666666666667,
+                "timeTaken": 10.241,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.7,
+                "temperature": 0.7,
+                "complexity": 8,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 40,
+                "accuracy": 20,
+                "relevance": 70,
+                "efficiency": 90,
+                "completion": 20,
+                "finalRating": 48,
+                "successRate": 43.333333333333336,
+                "timeTaken": 13.838000000000001,
+                "contextUsed": 331,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.7,
+                "temperature": 0.7,
+                "complexity": 9,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 70,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 80,
+                "completion": 90,
+                "finalRating": 82,
+                "successRate": 80,
+                "timeTaken": 19.581,
+                "contextUsed": 348,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.7,
+                "temperature": 0.7,
+                "complexity": 10,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 70,
+                "relevance": 90,
+                "efficiency": 80,
+                "completion": 90,
+                "finalRating": 78,
+                "successRate": 73.33333333333333,
+                "timeTaken": 17.017,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.7999999999999999,
+                "temperature": 0.7,
+                "complexity": 1,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 90,
+                "accuracy": 80,
+                "relevance": 70,
+                "efficiency": 90,
+                "completion": 80,
+                "finalRating": 82,
+                "successRate": 80,
+                "timeTaken": 0.235,
+                "contextUsed": 13,
+                "toolsCalled": 1
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.7999999999999999,
+                "temperature": 0.7,
+                "complexity": 2,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 90,
+                "accuracy": 60,
+                "relevance": 80,
+                "efficiency": 95,
+                "completion": 70,
+                "finalRating": 79,
+                "successRate": 76.66666666666667,
+                "timeTaken": 0.236,
+                "contextUsed": 13,
+                "toolsCalled": 1
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.7999999999999999,
+                "temperature": 0.7,
+                "complexity": 3,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 70,
+                "accuracy": 70,
+                "relevance": 80,
+                "efficiency": 90,
+                "completion": 80,
+                "finalRating": 78,
+                "successRate": 73.33333333333333,
+                "timeTaken": 4.6499999999999995,
+                "contextUsed": 133,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.7999999999999999,
+                "temperature": 0.7,
+                "complexity": 4,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 99,
+                "accuracy": 90,
+                "relevance": 99,
+                "efficiency": 99,
+                "completion": 99,
+                "finalRating": 97.2,
+                "successRate": 96,
+                "timeTaken": 3.193,
+                "contextUsed": 250,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.7999999999999999,
+                "temperature": 0.7,
+                "complexity": 5,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 50,
+                "accuracy": 90,
+                "relevance": 90,
+                "efficiency": 80,
+                "completion": 80,
+                "finalRating": 78,
+                "successRate": 76.66666666666667,
+                "timeTaken": 8.104,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.7999999999999999,
+                "temperature": 0.7,
+                "complexity": 6,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 85,
+                "relevance": 90,
+                "efficiency": 90,
+                "completion": 90,
+                "finalRating": 83,
+                "successRate": 78.33333333333333,
+                "timeTaken": 6.003,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.7999999999999999,
+                "temperature": 0.7,
+                "complexity": 7,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 50,
+                "accuracy": 70,
+                "relevance": 80,
+                "efficiency": 70,
+                "completion": 70,
+                "finalRating": 68,
+                "successRate": 66.66666666666667,
+                "timeTaken": 11.377,
+                "contextUsed": 356,
+                "toolsCalled": 5
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.7999999999999999,
+                "temperature": 0.7,
+                "complexity": 8,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 50,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 70,
+                "completion": 70,
+                "finalRating": 72,
+                "successRate": 73.33333333333333,
+                "timeTaken": 15.540999999999997,
+                "contextUsed": 1022,
+                "toolsCalled": 13
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.7999999999999999,
+                "temperature": 0.7,
+                "complexity": 9,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 40,
+                "accuracy": 90,
+                "relevance": 70,
+                "efficiency": 90,
+                "completion": 70,
+                "finalRating": 72,
+                "successRate": 66.66666666666667,
+                "timeTaken": 9.780000000000001,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.7999999999999999,
+                "temperature": 0.7,
+                "complexity": 10,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 80,
+                "completion": 80,
+                "finalRating": 78,
+                "successRate": 76.66666666666667,
+                "timeTaken": 13.524,
+                "contextUsed": 130,
+                "toolsCalled": 2
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.8999999999999999,
+                "temperature": 0.7,
+                "complexity": 1,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 90,
+                "accuracy": 70,
+                "relevance": 80,
+                "efficiency": 99,
+                "completion": 50,
+                "finalRating": 77.8,
+                "successRate": 80,
+                "timeTaken": 0.105,
+                "contextUsed": 13,
+                "toolsCalled": 1
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.8999999999999999,
+                "temperature": 0.7,
+                "complexity": 2,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 95,
+                "relevance": 90,
+                "efficiency": 80,
+                "completion": 100,
+                "finalRating": 85,
+                "successRate": 81.66666666666667,
+                "timeTaken": 2.249,
+                "contextUsed": 27,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.8999999999999999,
+                "temperature": 0.7,
+                "complexity": 3,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 70,
+                "accuracy": 90,
+                "relevance": 90,
+                "efficiency": 90,
+                "completion": 100,
+                "finalRating": 88,
+                "successRate": 83.33333333333333,
+                "timeTaken": 4.165,
+                "contextUsed": 133,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.8999999999999999,
+                "temperature": 0.7,
+                "complexity": 4,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 50,
+                "accuracy": 70,
+                "relevance": 90,
+                "efficiency": 80,
+                "completion": 90,
+                "finalRating": 76,
+                "successRate": 70,
+                "timeTaken": 6.568,
+                "contextUsed": 369,
+                "toolsCalled": 6
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.8999999999999999,
+                "temperature": 0.7,
+                "complexity": 5,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 70,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 80,
+                "completion": 80,
+                "finalRating": 80,
+                "successRate": 80,
+                "timeTaken": 5.9990000000000006,
+                "contextUsed": 263,
+                "toolsCalled": 5
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.8999999999999999,
+                "temperature": 0.7,
+                "complexity": 6,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 40,
+                "accuracy": 90,
+                "relevance": 70,
+                "efficiency": 95,
+                "completion": 20,
+                "finalRating": 63,
+                "successRate": 66.66666666666667,
+                "timeTaken": 9.719,
+                "contextUsed": 342,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.8999999999999999,
+                "temperature": 0.7,
+                "complexity": 7,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 40,
+                "accuracy": 90,
+                "relevance": 85,
+                "efficiency": 90,
+                "completion": 80,
+                "finalRating": 77,
+                "successRate": 71.66666666666667,
+                "timeTaken": 6.133,
+                "contextUsed": 106,
+                "toolsCalled": 2
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.8999999999999999,
+                "temperature": 0.7,
+                "complexity": 8,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 50,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 70,
+                "completion": 90,
+                "finalRating": 76,
+                "successRate": 73.33333333333333,
+                "timeTaken": 17.52,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.8999999999999999,
+                "temperature": 0.7,
+                "complexity": 9,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 50,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 80,
+                "completion": 100,
+                "finalRating": 80,
+                "successRate": 73.33333333333333,
+                "timeTaken": 14.945,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.8999999999999999,
+                "temperature": 0.7,
+                "complexity": 10,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 80,
+                "relevance": 90,
+                "efficiency": 90,
+                "completion": 80,
+                "finalRating": 80,
+                "successRate": 76.66666666666667,
+                "timeTaken": 16.672,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.9999999999999999,
+                "temperature": 0.7,
+                "complexity": 1,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 99,
+                "accuracy": 80,
+                "relevance": 90,
+                "efficiency": 99,
+                "completion": 99,
+                "finalRating": 93.4,
+                "successRate": 89.66666666666667,
+                "timeTaken": 0.086,
+                "contextUsed": 13,
+                "toolsCalled": 1
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.9999999999999999,
+                "temperature": 0.7,
+                "complexity": 2,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 60,
+                "relevance": 80,
+                "efficiency": 90,
+                "completion": 40,
+                "finalRating": 66,
+                "successRate": 66.66666666666667,
+                "timeTaken": 1.677,
+                "contextUsed": 13,
+                "toolsCalled": 2
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.9999999999999999,
+                "temperature": 0.7,
+                "complexity": 3,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 70,
+                "accuracy": 20,
+                "relevance": 80,
+                "efficiency": 90,
+                "completion": 80,
+                "finalRating": 68,
+                "successRate": 56.666666666666664,
+                "timeTaken": 3.1839999999999997,
+                "contextUsed": 156,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.9999999999999999,
+                "temperature": 0.7,
+                "complexity": 4,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 70,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 90,
+                "completion": 80,
+                "finalRating": 82,
+                "successRate": 80,
+                "timeTaken": 3.8169999999999997,
+                "contextUsed": 263,
+                "toolsCalled": 5
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.9999999999999999,
+                "temperature": 0.7,
+                "complexity": 5,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 45,
+                "accuracy": 85,
+                "relevance": 90,
+                "efficiency": 90,
+                "completion": 80,
+                "finalRating": 78,
+                "successRate": 73.33333333333333,
+                "timeTaken": 5.364,
+                "contextUsed": 356,
+                "toolsCalled": 5
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.9999999999999999,
+                "temperature": 0.7,
+                "complexity": 6,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 80,
+                "relevance": 90,
+                "efficiency": 70,
+                "completion": 80,
+                "finalRating": 76,
+                "successRate": 76.66666666666667,
+                "timeTaken": 5.7509999999999994,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.9999999999999999,
+                "temperature": 0.7,
+                "complexity": 7,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 20,
+                "accuracy": 85,
+                "relevance": 90,
+                "efficiency": 95,
+                "completion": 90,
+                "finalRating": 76,
+                "successRate": 65,
+                "timeTaken": 7.428,
+                "contextUsed": 106,
+                "toolsCalled": 2
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.9999999999999999,
+                "temperature": 0.7,
+                "complexity": 8,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 50,
+                "accuracy": 80,
+                "relevance": 90,
+                "efficiency": 90,
+                "completion": 90,
+                "finalRating": 80,
+                "successRate": 73.33333333333333,
+                "timeTaken": 8.450999999999997,
+                "contextUsed": 1005,
+                "toolsCalled": 12
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.9999999999999999,
+                "temperature": 0.7,
+                "complexity": 9,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 25,
+                "accuracy": 20,
+                "relevance": 80,
+                "efficiency": 90,
+                "completion": 20,
+                "finalRating": 47,
+                "successRate": 41.666666666666664,
+                "timeTaken": 8.104999999999999,
+                "contextUsed": 348,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 0.9999999999999999,
+                "temperature": 0.7,
+                "complexity": 10,
+                "title": "TemperatureVsComplexity"
+            },
+            "output": {
+                "speed": 80,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 80,
+                "completion": 90,
+                "finalRating": 84,
+                "successRate": 83.33333333333333,
+                "timeTaken": 11.529000000000002,
+                "contextUsed": 789,
+                "toolsCalled": 3
+            }
+        }
+    ]
+}

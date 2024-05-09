@@ -1,0 +1,205 @@
+{
+    "evaluationType": "ComplexityOnly",
+    "data": [
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7,
+                "complexity": 1,
+                "title": "ComplexityOnly"
+            },
+            "output": {
+                "speed": 90,
+                "accuracy": 70,
+                "relevance": 80,
+                "efficiency": 90,
+                "completion": 80,
+                "finalRating": 82,
+                "successRate": 80,
+                "timeTaken": 0.088,
+                "contextUsed": 13,
+                "toolsCalled": 1
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7,
+                "complexity": 2,
+                "title": "ComplexityOnly"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 40,
+                "relevance": 80,
+                "efficiency": 90,
+                "completion": 60,
+                "finalRating": 66,
+                "successRate": 60,
+                "timeTaken": 1.5590000000000002,
+                "contextUsed": 27,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7,
+                "complexity": 3,
+                "title": "ComplexityOnly"
+            },
+            "output": {
+                "speed": 80,
+                "accuracy": 70,
+                "relevance": 90,
+                "efficiency": 85,
+                "completion": 80,
+                "finalRating": 81,
+                "successRate": 80,
+                "timeTaken": 4.05,
+                "contextUsed": 137,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7,
+                "complexity": 4,
+                "title": "ComplexityOnly"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 70,
+                "relevance": 90,
+                "efficiency": 80,
+                "completion": 60,
+                "finalRating": 72,
+                "successRate": 73.33333333333333,
+                "timeTaken": 3.132,
+                "contextUsed": 263,
+                "toolsCalled": 5
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7,
+                "complexity": 5,
+                "title": "ComplexityOnly"
+            },
+            "output": {
+                "speed": 50,
+                "accuracy": 90,
+                "relevance": 70,
+                "efficiency": 80,
+                "completion": 75,
+                "finalRating": 73,
+                "successRate": 70,
+                "timeTaken": 7.346,
+                "contextUsed": 343,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7,
+                "complexity": 6,
+                "title": "ComplexityOnly"
+            },
+            "output": {
+                "speed": 60,
+                "accuracy": 95,
+                "relevance": 90,
+                "efficiency": 90,
+                "completion": 100,
+                "finalRating": 87,
+                "successRate": 81.66666666666667,
+                "timeTaken": 6.627999999999999,
+                "contextUsed": 855,
+                "toolsCalled": 9
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7,
+                "complexity": 7,
+                "title": "ComplexityOnly"
+            },
+            "output": {
+                "speed": 30,
+                "accuracy": 90,
+                "relevance": 80,
+                "efficiency": 60,
+                "completion": 80,
+                "finalRating": 68,
+                "successRate": 66.66666666666667,
+                "timeTaken": 11.584,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7,
+                "complexity": 8,
+                "title": "ComplexityOnly"
+            },
+            "output": {
+                "speed": 40,
+                "accuracy": 20,
+                "relevance": 70,
+                "efficiency": 90,
+                "completion": 20,
+                "finalRating": 48,
+                "successRate": 43.333333333333336,
+                "timeTaken": 13.297,
+                "contextUsed": 343,
+                "toolsCalled": 4
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7,
+                "complexity": 9,
+                "title": "ComplexityOnly"
+            },
+            "output": {
+                "speed": 20,
+                "accuracy": 70,
+                "relevance": 90,
+                "efficiency": 70,
+                "completion": 60,
+                "finalRating": 62,
+                "successRate": 60,
+                "timeTaken": 9.267,
+                "contextUsed": 236,
+                "toolsCalled": 3
+            }
+        },
+        {
+            "input": {
+                "top_p": 1,
+                "temperature": 0.7,
+                "complexity": 10,
+                "title": "ComplexityOnly"
+            },
+            "output": {
+                "speed": 50,
+                "accuracy": 80,
+                "relevance": 90,
+                "efficiency": 80,
+                "completion": 80,
+                "finalRating": 76,
+                "successRate": 73.33333333333333,
+                "timeTaken": 12.238000000000001,
+                "contextUsed": 130,
+                "toolsCalled": 2
+            }
+        }
+    ]
+}
