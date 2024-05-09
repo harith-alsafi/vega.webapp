@@ -92,9 +92,10 @@ export async function POST(req: Request) {
   ];
   console.log(messagesToSend);
   const res = await openai.chat.completions.create({
-    model: "gpt-3.5-turbo-0613",
+    model: "gpt-3.5-turbo",
     messages: messagesToSend,
     temperature: chatResponse.temperature,
+    top_p: chatResponse.top_p,
     tool_choice: "auto",
     tools: chatResponse.tools,
   });

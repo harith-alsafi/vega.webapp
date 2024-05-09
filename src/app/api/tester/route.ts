@@ -113,54 +113,67 @@ const sampleDevices = [
 
 const EvaluationInputSample: EvaluationInput[] = [
   {
-    content: "turn on the RED led",
+    content:
+      "this is the content of the message for example: turn on the RED led",
     taskComplexity: 1,
     porbable_tools: ["set_led"],
   },
   {
-    content: "turn on the RED, GREEN and BLUE led",
+    content:
+      "this is the content of the message for example: turn on the RED, GREEN and BLUE led",
     taskComplexity: 3,
     porbable_tools: ["set_led"],
   },
   {
     content:
-      "turn on the RED, GREEN and BLUE led followed by turning on the fan",
+      "this is the content of the message for example: turn on the RED, GREEN and BLUE led followed by printing 'hi there' on the LCD display",
     taskComplexity: 5,
-    porbable_tools: ["set_led", "set_fan"],
+    porbable_tools: ["set_led", "set_fan", "print_lcd"],
   },
   {
     content:
-      "get the temperature, if it is more than 20 degrees then turn on the fan, else turn on the RED led",
+      "this is the content of the message for example: get the temperature, if it is more than 20 degrees then turn on the fan, else turn on the RED led",
     taskComplexity: 7,
     porbable_tools: ["get_temperature", "set_led", "set_fan"],
   },
   {
     content:
-      "get the temperature, if it is more than 20 degrees then turn on the fan, else get the humidity, if it is more than 50% then turn on the RED led, else turn on the BLUE led",
+      "this is the content of the message for example: get the temperature, if it is more than 20 degrees then turn on the fan, else get the humidity, if it is more than 50% then turn on the RED led and print 'hi' on the LCD, else set the servo angle to 120",
     taskComplexity: 9,
-    porbable_tools: ["get_temperature", "get_humidity", "set_led", "set_fan"],
+    porbable_tools: [
+      "get_temperature",
+      "get_humidity",
+      "set_led",
+      "set_fan",
+      "set_servo",
+    ],
   },
 ];
 
-const systemPrompt = `Your purpose is generating evaluation messages for a chat system that has a list of connected devices, and a list of available functionality, you are supposed to generate a given number of evaluation messages with the following JSON schema ${JSON.stringify(
+const systemPrompt = `Your purpose is generating evaluation message for a system that has a list of connected devices, and a list of available functionality, given a complexity, the higher the complexity means that you will use more functionality and more conditional logic you are supposed to generate the evaluation message with the following EXAMPLE JSON schema ${JSON.stringify(
   EvaluationInputSample
-)} make sure you only use the given JSON schema and nothing else`;
+)} make sure that the content of the message is NEW and not the same as the example JOSN schema however make sure you give the response using the format of the given JSON schema`;
+
+const systemPrompt2 = `You are an expert at generating a message which will be used to assess a system, you will be  given a set of functionality that the system has, and a set of devices that are connected to the system, in addition you will be given a complexity rating from  1 to 10 which you will use to deide how complex the generated message will be, here is an example generated messages with there complexities: ${JSON.stringify(
+  EvaluationInputSample
+)} I want you to give me the message in the following JSON format ${JSON.stringify(
+  {
+    content: "The content of the message",
+  }
+)} Make sure you ONLY use the available functionality provided and make sure you don't mention any form of delay`;
 
 export async function getResponse(
+  taskComplexity: number,
   msg: string
 ): Promise<EvaluationInput | undefined> {
   try {
     const res = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      model: "gpt-4-turbo-preview",
       response_format: { type: "json_object" },
       messages: [
         {
-          role: "system",
-          content: systemPrompt,
-        },
-        {
           role: "user",
-          content: msg,
+          content: systemPrompt2 + " " + msg,
         },
       ],
       temperature: 0.7,
@@ -168,7 +181,14 @@ export async function getResponse(
 
     const response = res.choices[0].message;
     if (response.content) {
-      return JSON.parse(response.content) as EvaluationInput;
+      const responseJson = JSON.parse(response.content);
+      if (responseJson && responseJson.hasOwnProperty("content")) {
+        return {
+          content: responseJson.content,
+          taskComplexity: taskComplexity,
+          porbable_tools: [],
+        };
+      }
     }
   } catch (e) {
     return undefined;
@@ -179,21 +199,23 @@ export async function getResponse(
 export async function POST(req: Request) {
   const json = await req.json();
   const tester = json as TestGeneratorAgentData;
-  let message = `Generate an evaluation message using the known JSON schema`;
-  if (tester.complexity) {
-    message += ` with all messages having a complexity of ${tester.complexity} `;
-  } else {
-    message += ` with a complexity ranging from 1 to 10 `;
-  }
-  message += `given the list of available functions: ${JSON.stringify(
+  let message = ` `;
+  // if (tester.complexity) {
+  //   message += ` with a complexity of ${tester.complexity} `;
+  // } else {
+  //   message += ` with a complexity ranging from 1 to 10 `;
+  // }
+  message += `on that note i want you to generate a message with a complexity of ${
+    tester.complexity
+  } given the set of available tools as follows: ${JSON.stringify(
     tester.tools
   )} and the list of connected devices: ${JSON.stringify(tester.devices)} `;
   let resultData: EvaluationInput | undefined = undefined;
   let responseString = "";
   try {
-    resultData = await getResponse(message);
+    resultData = await getResponse(tester.complexity, message);
     while (!resultData) {
-      resultData = await getResponse(message);
+      resultData = await getResponse(tester.complexity, message);
     }
   } catch (e) {
     console.log(responseString);

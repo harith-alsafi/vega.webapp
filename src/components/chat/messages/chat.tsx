@@ -194,7 +194,7 @@ export function Chat({ id, initialMessages, className, title }: ChatProps) {
       }
     },
     onError(error) {
-      console.log("messages error", messages);
+      console.log("messages error", error);
       toast.error(error.message);
     },
     onDbUpdate(chat) {
@@ -257,9 +257,9 @@ export function Chat({ id, initialMessages, className, title }: ChatProps) {
   );
 
   useHotkeys(
-    "ctrl+alt+q", // toggle evaluation
+    "ctrl+alt+q", // stops evaluation
     async () => {
-      setIsEvaluation(!isEvaluation);
+      await stop();
     },
     { scopes: ["chat"] }
   );
@@ -336,6 +336,8 @@ export function Chat({ id, initialMessages, className, title }: ChatProps) {
         <ContextMenu>
           <ContextMenuTrigger>
             <ChatPanel
+              evaluationStatus={evaluationStatus}
+              isEvaluation={isEvaluation}
               setMessages={setMessages}
               id={id}
               isLoading={isLoading}

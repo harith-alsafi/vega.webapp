@@ -9,6 +9,7 @@ import {
   MessageUser,
 } from "@/services/chat-completion";
 import { PiDeviceInfo } from "@/services/rasberry-pi";
+import { get } from "http";
 import OpenAI from "openai";
 import { ChatCompletionTool } from "openai/resources";
 
@@ -24,9 +25,55 @@ const rankingSample: InputRating = {
   completion: 20,
 };
 
-const systemPrompt = `You are an expert at evaluating a chat system that has a list of connected devices, and a list of available functionality, you will be given a user message and a system response, you will have to rate the system response based on a criteria which you will give in the following JSON schema keeping in mind that each field is from 1 to 99: ${JSON.stringify(
-  rankingSample
-)} make sure you ONLY give the response using this exact criteria from the JSON schema`;
+const systemPrompt = `You are an expert at evaluating a chat system that has a list of connected devices, and a list of available functionality, you will be given a user message and a list of system responses for that message, you will have to rate the system response based on the following criteria keeping in mind that each field is from 1 to 99: 
+{
+  "speed": 40, // how fast was the execution of the response
+  "accuracy": 20, // how accurate was the response
+  "relevance": 70, // how relevant was the response
+  "efficiency": 90, // how efficient was the response
+  "completion": 20 // how complete was the response
+}
+make sure you ONLY give the response using this exact criteria from the JSON schema`;
+
+export function getMessageAll(
+  user: MessageUser,
+  generatedMessage: Array<MessageAssistant | MessageToolCallResponse>,
+  tools: ChatCompletionTool[],
+  devices: PiDeviceInfo[]
+) {
+  let msgData = `Given a system with Available Tools: \n ${JSON.stringify(
+    tools
+  )} \n Connected Devices: ${JSON.stringify(
+    devices
+  )} \n Please Generate a rating using the following data \n User Message: ${
+    user.content
+  } \n Chat Generated Messages: \n`;
+  for (let i = 0; i < generatedMessage.length; i++) {
+    const message = generatedMessage[i];
+    if (message.role === "assistant") {
+      msgData += `Assistant Message with content "${message.content}" `;
+      msgData +=
+        message.data !== undefined
+          ? ` with data ${JSON.stringify(message.data)} `
+          : "";
+      msgData +=
+        message.tool_calls !== undefined
+          ? ` with tools called ${JSON.stringify(
+              message.tool_calls?.map((call) => call.function.name)
+            )} `
+          : "";
+    } else {
+      msgData += `Tool Call Response for tool name ${message.name} with content $"{message.content}"`;
+      msgData +=
+        message.data !== undefined
+          ? ` with data ${JSON.stringify(message.data)} `
+          : "";
+    }
+    msgData += ` with time taken ${message.messageRating.timeTaken} and total context generated ${message.messageRating.contextUsed}  \n`;
+  }
+
+  return msgData;
+}
 
 export function getMessage(
   user: MessageUser,
@@ -63,9 +110,9 @@ export function getMessage(
     user.content
   } and the generated message ${
     generatedMessage.content
-  }, ${extraData} with the tools ${JSON.stringify(
+  }, ${extraData} with the available tools ${JSON.stringify(
     tools
-  )} and devices ${JSON.stringify(devices)}`;
+  )} and available devices ${JSON.stringify(devices)}`;
 }
 
 export async function getResponse(
@@ -104,24 +151,33 @@ export async function getResponse(
   const response = res.choices[0].message;
   if (response.content) {
     const rating = JSON.parse(response.content) as InputRating;
-    generatedMessageRating.accuracy = rating.accuracy;
-    generatedMessageRating.completion = rating.completion;
-    generatedMessageRating.efficiency = rating.efficiency;
-    generatedMessageRating.relevance = rating.relevance;
-    generatedMessageRating.speed = rating.speed;
-    generatedMessageRating.finalRating =
-      (generatedMessageRating.accuracy +
-        generatedMessageRating.completion +
-        generatedMessageRating.efficiency +
-        generatedMessageRating.relevance +
-        generatedMessageRating.speed) /
-      5;
-    generatedMessageRating.successRate =
-      (generatedMessageRating.speed +
-        generatedMessageRating.accuracy +
-        generatedMessageRating.relevance) /
-      3;
-    return generatedMessageRating;
+    if (
+      "accuracy" in rating &&
+      "completion" in rating &&
+      "efficiency" in rating &&
+      "relevance" in rating &&
+      "speed" in rating
+    ) {
+      generatedMessageRating.accuracy = rating.accuracy;
+      generatedMessageRating.completion = rating.completion;
+      generatedMessageRating.efficiency = rating.efficiency;
+      generatedMessageRating.relevance = rating.relevance;
+      generatedMessageRating.speed = rating.speed;
+      generatedMessageRating.finalRating =
+        (generatedMessageRating.accuracy +
+          generatedMessageRating.completion +
+          generatedMessageRating.efficiency +
+          generatedMessageRating.relevance +
+          generatedMessageRating.speed) /
+        5;
+      generatedMessageRating.successRate =
+        (generatedMessageRating.speed +
+          generatedMessageRating.accuracy +
+          generatedMessageRating.relevance) /
+        3;
+
+      return generatedMessageRating;
+    }
   }
   return undefined;
 }
@@ -137,27 +193,68 @@ export async function brutForceResponse(
   return rating;
 }
 
+export function GetMessageRatingAverage(
+  messageRatings: MessageRating[]
+): MessageRating {
+  const averageRating: MessageRating = messageRatings.reduce((a, b) => {
+    return {
+      speed: a.speed + b.speed,
+      accuracy: a.accuracy + b.accuracy,
+      relevance: a.relevance + b.relevance,
+      efficiency: a.efficiency + b.efficiency,
+      completion: a.completion + b.completion,
+      finalRating: a.finalRating + b.finalRating,
+      successRate: a.successRate + b.successRate,
+      timeTaken: a.timeTaken + b.timeTaken,
+      contextUsed: a.contextUsed + b.contextUsed,
+      toolsCalled: a.toolsCalled + b.toolsCalled,
+    };
+  });
+
+  return {
+    speed: averageRating.speed / messageRatings.length,
+    accuracy: averageRating.accuracy / messageRatings.length,
+    relevance: averageRating.relevance / messageRatings.length,
+    efficiency: averageRating.efficiency / messageRatings.length,
+    completion: averageRating.completion / messageRatings.length,
+    finalRating: averageRating.finalRating / messageRatings.length,
+    successRate: averageRating.successRate / messageRatings.length,
+    timeTaken: averageRating.timeTaken,
+    contextUsed: averageRating.contextUsed,
+    toolsCalled: averageRating.toolsCalled,
+  } as MessageRating;
+}
+
 export async function POST(req: Request) {
   const json = await req.json();
   const evaluator = json as EvaluationAgentData;
   if (evaluator.generatedMessaages.length > 0) {
-    const data = evaluator.generatedMessaages.map((message) => {
-      return brutForceResponse(
-        getMessage(
-          evaluator.userMessage,
-          message,
-          evaluator.tools,
-          evaluator.devices
-        ),
-        message.messageRating
-      );
-    });
-    const results = await Promise.all(data);
+    // const data = evaluator.generatedMessaages.map((message) => {
+    //   return brutForceResponse(
+    //     getMessage(
+    //       evaluator.userMessage,
+    //       message,
+    //       evaluator.tools,
+    //       evaluator.devices
+    //     ),
+    //     message.messageRating
+    //   );
+    // });
+    // const results = await Promise.all(data);
+    const result = await brutForceResponse(
+      getMessageAll(
+        evaluator.userMessage,
+        evaluator.generatedMessaages,
+        evaluator.tools,
+        evaluator.devices
+      ),
+      GetMessageRatingAverage(
+        evaluator.generatedMessaages.map((message) => message.messageRating)
+      )
+    );
     const evaluationOutput: EvaluationOutput = {
       messageParameter: evaluator.userMessage.messageParameter,
-      messageRating: results.filter(
-        (result) => result !== undefined
-      ) as MessageRating[],
+      messageRating: [result],
     };
     return Response.json(evaluationOutput);
   }

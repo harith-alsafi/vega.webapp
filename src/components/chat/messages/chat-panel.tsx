@@ -29,6 +29,8 @@ export interface ChatPanelProps
     | "input"
     | "setInput"
     | "setMessages"
+    | "isEvaluation"
+    | "evaluationStatus"
   > {
   id?: string;
   title?: string;
@@ -45,6 +47,8 @@ export function ChatPanel({
   input,
   setInput,
   messages,
+  isEvaluation,
+  evaluationStatus,
 }: ChatPanelProps) {
   const [isOpen, setIsOpen] = React.useState(false);
   const { connectionState } = useConnectionContext();
@@ -90,6 +94,7 @@ export function ChatPanel({
         {/* <div className="bg-background px-4 py-2 space-y-4 border-t shadow-lg  sm:rounded-t-xl sm:border md:py-4"> */}
         <div className="px-4 py-2 md:mr-6 sm:mr-0 space-y-4 border-t shadow-lg bg-background sm:rounded-t-xl sm:border md:py-4 z-0">
           <PromptForm
+            evaluationStatus={evaluationStatus}
             onSubmit={async (value) => {
               if (!connectionState.status) {
                 setIsOpen(true);
@@ -101,6 +106,7 @@ export function ChatPanel({
               };
               await append(msg);
             }}
+            isEvaluation={isEvaluation}
             input={input}
             setInput={setInput}
             isLoading={isLoading}

@@ -29,7 +29,7 @@ import { PiInfo, PiDeviceInfo, ToolType, ParameterProperty } from "@/services/ra
 import { BoxModelIcon } from "@radix-ui/react-icons";
 
 export interface PromptProps
-  extends Pick<ChatCompletion, "input" | "setInput"> {
+  extends Pick<ChatCompletion, "input" | "setInput" | "isEvaluation" | "evaluationStatus"> {
   onSubmit: (value: string) => void;
   isLoading: boolean;
 }
@@ -83,6 +83,8 @@ export function PromptForm({
   input,
   setInput,
   isLoading,
+  isEvaluation,
+  evaluationStatus
 }: PromptProps) {
   const { connectionState } = useConnectionContext();
   const isConnected = connectionState.status;
@@ -217,7 +219,7 @@ export function PromptForm({
               tabIndex={0}
               rows={1}
               value={input}
-              placeholder={isConnected ? "Type a message..." : "Please connect to a raspberry pi to send a message."}
+              placeholder={isEvaluation? evaluationStatus : (isConnected ? "Type a message..." : "Please connect to a raspberry pi to send a message.")}
               spellCheck={false}
               onKeyDown={(e) => {
                 if (e.key === "ArrowUp") {

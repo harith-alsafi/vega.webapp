@@ -31,9 +31,23 @@ export interface ChatMessageProps {
   hideParameters?: boolean;
 }
 
-export function ChatMessage({ message, showIcon, currentIndex, hideRating, hideParameters, ...props }: ChatMessageProps) {
+export function ChatMessage({
+  message,
+  showIcon,
+  currentIndex,
+  hideRating,
+  hideParameters,
+  ...props
+}: ChatMessageProps) {
   return (
-    <MessageContainer hideRating={hideRating} hideParameter={hideParameters} currentIndex={currentIndex}  message={message} showIcon={showIcon ?? true} {...props}>
+    <MessageContainer
+      hideRating={hideRating}
+      hideParameter={hideParameters}
+      currentIndex={currentIndex}
+      message={message}
+      showIcon={showIcon ?? true}
+      {...props}
+    >
       <MemoizedReactMarkdown
         className="prose break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0"
         remarkPlugins={[remarkGfm, remarkMath]}
@@ -65,12 +79,12 @@ export function ChatMessage({ message, showIcon, currentIndex, hideRating, hideP
             <TableBody className="divide-y">{children}</TableBody>
           ),
           tr: ({ children }) => (
-            <TableRow className="border-t text-center">{children}</TableRow>
+            <TableRow className="border-b text-center">{children}</TableRow>
           ),
           table: ({ children }) => (
-            <div className="rounded-md border mb-2 mt-2">
-              <Table className="">{children}</Table>
-            </div>
+            <div className="rounded-md border ">
+            <Table className="mt-0 mb-0">{children}</Table>
+          </div>
           ),
           p({ children }) {
             return <p className="mb-2 last:mb-0">{children}</p>;

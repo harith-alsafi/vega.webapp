@@ -38,10 +38,13 @@
         "rule": "unauthenticated-encryption"
       },
       {
+        "rule": "unfulfilled-promise"
+      },
+      {
         "rule": "update-in-get-request"
       }
     ],
-    "timestampMs": 1713005775746
+    "timestampMs": 1714955901178
   },
   "appMapMetadata": {
     "a:\\Work\\Projects\\vega\\vega.webapp\\tmp\\appmap\\requests\\2024-01-30T21-25-51.444Z_-api-chat.appmap.json": {
@@ -363,6 +366,21 @@
     },
     {
       "rule": {
+        "id": "unfulfilled-promise",
+        "title": "Unfulfilled Promise",
+        "description": "Finds promises which have been created during the recording but have remained unfulfilled at the end.",
+        "enumerateScope": true
+      },
+      "id": "unfulfilled-promise",
+      "options": {},
+      "scope": "command",
+      "includeScope": [],
+      "excludeScope": [],
+      "includeEvent": [],
+      "excludeEvent": []
+    },
+    {
+      "rule": {
         "id": "update-in-get-request",
         "title": "Data update performed in GET or HEAD request",
         "scope": "http_server_request",
@@ -392,7 +410,7 @@
   ],
   "summary": {
     "numAppMaps": 1,
-    "numChecks": 13,
+    "numChecks": 14,
     "rules": [
       "authz-before-authn",
       "deprecated-crypto-algorithm",
@@ -406,6 +424,7 @@
       "too-many-joins",
       "too-many-updates",
       "unauthenticated-encryption",
+      "unfulfilled-promise",
       "update-in-get-request"
     ],
     "ruleLabels": [

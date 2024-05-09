@@ -97,6 +97,7 @@
   },
   "devDependencies": {
     "@appland/appmap-agent-js": "^14.2.0",
+    "@tailwindcss/typography": "^0.5.13",
     "@types/axios": "^0.14.0",
     "@types/file-saver": "^2.0.7",
     "@types/jest": "^29.5.11",

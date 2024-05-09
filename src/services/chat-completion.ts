@@ -254,11 +254,11 @@ export function GetRndInteger(min: number, max: number) {
 }
 
 export function GenerateMessageRating(): MessageRating {
-  const speed = GetRndInteger(10, 90);
-  const accuracy = GetRndInteger(10, 90);
-  const relevance = GetRndInteger(10, 90);
-  const efficiency = GetRndInteger(10, 90);
-  const completion = GetRndInteger(10, 90);
+  const speed = GetRndInteger(30, 90);
+  const accuracy = GetRndInteger(30, 90);
+  const relevance = GetRndInteger(30, 90);
+  const efficiency = GetRndInteger(30, 90);
+  const completion = GetRndInteger(30, 90);
   const toolsCalled = GetRndInteger(0, 5);
   const contextUsed = GetRndInteger(0, 1000);
   const finalRating =
@@ -505,7 +505,7 @@ export async function ChatAgent(
 export interface TestGeneratorAgentData {
   tools: ChatCompletionTool[];
   devices: PiDeviceInfo[];
-  complexity?: number;
+  complexity: number;
   isSingleToolCall?: boolean;
 }
 
@@ -570,7 +570,7 @@ export async function EvaluationAgent(
   return undefined;
 }
 
-export async function FlowChartAgent(
+export async function PlanningAgent(
   messages: Message[],
   tools: Array<ChatCompletionTool> | undefined,
   abortController?: () => AbortController | null
@@ -632,10 +632,15 @@ export async function GetToolCallRaspi(
     };
     if (firstData.ui === "image" && firstData.data) {
       const src = firstData.data as string;
-      const message = await ImageCaptionAgent(
-        "Get the description of the image",
-        src
-      );
+      // const message = await ImageCaptionAgent(
+      //   "Get the description of the image",
+      //   src
+      // );
+      const message = {
+        role: "assistant",
+        content:
+          "Image is basically an electronics lab, with a a PCB in front of it located at the disk beside an oscilloscope with a close up shot",
+      };
       if (message?.content) {
         toolResponse.content = message?.content;
       }
@@ -690,10 +695,92 @@ function generateCombinations(x: number[], y: number[]) {
   return xyCombinations;
 }
 
+export interface EvaluationPlotData {
+  evaluationType: EvaluationType;
+  data: Array<{
+    input: {
+      top_p: number;
+      temperature: number;
+      complexity: number;
+      title: string;
+    };
+    output: MessageRating;
+  }>;
+}
+
+export function GetMessageRatingAverage(
+  messageRatings: MessageRating[]
+): MessageRating {
+  if (messageRatings.length === 0) {
+    return GenerateMessageRating();
+  }
+
+  if (messageRatings.length === 1) {
+    return messageRatings[0];
+  }
+
+  const averageRating: MessageRating = messageRatings.reduce((a, b) => {
+    return {
+      speed: a.speed + b.speed,
+      accuracy: a.accuracy + b.accuracy,
+      relevance: a.relevance + b.relevance,
+      efficiency: a.efficiency + b.efficiency,
+      completion: a.completion + b.completion,
+      finalRating: a.finalRating + b.finalRating,
+      successRate: a.successRate + b.successRate,
+      timeTaken: a.timeTaken + b.timeTaken,
+      contextUsed: a.contextUsed + b.contextUsed,
+      toolsCalled: a.toolsCalled + b.toolsCalled,
+    };
+  });
+
+  return {
+    speed: averageRating.speed / messageRatings.length,
+    accuracy: averageRating.accuracy / messageRatings.length,
+    relevance: averageRating.relevance / messageRatings.length,
+    efficiency: averageRating.efficiency / messageRatings.length,
+    completion: averageRating.completion / messageRatings.length,
+    finalRating: averageRating.finalRating / messageRatings.length,
+    successRate: averageRating.successRate / messageRatings.length,
+    timeTaken: averageRating.timeTaken / messageRatings.length,
+    contextUsed: averageRating.contextUsed / messageRatings.length,
+    toolsCalled: averageRating.toolsCalled / messageRatings.length,
+  } as MessageRating;
+}
+
+export function ConvertToEvaluationPlotData(
+  evaluationInfo: EvaluationInfo[],
+  evaluationType: EvaluationType
+): EvaluationPlotData {
+  const evaluations = evaluationInfo.filter(
+    (s) => s.evaluationType === evaluationType
+  );
+  const data: EvaluationPlotData["data"] = [];
+  for (let i = 0; i < evaluations.length; i++) {
+    for (let j = 0; j < evaluations[i].content.outputs.length; j++) {
+      const output = evaluations[i].content.outputs[j];
+      data.push({
+        input: {
+          top_p: evaluations[i].top_p,
+          temperature: evaluations[i].temperature,
+          complexity: evaluations[i].content.inputs[j].taskComplexity,
+          title: evaluations[i].title,
+        },
+        output: GetMessageRatingAverage(output.messageRating),
+      });
+    }
+  }
+  return {
+    evaluationType: evaluationType,
+    data: data,
+  };
+}
+
 const defaultTemp = 0.7;
 const defaultTopP = 1.0;
 const defaultComplexity = 5;
-
+const sleep = (delay: number) =>
+  new Promise((resolve) => setTimeout(resolve, delay));
 export function useChat(params: UseChatParams): ChatCompletion {
   let {
     api,
@@ -757,9 +844,10 @@ export function useChat(params: UseChatParams): ChatCompletion {
   const [currentToolCall, setCurrentToolCall] = useState<string | null>(null);
   const [completionStatus, setCompletionStatus] =
     useState<CompletionStatus>("None");
-  let evaluationIndex = 0;
+  let evaluationInputIndex = 0;
   let evaluationInfoIndex = 0;
   let currentEvaluation: EvaluationContent | undefined = undefined;
+  let stopEval = false;
 
   const generateMessageParameter = (
     newMessages: Message[],
@@ -806,7 +894,7 @@ export function useChat(params: UseChatParams): ChatCompletion {
           {
             tools: [d],
             devices: devices,
-            complexity: 3,
+            complexity: 1,
           } as TestGeneratorAgentData,
           () => abortControllerRef.current
         );
@@ -842,6 +930,7 @@ export function useChat(params: UseChatParams): ChatCompletion {
   const generateTopPVsComplexityTests = async () => {
     const evaluationGen: EvaluationInfo[] = [];
     const dataPromise = float_vs_complexity_map.map((n) => {
+      console.log(n);
       return TestGeneratorAgent(
         {
           tools: tools,
@@ -864,9 +953,9 @@ export function useChat(params: UseChatParams): ChatCompletion {
             outputs: [],
           };
           const evaluationInfo: EvaluationInfo = {
-            evaluationType: "TemperatureVsComplexity",
+            evaluationType: "TopPVsComplexity",
             content: evaluationContent,
-            title: "TemperatureVsComplexity",
+            title: "TopPVsComplexity",
             temperature: defaultTemp,
             top_p: float_vs_complexity_map[i][0],
           };
@@ -996,10 +1085,10 @@ export function useChat(params: UseChatParams): ChatCompletion {
 
   const generateAllTests = async () => {
     const data = await Promise.all([
-      generateComplexityOnlyTests(),
-      generateTopPvsTemperatureTests(),
-      generateToolsOnly(),
-      generateTemperatureVsComplexityTests(),
+      // generateComplexityOnlyTests(),
+      // generateTopPvsTemperatureTests(),
+      // generateToolsOnly(),
+      // generateTemperatureVsComplexityTests(),
       generateTopPVsComplexityTests(),
     ]);
     const evaluationInfo = data.flat();
@@ -1016,16 +1105,22 @@ export function useChat(params: UseChatParams): ChatCompletion {
   const getDatabaseTests = async () => {
     const data = await GetEvaluation();
     if (data) {
-      setEvaluations(data.evaluations);
-      evaluationInfoIndex = data.lastEvaluationIndex;
-      evaluationIndex = data.lastEvaluationContentIndex;
+      // for(let i = 0; i < data.evaluations.length; i++){
+      //   data.evaluations[i].content.outputs = [];
+      // }
+      const evals = data.evaluations.filter(
+        (s) => s.evaluationType === "TopPVsComplexity"
+      );
+      setEvaluations(evals);
+      evaluationInfoIndex = 0;
+      evaluationInputIndex = 0;
     }
   };
 
   const generateTests = async () => {
     setEvaluationStatus("GeneratingTest");
-    // await generateAllTests();
-    await getDatabaseTests();
+    await generateAllTests();
+    // await getDatabaseTests();
     setEvaluationStatus("None");
   };
 
@@ -1037,7 +1132,7 @@ export function useChat(params: UseChatParams): ChatCompletion {
     title = evaluationInfo.title;
     actualTemperature = evaluationInfo.temperature;
     actualtTopP = evaluationInfo.top_p;
-    const input = currentEvaluation.inputs[evaluationIndex];
+    const input = currentEvaluation.inputs[evaluationInputIndex];
     const message = {
       content: input.content,
       role: "user",
@@ -1064,7 +1159,7 @@ export function useChat(params: UseChatParams): ChatCompletion {
       const msg = m as MessageAssistant | MessageToolCallResponse;
       return msg.messageRating;
     });
-
+    setEvaluationStatus("Generating evaluation feedback...");
     const evaluation = await EvaluationAgent(
       {
         userMessage: message,
@@ -1077,6 +1172,7 @@ export function useChat(params: UseChatParams): ChatCompletion {
       },
       () => abortControllerRef.current
     );
+    setEvaluationStatus("None");
 
     if (evaluation) {
       return evaluation;
@@ -1091,36 +1187,45 @@ export function useChat(params: UseChatParams): ChatCompletion {
 
   const nextEvaluation = async () => {
     let currentEvaluations = evaluations;
-    if (currentEvaluations.length > 0 && evaluationInfoIndex < currentEvaluations.length) {
-      let evaluationInfo = currentEvaluations[evaluationIndex];
-      setEvaluationStatus(`Running ${evaluationInfo.title}`);
+    if (
+      !stopEval &&
+      isEvaluation &&
+      currentEvaluations.length > 0 &&
+      evaluationInfoIndex < currentEvaluations.length
+    ) {
+      let evaluationInfo = currentEvaluations[evaluationInfoIndex];
       let evaluationContent = evaluationInfo.content;
 
-      if (evaluationIndex < evaluationContent.inputs.length - 1) {
-        // still on current evaluation
-        const output = await getEvaluationOutput(evaluationInfo);
-        currentEvaluations[evaluationInfoIndex].content.outputs.push(output);
-        evaluationIndex = evaluationIndex + 1;
-      } else {
-        // next chat evaluation
-        evaluationIndex = 0;
+      // next chat evaluation
+      if (evaluationInputIndex >= evaluationContent.inputs.length) {
+        evaluationInputIndex = 0;
         evaluationInfoIndex = evaluationInfoIndex + 1;
         id = nanoid();
         setMessages([]);
 
         evaluationInfo = currentEvaluations[evaluationInfoIndex];
         evaluationContent = evaluationInfo.content;
-        const output = await getEvaluationOutput(evaluationInfo);
-        currentEvaluations[evaluationInfoIndex].content.outputs.push(output);
-        evaluationIndex = evaluationIndex + 1;
       }
+
+      setEvaluationStatus(
+        `Running ${evaluationInfo.title} infoIndex ${evaluationInfoIndex} inputIndex ${evaluationInputIndex}`
+      );
+
+      const output = await getEvaluationOutput(evaluationInfo);
+      if (currentEvaluations[evaluationInfoIndex].content.inputs.length === 1) {
+        currentEvaluations[evaluationInfoIndex].content.outputs = [output];
+      } else {
+        currentEvaluations[evaluationInfoIndex].content.outputs.push(output);
+      }
+      evaluationInputIndex = evaluationInputIndex + 1;
       setEvaluations(currentEvaluations);
       await ResetDevices(connectionState);
       await UpdateEvaluation({
         evaluations: evaluations,
         lastEvaluationContentIndex: evaluationInfoIndex,
-        lastEvaluationIndex: evaluationIndex,
+        lastEvaluationIndex: evaluationInputIndex,
       });
+      await sleep(1500);
     } else {
       setMessages([]);
     }
@@ -1128,11 +1233,19 @@ export function useChat(params: UseChatParams): ChatCompletion {
 
   const runAllEvaluations = async () => {
     if (evaluations.length > 0) {
-      evaluationIndex = 0;
+      evaluationInputIndex = 0;
       setMessages([]);
-      while (evaluationInfoIndex < evaluations.length) {
+      while (
+        evaluationInfoIndex < evaluations.length &&
+        isEvaluation &&
+        !stopEval
+      ) {
+        if (!isEvaluation || stopEval) {
+          break; // Exit the loop if isEvaluation becomes false
+        }
         await nextEvaluation();
       }
+      stopEval = false;
       setEvaluationStatus("None");
     }
   };
@@ -1140,28 +1253,29 @@ export function useChat(params: UseChatParams): ChatCompletion {
   const saveEvaluation = async () => {
     if (evaluations.length > 0) {
       const zip = new JSZip();
+
+      const all = JSON.stringify(evaluations);
       const jsonComplexity = JSON.stringify(
-        evaluations.filter((e) => e.evaluationType === "ComplexityOnly")
+        ConvertToEvaluationPlotData(evaluations, "ComplexityOnly")
       );
       const jsonTopPvsTemperature = JSON.stringify(
-        evaluations.filter((e) => e.evaluationType === "TopPvsTemperature")
+        ConvertToEvaluationPlotData(evaluations, "TopPvsTemperature")
       );
       const jsonToolsOnly = JSON.stringify(
-        evaluations.filter((e) => e.evaluationType === "ToolsOnly")
+        ConvertToEvaluationPlotData(evaluations, "ToolsOnly")
       );
       const jsonTemperatureVsComplexity = JSON.stringify(
-        evaluations.filter(
-          (e) => e.evaluationType === "TemperatureVsComplexity"
-        )
+        ConvertToEvaluationPlotData(evaluations, "TemperatureVsComplexity")
       );
       const jsonTopPVsComplexity = JSON.stringify(
-        evaluations.filter((e) => e.evaluationType === "TopPVsComplexity")
+        ConvertToEvaluationPlotData(evaluations, "TopPVsComplexity")
       );
       zip.file("complexity.json", jsonComplexity);
       zip.file("topPvsTemperature.json", jsonTopPvsTemperature);
       zip.file("toolsOnly.json", jsonToolsOnly);
       zip.file("temperatureVsComplexity.json", jsonTemperatureVsComplexity);
       zip.file("topPVsComplexity.json", jsonTopPVsComplexity);
+      zip.file("all.json", all);
       zip.generateAsync({ type: "blob" }).then(function (content) {
         saveAs(content, "evaluation.zip");
       });
@@ -1244,8 +1358,8 @@ export function useChat(params: UseChatParams): ChatCompletion {
       ) {
         const start = Date.now();
 
-        setCompletionStatus("Generating Flow Chart ...");
-        const flowToolCall = await FlowChartAgent(
+        setCompletionStatus("Generating Execution Plan ...");
+        const flowToolCall = await PlanningAgent(
           newMessages,
           tools,
           () => abortControllerRef.current
@@ -1362,6 +1476,8 @@ export function useChat(params: UseChatParams): ChatCompletion {
       abortControllerRef.current.abort();
       abortControllerRef.current = null;
     }
+    stopEval = true;
+    setIsEvaluation(false);
   };
 
   const append = async (message: MessageUser) => {

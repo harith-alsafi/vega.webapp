@@ -19,17 +19,14 @@ export interface ParameterProperty {
 
 export interface ParameterType extends FunctionParameters {
   type: "object";
-  properties: Record<
-    string,
-    ParameterProperty
-  >;
+  properties: Record<string, ParameterProperty>;
   required: string[];
   return: string;
 }
 
-export type PiBaseInfo =  Omit<ChatCompletionTool["function"], "parameters">;
+export type PiBaseInfo = Omit<ChatCompletionTool["function"], "parameters">;
 
-export interface PiToolInfo  extends PiBaseInfo{
+export interface PiToolInfo extends PiBaseInfo {
   parameters?: ParameterType;
 }
 
@@ -37,7 +34,7 @@ export type ToolType = PiToolInfo | ChatCompletionTool["function"];
 
 export type DeviceType = "pwm" | "digital" | "analog" | "i2c" | "serial";
 
-export interface PiDeviceInfo extends PiBaseInfo{
+export interface PiDeviceInfo extends PiBaseInfo {
   type: DeviceType;
   pins: string[];
   isInput: boolean;
@@ -94,8 +91,9 @@ export interface PiFunctionCallResponseData extends PiFunctionCallResponseBase {
   data?: PiPlotResponse;
 }
 
-export interface PiFunctionCallResponseString extends PiFunctionCallResponseBase {
-  ui?: Extract<UiType, "image" >;  
+export interface PiFunctionCallResponseString
+  extends PiFunctionCallResponseBase {
+  ui?: Extract<UiType, "image">;
   data?: string;
 }
 
@@ -114,13 +112,17 @@ export interface PiFunctionCallResponseMap extends PiFunctionCallResponseBase {
   data?: PiMapResponse;
 }
 
-
-export type PiFunctionCallResponse =  PiFunctionCallResponseData | PiFunctionCallResponseString | PiFunctionCallResponseFlow | PiFunctionCallResponseCard | PiFunctionCallResponseMap;
+export type PiFunctionCallResponse =
+  | PiFunctionCallResponseData
+  | PiFunctionCallResponseString
+  | PiFunctionCallResponseFlow
+  | PiFunctionCallResponseCard
+  | PiFunctionCallResponseMap;
 
 export const GetToolCalslUrl = "/get-tools";
 export const RunToolCallUrl = "/run-tools";
 export const GetDevicesUrl = "/get-devices";
-export const ResetDevicesUrl = "/reset-devices";  
+export const ResetDevicesUrl = "/reset-devices";
 
 export const ToolsExample: Array<ChatCompletionTool["function"]> = [
   {
@@ -214,13 +216,13 @@ export async function RunToolCalls(
     },
     body: JSON.stringify(toolCall.map((call) => call.function)),
   });
-  const json = await response.json()
+  const json = await response.json();
   const data = json as PiFunctionCallResponse[];
   return data;
 }
 
-export async function ResetDevices(pi: PiConnection): Promise<void>{
-  await fetch(pi.url+ResetDevicesUrl, {
+export async function ResetDevices(pi: PiConnection): Promise<void> {
+  await fetch(pi.url + ResetDevicesUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -243,9 +245,7 @@ export async function GetDevices(
   return data;
 }
 
-export async function GetToolCalls(
-  url: string,
-): Promise<Array<ToolType>> {
+export async function GetToolCalls(url: string): Promise<Array<ToolType>> {
   const response = await fetch(url, {
     method: "POST",
     headers: {
@@ -265,16 +265,19 @@ async function delay(milliseconds: number) {
 }
 // a polyfill for it would be:
 AbortSignal.timeout ??= function timeout(ms) {
-  const ctrl = new AbortController()
-  setTimeout(() => ctrl.abort(), ms)
-  return ctrl.signal
-}
+  const ctrl = new AbortController();
+  setTimeout(() => ctrl.abort(), ms);
+  return ctrl.signal;
+};
 
-export async function PingRaspberryPi(ip: string, port: number): Promise<boolean> {
+export async function PingRaspberryPi(
+  ip: string,
+  port: number
+): Promise<boolean> {
   try {
     const response = await fetch(`http://${ip}:${port}/`, {
       method: "GET",
-      signal: AbortSignal.timeout(5000)
+      signal: AbortSignal.timeout(5000),
     });
     return response.ok;
   } catch (error) {
@@ -291,8 +294,8 @@ export async function ConnectRaspberryPi(
   // return DefaultPiConnection;
   url = url || `http://${ip}:${port}`;
   const [devices, tools] = await Promise.all([
-    GetDevices(url+GetDevicesUrl),
-    GetToolCalls(url+GetToolCalslUrl),
+    GetDevices(url + GetDevicesUrl),
+    GetToolCalls(url + GetToolCalslUrl),
   ]);
   if (!devices) {
     throw new Error("Failed to fetch devices");
@@ -300,7 +303,7 @@ export async function ConnectRaspberryPi(
   if (!tools) {
     throw new Error("Failed to fetch tools");
   }
-  return{
+  return {
     ip,
     port,
     url,
@@ -310,4 +313,3 @@ export async function ConnectRaspberryPi(
     tools,
   };
 }
-
