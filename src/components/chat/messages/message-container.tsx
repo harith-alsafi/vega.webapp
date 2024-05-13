@@ -507,7 +507,7 @@ export default function MessageContainer({
         {showIcon && isUser ? (
           message.role === "user" &&
           message.messageParameter !== undefined &&
-          (hideParameter === undefined || hideParameter === false)? (
+          (hideParameter === undefined || hideParameter === false) ? (
             <MessageParameterUi currentIndex={currentIndex} message={message} />
           ) : (
             <IconUser className="shadow border bg-background rounded-md" />

@@ -218,18 +218,20 @@ export default function FlowChart(result: GptFlowChartResult) {
         proOptions={{ hideAttribution: true }}
         nodes={nodes}
         edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
         onConnect={onConnect}
-        edgesUpdatable={false}
-        edgesFocusable={false}
-        nodesDraggable={false}
-        nodesConnectable={false}
-        nodesFocusable={false}
+        // edgesUpdatable={false}
+        // edgesFocusable={false}
+        // nodesDraggable={false}
+        // nodesConnectable={false}
+        // nodesFocusable={false}
         fitView
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         defaultEdgeOptions={defaultEdgeOptions}
       >
-        <Controls showInteractive={false} />
+        {/* <Controls showInteractive={false} /> */}
         <Panel position="top-right">
           <Label
             className="bg-slate-800 rounded p-1"

@@ -20,7 +20,7 @@ export default function DeviceCarousel({ devices }: DeviceCarouselProps) {
         <CarouselContent>
           {devices.map((device, index) => (
             <CarouselItem key={index}>
-              <div className="p-1">
+              <div className="p-0">
                 <DeviceCard device={device} />
               </div>
             </CarouselItem>

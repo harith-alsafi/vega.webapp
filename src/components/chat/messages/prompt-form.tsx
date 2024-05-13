@@ -102,12 +102,7 @@ export function PromptForm({
   const [items, setItems] = React.useState<PiInfo[]>([]);
   const [selected, setSelected] = React.useState<string>("");
 
-  const isComponent = () => {
-    if (items.length === 0 || !("pin" in items[0])) {
-      return false;
-    }
-    return "pin" in items[0];
-  }
+  const isComponent = items.length > 0 && "pin" in items[0];
 
   const setInputFocus = () => {
     if (inputRef.current) {
@@ -170,7 +165,7 @@ export function PromptForm({
             className="max-h-96 grow p-0 w-full "
           >
             <Command className="max-h-44 w-full">
-              <CommandInput placeholder={`Search ${isComponent() ? "Devices" : "Functions"}...`} className="h-9" />
+              <CommandInput placeholder={`Search ${isComponent ? "Functions" : "Devices  "}...`} className="h-9" />
               <CommandEmpty>No result found.</CommandEmpty>
               <CommandGroup >
                 {items.map((item) => (

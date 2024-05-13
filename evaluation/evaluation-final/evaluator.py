@@ -6,7 +6,7 @@ from scipy.interpolate import make_interp_spline, griddata
 import random
 
 # Load the JSON data
-with open('topPVsComplexity.json', 'r') as file:
+with open('temperatureVsComplexity.json', 'r') as file:
     data = json.load(file)
 
 # Normalize the data
@@ -15,16 +15,17 @@ for item in data['data']:
     output_data = item['output']
     
     for key, value in output_data.items():
-        if key != 'timeTaken' and key != 'contextUsed' and key != 'toolsCalled' and key != 'comments':
+        if key != 'comments':
             try:
                 output_data[key] = float(value)
             except ValueError:
                 print(f"Error converting {key} to float.")
-    
-    input_data['top_p'] = float(input_data['top_p'])
-    input_data['temperature'] = float(input_data['temperature'])
-
-
+    try:
+        input_data['top_p'] = float(input_data['top_p'])
+        input_data['temperature'] = float(input_data['temperature'])
+        input_data['complexity'] = float(input_data['complexity'])
+    except Exception as e:
+        print(f"Error converting complexity to float.")
 
 # Extract the required data for plotting
 top_p = [item['input']['top_p'] for item in data['data']]
@@ -38,36 +39,56 @@ efficiency = [item['output']['efficiency'] for item in data['data']]
 completion = [item['output']['completion'] for item in data['data']]
 final_rating = [item['output']['finalRating'] for item in data['data']]
 
+
+
 # Filter out data with success rate around 0.43
 filtered_top_p = []
-filtered_temperature = []
-filtered_success_rate = []
-filtered_complexity = []
-
-for tp, temp, sr, comp in zip(top_p, temperature, success_rate, complexity):
-    # if round(sr) != 43:
-    if sr >= 85:
-        sr = 90
-    elif sr <= 48:
-        sr = 40
-    else:
-        sr = random.randrange(55,70)
+for tp in top_p:
+    # if tp != 0.43:
     filtered_top_p.append(tp)
+filtered_temperature = []
+for temp in temperature:
+    # if temp != 0.43:
     filtered_temperature.append(temp)
-    filtered_success_rate.append(sr)
-    filtered_complexity.append(complexity)
-
-print(len(filtered_top_p))
-print(len(filtered_temperature))
-print(len(filtered_success_rate))
-print(len(filtered_complexity))
+filtered_success_rate = []
+for sr in success_rate:
+    # if sr != 0.43:
+    filtered_success_rate.append(sr/100)
+filtered_complexity = []
+for comp in complexity:
+    # if comp != 0.43:
+    filtered_complexity.append(comp/10)
+filtered_speed = []
+for spd in speed:
+    # if spd != 0.43:
+    filtered_speed.append(spd/100)
+filtered_accuracy = []
+for acrc in accuracy:
+    # if acrc != 0.43:
+    filtered_accuracy.append(acrc/100)
+filtered_relevance = []
+for relv in relevance:
+    # if relv != 0.43:
+    filtered_relevance.append(relv/100)
+filtered_efficiency = []
+for eff in efficiency:
+    # if eff != 0.43:
+    filtered_efficiency.append(eff/100)
+filtered_completion = []
+for compl in completion:
+    # if compl != 0.43:
+    filtered_completion.append(compl/100)
+filtered_final_rating = []
+for fr in final_rating:
+    # if fr != 0.43:
+    filtered_final_rating.append(fr/100)
 
 # 2D Graphs
 def top_p_vs_success_rate():
     plt.figure(figsize=(8, 6))
-    plt.scatter(top_p, success_rate)
-    unique_x, unique_indices = np.unique(top_p, return_inverse=True)
-    y_sorted = [success_rate[i] for i in unique_indices]
+    plt.scatter(filtered_top_p, filtered_success_rate)
+    unique_x, unique_indices = np.unique(filtered_top_p, return_inverse=True)
+    y_sorted = [filtered_success_rate[i] for i in unique_indices]
     x_smooth = np.linspace(min(unique_x), max(unique_x), 300)
     y_smooth = make_interp_spline(unique_x, y_sorted)(x_smooth)
     plt.plot(x_smooth, y_smooth, color='red')
@@ -78,15 +99,15 @@ def top_p_vs_success_rate():
 
 def complexity_vs_success_rate():
     plt.figure(figsize=(8, 6))
-    unique_x, unique_indices = np.unique(complexity, return_inverse=True)
-    y_sorted = [success_rate[i] for i in unique_indices]
+    unique_x, unique_indices = np.unique(filtered_complexity, return_inverse=True)
+    y_sorted = [filtered_success_rate[i] for i in unique_indices]
     x_smooth = np.linspace(min(unique_x), max(unique_x), 300)
     y_smooth = make_interp_spline(unique_x, y_sorted)(x_smooth)
     plt.plot(x_smooth, y_smooth, color='red')  # Plot the curve first
 
     # Plot the scatter points on top of the curve
-    complexity_array = np.array(complexity)
-    success_rate_array = np.array(success_rate)
+    complexity_array = np.array(filtered_complexity)
+    success_rate_array = np.array(filtered_success_rate)
     plt.scatter(complexity_array, success_rate_array, zorder=2)  # Set a higher zorder value
 
     plt.xlabel('Complexity')
@@ -96,9 +117,9 @@ def complexity_vs_success_rate():
 
 def temperature_vs_success_rate():
     plt.figure(figsize=(8, 6))
-    plt.scatter(temperature, success_rate)
-    unique_x, unique_indices = np.unique(temperature, return_inverse=True)
-    y_sorted = [success_rate[i] for i in unique_indices]
+    plt.scatter(filtered_temperature, filtered_success_rate)
+    unique_x, unique_indices = np.unique(filtered_temperature, return_inverse=True)
+    y_sorted = [filtered_success_rate[i] for i in unique_indices]
     x_smooth = np.linspace(min(unique_x), max(unique_x), 300)
     y_smooth = make_interp_spline(unique_x, y_sorted)(x_smooth)
     plt.plot(x_smooth, y_smooth, color='red')
@@ -215,22 +236,22 @@ def temperature_complexity_success_rate():
 
 # 2D Multi-line Graph with Points
 def metrics_vs_complexity():
-    unique_x, unique_indices = np.unique(complexity, return_inverse=True)
+    unique_x, unique_indices = np.unique(filtered_complexity, return_inverse=True)
     x_smooth = np.linspace(min(unique_x), max(unique_x), 300)
 
-    y_speed = [speed[i] for i in unique_indices]
+    y_speed = [filtered_speed[i] for i in unique_indices]
     y_speed_smooth = make_interp_spline(unique_x, y_speed)(x_smooth)
 
-    y_accuracy = [accuracy[i] for i in unique_indices]
+    y_accuracy = [filtered_accuracy[i] for i in unique_indices]
     y_accuracy_smooth = make_interp_spline(unique_x, y_accuracy)(x_smooth)
 
-    y_relevance = [relevance[i] for i in unique_indices]
+    y_relevance = [filtered_relevance[i] for i in unique_indices]
     y_relevance_smooth = make_interp_spline(unique_x, y_relevance)(x_smooth)
 
-    y_efficiency = [efficiency[i] for i in unique_indices]
+    y_efficiency = [filtered_efficiency[i] for i in unique_indices]
     y_efficiency_smooth = make_interp_spline(unique_x, y_efficiency)(x_smooth)
 
-    y_completion = [completion[i] for i in unique_indices]
+    y_completion = [filtered_completion[i] for i in unique_indices]
     y_completion_smooth = make_interp_spline(unique_x, y_completion)(x_smooth)
 
   
@@ -250,7 +271,7 @@ def metrics_vs_complexity():
 def input_name_vs_success_rate():
     input_names = [item['input']['title'] for item in data['data']]
     plt.figure(figsize=(10, 6))
-    plt.bar(input_names, success_rate)
+    plt.bar(input_names, filtered_success_rate)
     plt.xlabel('Input Name')
     plt.ylabel('Success Rate')
     plt.title('Input Name vs Success Rate')
@@ -262,7 +283,7 @@ if __name__ == '__main__':
     # complexity_vs_success_rate() # done
     # temperature_vs_success_rate()
     # top_p_temperature_success_rate()
-    top_p_complexity_success_rate()
-    # temperature_complexity_success_rate()
+    # top_p_complexity_success_rate()
+    temperature_complexity_success_rate()
     # metrics_vs_complexity() # done 
     # input_name_vs_success_rate() # done

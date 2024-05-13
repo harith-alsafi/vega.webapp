@@ -63,7 +63,7 @@ export function EmptyScreen({
           </div>
         </div>
 
-        <p className="mb-2 leading-normal text-muted-foreground">
+        <p className="mb-2 leading-normal text-muted-foreground whitespace-normal break-words">
           {!isEvaluation
             ? `This is an AI chatbot used to talk with IoT devices , you can start a
           conversation here or try the following examples`
@@ -116,7 +116,7 @@ export function EmptyScreen({
               <Button
                 key={index}
                 variant="link"
-                className="h-auto p-0 text-base"
+                className="h-auto p-0 text-base whitespace-normal break-word"
                 onClick={() => setInput(message.message)}
               >
                 <IconArrowRight className="mr-2 text-muted-foreground" />

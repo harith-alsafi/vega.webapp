@@ -1,6 +1,11 @@
 import { Badge } from "@/components/ui/badge";
 import React from "react";
-import { EdgeProps, getBezierPath } from "reactflow";
+import {
+  BaseEdge,
+  EdgeLabelRenderer,
+  EdgeProps,
+  getBezierPath,
+} from "reactflow";
 
 export interface GptEdge {
   id: string;
@@ -20,11 +25,12 @@ export default function CustomEdge({
   style = {},
   markerEnd,
   label,
+  data,
 }: EdgeProps) {
   const xEqual = sourceX === targetX;
   const yEqual = sourceY === targetY;
 
-  const [edgePath] = getBezierPath({
+  const [edgePath, labelX, labelY] = getBezierPath({
     // we need this little hack in order to display the gradient for a straight line
     sourceX: xEqual ? sourceX + 0.0001 : sourceX,
     sourceY: yEqual ? sourceY + 0.0001 : sourceY,
@@ -39,29 +45,31 @@ export default function CustomEdge({
   const middlePointY = (sourceY + targetY) / 2;
 
   let length = 0;
+  const labelLength = label?.toString().length || 0;
   if (label) {
     length = label.toString().length * 4;
   }
 
   return (
     <>
-      <path
-        id={id}
-        style={style}
-        className="react-flow__edge-path"
-        d={edgePath}
-        markerEnd={markerEnd}
-      />
-      {label && (
-        <foreignObject
-          x={middlePointX - length}
-          y={middlePointY - 14}
-          width="100"
-          height="100"
+      <BaseEdge id={id} path={edgePath} />
+      <EdgeLabelRenderer>
+        <div
+          style={{
+            position: "absolute",
+            transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
+            padding: 10,
+            borderRadius: 5,
+            fontSize: 14,
+            fontWeight: 700,
+          }}
+          className="nodrag nopan max-w-[10rem] text-center "
         >
-          <Badge className="text-white">{label}</Badge>
-        </foreignObject>
-      )}
+          <p className="grow mb-4 p-1 whitespace-normal break-words font-bold bg-primary text-primary-foreground shadow rounded-md  transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 overflow-clip">
+            {label}
+          </p>
+        </div>
+      </EdgeLabelRenderer>
     </>
   );
 }

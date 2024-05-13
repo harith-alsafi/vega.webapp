@@ -25,7 +25,7 @@ export async function getClient() {
 
 const chatNameSpace = "chat:";
 const piNameSpace = "pi:1";
-const valNameSpace = "val:3";
+const valNameSpace = "val:2";
 
 export async function UpdatePiConnection(pi: PiConnection): Promise<void> {
   const redisClient = await getClient();

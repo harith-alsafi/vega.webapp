@@ -150,11 +150,11 @@ export function SingleChat({ message, index }: SingleChatProps) {
     return (
       <div key={index}>
         {message.role === "user" && index > 1 && (
-          <Separator className="h-[2px] my-4 md:my-8" />
+          <Separator className="h-[2px] my-2 md:my-4" />
         )}
         <ChatMessage currentIndex={index} message={message} />
         {message.role === "user" && (
-          <Separator className="h-[2px] my-4 md:my-8" />
+          <Separator className="h-[2px] my-2 md:my-4" />
         )}
       </div>
     );

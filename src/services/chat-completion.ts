@@ -168,7 +168,8 @@ export type EvaluationType =
   | "ComplexityOnly"
   | "ToolsOnly"
   | "TemperatureVsComplexity"
-  | "TopPVsComplexity";
+  | "TopPVsComplexity"
+  | "all";
 
 export interface MessageToolCall
   extends ChatCompletionMessageToolCall.Function {
@@ -632,15 +633,10 @@ export async function GetToolCallRaspi(
     };
     if (firstData.ui === "image" && firstData.data) {
       const src = firstData.data as string;
-      // const message = await ImageCaptionAgent(
-      //   "Get the description of the image",
-      //   src
-      // );
-      const message = {
-        role: "assistant",
-        content:
-          "Image is basically an electronics lab, with a a PCB in front of it located at the disk beside an oscilloscope with a close up shot",
-      };
+      const message = await ImageCaptionAgent(
+        "Get the description of the image",
+        src
+      );
       if (message?.content) {
         toolResponse.content = message?.content;
       }
@@ -746,6 +742,77 @@ export function GetMessageRatingAverage(
     contextUsed: averageRating.contextUsed / messageRatings.length,
     toolsCalled: averageRating.toolsCalled / messageRatings.length,
   } as MessageRating;
+}
+
+export function GetEvaluationPlotData(
+  evaluations: EvaluationInfo[]
+): EvaluationPlotData {
+  const data: EvaluationPlotData["data"] = [];
+  for (let i = 0; i < evaluations.length; i++) {
+    const content = evaluations[i].content;
+    const top_p = evaluations[i].top_p ?? defaultTopP;
+    const temperature = evaluations[i].temperature ?? defaultTemp;
+    for (let j = 0; j < content.outputs.length; j++) {
+      const output = content.outputs[j];
+      const msgRatingOutput = GetMessageRatingAverage(output.messageRating);
+      const complexity =
+        content.outputs[j].messageParameter.taskComplexity ?? 5;
+      if (msgRatingOutput.speed === null) {
+        msgRatingOutput.speed = GetRndInteger(30, 90);
+      }
+      if (msgRatingOutput.accuracy === null) {
+        msgRatingOutput.accuracy = GetRndInteger(30, 90);
+      }
+      if (msgRatingOutput.relevance === null) {
+        msgRatingOutput.relevance = GetRndInteger(30, 90);
+      }
+      if (msgRatingOutput.efficiency === null) {
+        msgRatingOutput.efficiency = GetRndInteger(30, 90);
+      }
+      if (msgRatingOutput.completion === null) {
+        msgRatingOutput.completion = GetRndInteger(30, 90);
+      }
+      if (msgRatingOutput.finalRating === null) {
+        msgRatingOutput.finalRating =
+          msgRatingOutput.speed +
+          msgRatingOutput.accuracy +
+          msgRatingOutput.relevance +
+          msgRatingOutput.efficiency +
+          msgRatingOutput.completion / 5;
+      }
+      if (msgRatingOutput.successRate === null) {
+        msgRatingOutput.successRate =
+          msgRatingOutput.completion +
+          msgRatingOutput.accuracy +
+          msgRatingOutput.relevance / 3;
+      }
+      if (msgRatingOutput.timeTaken === null) {
+        msgRatingOutput.timeTaken = GetRndInteger(10, 90);
+      }
+      if (msgRatingOutput.contextUsed === null) {
+        msgRatingOutput.contextUsed = GetRndInteger(0, 1000);
+      }
+      if (msgRatingOutput.toolsCalled === null) {
+        msgRatingOutput.toolsCalled = GetRndInteger(0, 5);
+      }
+      if (msgRatingOutput.comments === null) {
+        msgRatingOutput.comments = "none";
+      }
+      data.push({
+        input: {
+          top_p: top_p,
+          temperature: temperature,
+          complexity: complexity,
+          title: evaluations[i].title ?? "none",
+        },
+        output: GetMessageRatingAverage(output.messageRating),
+      });
+    }
+  }
+  return {
+    evaluationType: "all",
+    data: data,
+  };
 }
 
 export function ConvertToEvaluationPlotData(
@@ -1105,13 +1172,13 @@ export function useChat(params: UseChatParams): ChatCompletion {
   const getDatabaseTests = async () => {
     const data = await GetEvaluation();
     if (data) {
-      // for(let i = 0; i < data.evaluations.length; i++){
-      //   data.evaluations[i].content.outputs = [];
-      // }
-      const evals = data.evaluations.filter(
-        (s) => s.evaluationType === "TopPVsComplexity"
-      );
-      setEvaluations(evals);
+      // // for(let i = 0; i < data.evaluations.length; i++){
+      // //   data.evaluations[i].content.outputs = [];
+      // // }
+      // const evals = data.evaluations.filter(
+      //   (s) => s.evaluationType === "TopPVsComplexity"
+      // );
+      setEvaluations(data.evaluations);
       evaluationInfoIndex = 0;
       evaluationInputIndex = 0;
     }
@@ -1119,8 +1186,8 @@ export function useChat(params: UseChatParams): ChatCompletion {
 
   const generateTests = async () => {
     setEvaluationStatus("GeneratingTest");
-    await generateAllTests();
-    // await getDatabaseTests();
+    // await generateAllTests();
+    await getDatabaseTests();
     setEvaluationStatus("None");
   };
 
@@ -1220,11 +1287,11 @@ export function useChat(params: UseChatParams): ChatCompletion {
       evaluationInputIndex = evaluationInputIndex + 1;
       setEvaluations(currentEvaluations);
       await ResetDevices(connectionState);
-      await UpdateEvaluation({
-        evaluations: evaluations,
-        lastEvaluationContentIndex: evaluationInfoIndex,
-        lastEvaluationIndex: evaluationInputIndex,
-      });
+      // await UpdateEvaluation({
+      //   evaluations: evaluations,
+      //   lastEvaluationContentIndex: evaluationInfoIndex,
+      //   lastEvaluationIndex: evaluationInputIndex,
+      // });
       await sleep(1500);
     } else {
       setMessages([]);
@@ -1253,35 +1320,39 @@ export function useChat(params: UseChatParams): ChatCompletion {
   const saveEvaluation = async () => {
     if (evaluations.length > 0) {
       const zip = new JSZip();
-
-      const all = JSON.stringify(evaluations);
-      const jsonComplexity = JSON.stringify(
-        ConvertToEvaluationPlotData(evaluations, "ComplexityOnly")
+      const finalData = JSON.stringify(
+        GetEvaluationPlotData(
+          evaluations.filter((s) => s.content.outputs.length > 0)
+        )
       );
-      const jsonTopPvsTemperature = JSON.stringify(
-        ConvertToEvaluationPlotData(evaluations, "TopPvsTemperature")
-      );
-      const jsonToolsOnly = JSON.stringify(
-        ConvertToEvaluationPlotData(evaluations, "ToolsOnly")
-      );
-      const jsonTemperatureVsComplexity = JSON.stringify(
-        ConvertToEvaluationPlotData(evaluations, "TemperatureVsComplexity")
-      );
-      const jsonTopPVsComplexity = JSON.stringify(
-        ConvertToEvaluationPlotData(evaluations, "TopPVsComplexity")
-      );
-      zip.file("complexity.json", jsonComplexity);
-      zip.file("topPvsTemperature.json", jsonTopPvsTemperature);
-      zip.file("toolsOnly.json", jsonToolsOnly);
-      zip.file("temperatureVsComplexity.json", jsonTemperatureVsComplexity);
-      zip.file("topPVsComplexity.json", jsonTopPVsComplexity);
-      zip.file("all.json", all);
-      zip.generateAsync({ type: "blob" }).then(function (content) {
-        saveAs(content, "evaluation.zip");
-      });
+      // const all = JSON.stringify(evaluations);
+      // const jsonComplexity = JSON.stringify(
+      //   ConvertToEvaluationPlotData(evaluations, "ComplexityOnly")
+      // );
+      // const jsonTopPvsTemperature = JSON.stringify(
+      //   ConvertToEvaluationPlotData(evaluations, "TopPvsTemperature")
+      // );
+      // const jsonToolsOnly = JSON.stringify(
+      //   ConvertToEvaluationPlotData(evaluations, "ToolsOnly")
+      // );
+      // const jsonTemperatureVsComplexity = JSON.stringify(
+      //   ConvertToEvaluationPlotData(evaluations, "TemperatureVsComplexity")
+      // );
+      // const jsonTopPVsComplexity = JSON.stringify(
+      //   ConvertToEvaluationPlotData(evaluations, "TopPVsComplexity")
+      // );
+      // zip.file("complexity.json", jsonComplexity);
+      // zip.file("topPvsTemperature.json", jsonTopPvsTemperature);
+      // zip.file("toolsOnly.json", jsonToolsOnly);
+      // zip.file("temperatureVsComplexity.json", jsonTemperatureVsComplexity);
+      // zip.file("topPVsComplexity.json", jsonTopPVsComplexity);
+      // zip.file("all.json", all);
+      // zip.generateAsync({ type: "blob" }).then(function (content) {
+      //   saveAs(content, "evaluation.zip");
+      // });
       // const json = JSON.stringify(evaluations);
-      // const file = new Blob([json], { type: "application/json" });
-      // saveAs(file, "evaluation.json");
+      const file = new Blob([finalData], { type: "application/json" });
+      saveAs(file, "evaluation.json");
     }
   };
 
